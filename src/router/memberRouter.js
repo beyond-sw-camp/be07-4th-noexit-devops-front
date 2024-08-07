@@ -1,5 +1,6 @@
 import MemberCreate from '@/views/MemberCreate.vue'
 import LoginPage from '@/views/LoginPage.vue'
+import MyPage from '@/views/MyPage.vue'
 
 export const memberRouter = [
     {
@@ -8,9 +9,14 @@ export const memberRouter = [
         component: MemberCreate
     },
     {
-        path: '/doLogin',
+        path: '/login',
         name: 'LoginPage',
         component: LoginPage
+    },
+    {
+        path: '/mypage',
+        name: 'MyPage',
+        component: MyPage
     }
 
 
