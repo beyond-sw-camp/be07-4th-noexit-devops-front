@@ -10,8 +10,17 @@
 
                             <v-text-field label="이름" v-model="name" required>
                             </v-text-field>
-                            <v-text-field label="이메일" v-model="email" type="email" required>
-                            </v-text-field>
+                            <v-row>
+                                <v-col cols="9">
+                                    <v-text-field label="이메일" v-model="email" type="email" required>
+                                    </v-text-field>
+
+                                </v-col>
+                                <v-col cols="3">
+                                    <!-- 이메일 인증 버튼 누르면 otp-input -->
+                                    <v-btn @click="showEmailModal">이메일 인증</v-btn></v-col>
+                            </v-row>
+
                             <v-text-field label="비밀번호" v-model="password" type="password">
                             </v-text-field>
                             <v-text-field label="나이" v-model="age" required></v-text-field>
@@ -25,12 +34,18 @@
             </v-col>
         </v-row>
     </v-container>
+    <EmailModal v-model="resetPassword" @update:dialog="resetPassword = $event"></EmailModal>
+
 </template>
 
 <script>
 import axios from 'axios'
+import EmailModal from './EmailModal.vue';
 
 export default {
+    components: {
+        EmailModal,
+    },
     data() {
         return {
             name: "",
