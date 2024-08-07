@@ -1,10 +1,11 @@
-import MemberCreateComponent from '@/components/member/MemberCreateComponent.vue'
+import MemberCreate from '@/views/MemberCreate.vue'
+
 
 export const memberRouter = [
     {
         path: '/member/create',
-        name: 'MemberCreateComponent',
-        component: MemberCreateComponent
+        name: 'MemberCreate',
+        component: MemberCreate
     }
 
 
