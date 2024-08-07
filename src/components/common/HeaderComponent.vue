@@ -16,7 +16,7 @@
                     <v-btn v-if="isLogin" :to="{ path: '/mypage' }">MyPage</v-btn>
                     <v-btn v-if="!isLogin" :to="{ path: '/member/create' }">회원가입</v-btn>
                     <v-btn v-if="!isLogin" :to="{ path: '/login' }">로그인</v-btn>
-                    <v-btn v-if="isLogin" @click="doLogout">로그2아웃</v-btn>
+                    <v-btn v-if="isLogin" @click="doLogout">로그아웃</v-btn>
                 </v-col>
             </v-row>
         </v-container>
