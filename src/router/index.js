@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-// import memberRouter from './MemberRouter';
 import {memberRouter} from './memberRouter'; //라우터 임포트할때 중괄호 쓰는것 잊지말기.
 
 const routes = [
