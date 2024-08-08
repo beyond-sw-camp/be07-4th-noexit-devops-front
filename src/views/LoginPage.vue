@@ -6,7 +6,7 @@
                     <v-card-title class="text-h5 text-center">로그인</v-card-title>
                     <v-card-text>
                         <v-form @submit.prevent="doLogin">
-
+                            <v-select label="role" :items="['일반 사용자', '점주 사용자']" v-model="role"></v-select>
                             <v-text-field label="email" v-model="email" type="email" required></v-text-field>
                             <v-text-field label="비밀번호" v-model="password" type="password" required></v-text-field>
                             <v-row>
@@ -47,23 +47,30 @@ export default {
         return {
             email: "",
             password: "",
+            role: "",
             resetPassword: false
         }
     },
     methods: {
         async doLogin() {
             try {
+                if (this.role == '일반 사용자') {
+                    this.role = 'USER'
+                } else {
+                    this.role = "OWNER"
+                }
                 const loginData = {
                     email: this.email,
-                    password: this.password
+                    password: this.password,
+                    role: this.role
                 }
-
+                console.log(loginData);
                 const response = await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/doLogin`, loginData);
                 const token = response.data.result.token;
-                const refreshToken = response.data.result.refreshToken;
+                // const refreshToken = response.data.result.refreshToken;
                 const role = jwtDecode(token).role;
                 localStorage.setItem('token', token)
-                localStorage.setItem('refreshToken', refreshToken)
+                // localStorage.setItem('refreshToken', refreshToken)
                 localStorage.setItem('role', role)
                 window.location.href = "/"
                 // this.$router.push("/")
