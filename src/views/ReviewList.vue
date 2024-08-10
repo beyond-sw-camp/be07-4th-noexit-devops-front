@@ -1,0 +1,8 @@
+<template>
+    <div>리뷰 목록</div>
+</template>
+<script>
+export default {
+
+}
+</script>
