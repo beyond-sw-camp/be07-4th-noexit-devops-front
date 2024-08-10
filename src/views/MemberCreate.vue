@@ -7,11 +7,10 @@
                     <v-card-title class="text-h5">회원가입</v-card-title>
                     <v-card-text>
                         <v-form @submit.prevent="memberCreate">
-                            <v-file-input label="상품 이미지" accept="image/*" @change="fileUpdate" required></v-file-input>
-
+                            <v-file-input label="상품 이미지" accept="image/*" @change="fileUpdate" required>
+                            </v-file-input>
                             <v-select label="role" :items="['일반 사용자', '점주 사용자']" v-model="role"></v-select>
-                            <v-text-field label="이름" v-model="username" required>
-                            </v-text-field>
+                            <v-text-field label="이름" v-model="username" required></v-text-field>
                             <v-text-field v-if="this.role == '일반 사용자'" label="닉네임" v-model="nickname"
                                 required></v-text-field>
                             <v-row>
@@ -63,7 +62,7 @@ export default {
             nickname: "",
             role: "",
             storeName: "",
-            profileImage: null,
+            profileImage: "",
         }
     },
     methods: {
@@ -72,26 +71,34 @@ export default {
                 let registerData = new FormData();
 
                 if (this.role == '일반 사용자') {
-                    registerData.append("username", this.username);
-                    registerData.append("email", this.email);
-                    registerData.append("password", this.password);
-                    registerData.append("age", this.age);
-                    registerData.append("phone_number", this.phone_number);
-                    registerData.append("nickname", this.nickname);
-                    registerData.appeend('profileImage', this.profileImage);
-                    registerData.append('role', this.role);
-                    console.log(registerData);
+                    const data = {
+                        username: this.username,
+                        email: this.email,
+                        password: this.password,
+                        age: parseInt(this.age),
+                        phone_number: this.phone_number,
+                        nickname: this.nickname,
+                    };
 
+                    console.log(data);
+
+                    registerData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
+                    registerData.append("file", this.profileImage);
                     await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/member/create`, registerData);
-
                 } else if (this.role == '점주 사용자') {
-                    // const registerData = {
-                    //     username: this.username,
-                    //     email: this.email,
-                    //     password: this.password,
-                    //     storeName: this.storeName,
-                    //     phone_number: this.phone_number,
-                    // }
+                    const data = {
+                        username: this.username,
+                        email: this.email,
+                        password: this.password,
+                        storeName: this.storeName,
+                        phone_number: this.phone_number,
+                    };
+
+                    console.log(data);
+
+                    registerData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
+                    registerData.append("file", this.profileImage); // 이미지 파일 추가
+
                     await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/owner/create`, registerData);
                 }
                 this.$router.push("/");
@@ -104,7 +111,7 @@ export default {
 
         },
         fileUpdate() {
-            this.productImage = event.target.files[0]
+            this.profileImage = event.target.files[0]
         },
     }
 }
