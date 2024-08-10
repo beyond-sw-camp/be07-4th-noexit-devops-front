@@ -77,17 +77,14 @@ body {
 }
 
 .custom-app-bar {
-  min-height: 80px;
-  /* 앱바 높이 조정 */
+  min-height: 80px; /* 앱바 높이 조정 */
   padding: 10px 24px;
   font-size: 20px;
 }
 
 .main-content {
-  margin-top: 20px;
-  /* 앱바 아래로 네비게이션 메뉴 이동 */
-  min-height: calc(100vh - 100px);
-  /* v-main 높이 조정 */
+  margin-top: 20px; /* 앱바 아래로 네비게이션 메뉴 이동 */
+  min-height: calc(100vh - 100px); /* v-main 높이 조정 */
 }
 
 .top-row {
@@ -95,36 +92,28 @@ body {
 }
 
 .custom-search-bar .v-input__control {
-  border-radius: 20px;
-  /* 검색창의 모서리를 둥글게 만듭니다 */
-  height: 40px;
-  /* 검색바 높이 조정 */
+  border-radius: 20px; /* 검색창의 모서리를 둥글게 만듭니다 */
+  height: 40px; /* 검색바 높이 조정 */
 }
 
 .custom-search-bar .v-input__slot {
-  border-radius: 20px;
-  /* 검색창 내부 슬롯의 모서리를 둥글게 만듭니다 */
-  height: 40px;
-  /* 검색바 내부 슬롯의 높이 조정 */
+  border-radius: 20px; /* 검색창 내부 슬롯의 모서리를 둥글게 만듭니다 */
+  height: 40px; /* 검색바 내부 슬롯의 높이 조정 */
 }
 
 .v-text-field.search-bar input {
   background: #f8f7f7;
   border-radius: 20px;
-  height: 40px;
-  /* 검색바 높이 조정 */
-  font-size: 16px;
-  /* 글자 크기 조정 */
+  height: 40px; /* 검색바 높이 조정 */
+  font-size: 16px; /* 글자 크기 조정 */
 }
 
 .logo-img {
-  max-height: 40px;
-  /* 로고 이미지 높이 조정 */
+  max-height: 40px; /* 로고 이미지 높이 조정 */
 }
 
 .nav-container {
-  margin-top: 16px;
-  /* 앱바와 네비게이션 메뉴 사이의 여백 추가 */
+  margin-top: 16px; /* 앱바와 네비게이션 메뉴 사이의 여백 추가 */
 }
 
 .nav-row {
@@ -132,11 +121,9 @@ body {
 }
 
 .nav-link {
-  font-size: 20px;
-  /* 글자 크기 조정 */
+  font-size: 20px; /* 글자 크기 조정 */
   font-weight: 500;
-  margin: 0 15px;
-  /* 글자 간격을 조정 */
+  margin: 0 15px; /* 글자 간격을 조정 */
   text-decoration: none;
   color: black;
 }
@@ -146,10 +133,8 @@ body {
 }
 
 .custom-divider {
-  background-color: black;
-  /* 원하는 색상으로 변경 */
-  height: 2px;
-  /* 구분선의 두께 설정 */
+  background-color: black; /* 원하는 색상으로 변경 */
+  height: 2px; /* 구분선의 두께 설정 */
 }
 
 .jua-regular {
