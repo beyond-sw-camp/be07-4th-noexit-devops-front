@@ -1,17 +1,7 @@
 <template>
     <v-container>
-        <v-row justify="center">
-            <v-col cols="4">
-                <v-btn :to="{ path: '/mypage' }" block>마이페이지</v-btn>
-            </v-col>
-            <v-col cols="4">
-                <v-btn :to="{ path: '/wishlist' }" block>찜한 목록</v-btn>
-            </v-col>
-            <v-col cols="4">
-                <v-btn :to="{ path: '/reviewList' }" block>내가 쓴 후기</v-btn>
-            </v-col>
-        </v-row>
 
+        <MypageHeaderComponent />
         <v-card-text>
             <!-- 이미지는 dto에 존재하지 않아서 어떻게 가져와야할지 추후 수정필요 -->
             <v-card-actions>
@@ -36,7 +26,11 @@
 
 <script>
 import axios from 'axios';
+import MypageHeaderComponent from '@/components/MypageHeaderComponent.vue'
 export default {
+    components: {
+        MypageHeaderComponent
+    },
     data() {
         return {
             memberInfo: {},
