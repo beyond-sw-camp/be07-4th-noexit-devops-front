@@ -26,7 +26,7 @@ export const memberRouter = [
         component: MemberReviewList
     },
     {
-        path: '/member/wishList',
+        path: '/wishList',
         name: 'WishList',
         component: WishList
     }
