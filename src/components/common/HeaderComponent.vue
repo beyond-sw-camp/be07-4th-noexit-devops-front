@@ -33,7 +33,7 @@
         <v-row align="center" justify="flex-start" class="nav-row">
           <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/')">RESERVATION</v-col>
           <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/curator')">BOARD</v-col>
-          <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/curation')">ESCAPE WITH ME</v-col>
+          <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/review/list')">REVIEW</v-col>
         </v-row>
       </v-container>
       <v-divider class="custom-divider"></v-divider>
