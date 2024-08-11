@@ -15,7 +15,6 @@
               hide-details
             ></v-text-field>
           </v-col>
-
           <v-col cols="12" md="4" class="d-flex justify-end align-center">
             <v-btn text v-if="!isLogin" :to="{ path: '/login' }" class="jua-regular" style="font-size: 20px;">로그인</v-btn>
             <v-btn text v-if="!isLogin" :to="{ path: '/member/create' }" class="jua-regular" style="font-size: 20px;">회원가입</v-btn>
@@ -25,22 +24,41 @@
           </v-col>
         </v-row>
       </v-container>
+
     </v-app-bar>
 
     <!-- 네비게이션 메뉴 -->
     <v-main class="main-content">
       <v-container class="nav-container">
         <v-row align="center" justify="flex-start" class="nav-row">
-          <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/')">RESERVATION</v-col>
-          <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/curator')">BOARD</v-col>
-          <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/curation')">ESCAPE WITH ME</v-col>
+          
+          <v-col cols="auto">
+            <router-link :to="'/reservation'" style="text-decoration: none; color: inherit;">
+              RESERVATION
+            </router-link>
+          </v-col>
+          
+          <v-col cols="auto">
+            <router-link :to="'/board'" style="text-decoration: none; color: inherit;">
+              BOARD
+            </router-link>
+          </v-col>
+          
+          <v-col cols="auto">
+            <router-link :to="{ path: '/findboard' }" style="cursor: pointer; text-decoration: none; color: inherit;">
+              ESCAPE WITH ME
+            </router-link>
+          </v-col>
+        
         </v-row>
       </v-container>
       <v-divider class="custom-divider"></v-divider>
-      <!-- 메인 컨텐츠 -->
+    
       <v-container>
         <router-view />
       </v-container>
+
+
     </v-main>
   </v-app>
 </template>
@@ -144,4 +162,5 @@ body {
   font-weight: 400;
   font-style: normal;
 }
+
 </style>
