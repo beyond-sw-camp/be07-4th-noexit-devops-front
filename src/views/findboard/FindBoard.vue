@@ -1,125 +1,93 @@
 <template>
-  <v-container>
-    <!-- Post Creation Form -->
-    <v-card class="mb-4" variant="tonal">
-      <v-card-title>글 작성 란</v-card-title>
-      <v-card-text>
-        <v-form @submit.prevent="submitForm">
-          <v-text-field
-            v-model="newPost.title"
-            label="가게 이름"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="newPost.subtitle"
-            label="마감 시각"
-            required
-          ></v-text-field>
-          <v-textarea
-            v-model="newPost.content"
-            label="Contents"
-            required
-          ></v-textarea>
-          <v-card-actions>
-            <v-btn type="submit" color="primary">글 작성 버튼</v-btn>
-          </v-card-actions>
-        </v-form>
-      </v-card-text>
-    </v-card>
-
-    <!-- List of Posts -->
-    <v-row>
-      <v-col
-        v-for="(post, index) in paginatedPosts"
-        :key="index"
-        cols="12"
-      >
-        <v-card variant="tonal">
-          <v-card-title>
-            {{ post.title }}
-          </v-card-title>
-          <v-card-subtitle>
-            {{ post.subtitle }}
-          </v-card-subtitle>
-          <v-card-text>
-            {{ post.content }}
-          </v-card-text>
-          <v-card-actions>
-            <v-btn @click="applyToPost(post)">
-              참가 신청 버튼
-            </v-btn>
-          </v-card-actions>
+  <v-container class="pa-4 d-flex justify-center">
+    <v-row class="d-flex justify-center" style="max-width: 1500px;">
+      
+      <!-- 반복되는 카드 디자인 -->
+      <v-col cols="12" v-for="f in findBoardList" :key="f.id" class="d-flex justify-center">
+        <v-card variant="outlined" class="pa-4 d-flex align-center" outlined style="width: 100%; max-width: 1500px;">
+          <!-- 왼쪽 프로필 아이콘 -->
+          
+          <!-- <v-avatar size="100" class="mr-4">
+            <v-icon :src="p.imagePath" large color="gray">아바타</v-icon>
+          </v-avatar> -->
+          <!-- 오른쪽 글 내용 -->
+          <v-col>
+            
+            <div class="d-flex justify-space-between align-center">
+              <div>
+                <div>작성자 : {{f.writer}}</div>
+                <div>제목 : {{f.title}}</div>
+                <div>제목 : {{f.contents}}</div>
+              </div>
+              <div class="ml-auto text-right">
+                <div><strong>마감 시각: {{f.expirationTime}}</strong></div>
+                <v-btn color="primary" class="mt-2">참가 신청 버튼</v-btn>
+              </div>
+            </div>
+            <div class="text-right mt-2">{{f.currentCount}}인원</div>
+          </v-col>
+        
         </v-card>
+      
       </v-col>
     </v-row>
+    
+    <!-- 로딩 인디케이터 (데이터가 로딩 중일 때 표시) -->
+    <div v-if="loading" class="text-center my-4">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+    </div>
 
-    <!-- Pagination -->
-    <v-pagination
-      v-model="page"
-      :length="pageCount"
-      @input="changePage"
-    ></v-pagination>
   </v-container>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      posts: [
-        // Sample data
-        {
-          title: "가게 이름 : 신대방삼거리역 민성이스케이프점",
-          subtitle: "마감 시각: xxxx",
-          content: "Contents : 오늘 4시에 NoExit 1호점에서 공포 테마로 같이 방탈출 하실 3분 구합니다!!!"
-        },
-        // More sample data here...
-      ],
-      newPost: {
-        title: "",
-        subtitle: "",
-        content: ""
+import axios from 'axios';
+
+  export default {
+      data() {
+        return {
+          findBoardList: [],
+          loading: true // 로딩 상태 추가
+        };
       },
-      page: 1,
-      perPage: 4
-    };
-  },
-  computed: {
-    pageCount() {
-      return Math.ceil(this.posts.length / this.perPage);
-    },
-    paginatedPosts() {
-      const start = (this.page - 1) * this.perPage;
-      return this.posts.slice(start, start + this.perPage);
-    }
-  },
-  methods: {
-    changePage(newPage) {
-      this.page = newPage;
-    },
-    applyToPost(post) {
-      // Handle the application logic here
-      alert(`Applying to ${post.title}`);
-    },
-    submitForm() {
-      // Add the new post to the posts array
-      this.posts.unshift({ ...this.newPost });
+      created(){
+        this.loadFindBoard();
+      },
+      methods: {
 
-      // Reset the form
-      this.newPost.title = "";
-      this.newPost.subtitle = "";
-      this.newPost.content = "";
+        async loadFindBoard() {
+          this.loading = true; // 로딩 시작
+          try {
+            const response = await axios.get(`http://localhost:8080/findboard/list`);
+            this.findBoardList = response.data.result.content;
+          } catch (error) {
+            console.error('Error loading findBoardList:', error);
+          } finally {
+            this.loading = false; // 로딩 종료
+          }
+          
+        }
 
-      // Go back to the first page to see the new post
-      this.page = 1;
-    }
-  }
-};
+      }
+  };
 </script>
 
-<style scoped>
-/* Add your custom styles here */
-.mb-4 {
+<style>
+@import url('https://webfontworld.github.io/gmarket/GmarketSans.css');
+
+body, .v-card, .v-btn, .v-avatar, .v-icon {
+  font-family: 'GmarketSansMedium', sans-serif;
+  font-weight: 1000;
+}
+
+.v-avatar {
+  background-color: #e2e2f7;
+  padding: 8px;
+  border-radius: 50%;
+}
+
+.v-card {
   margin-bottom: 16px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 }
 </style>
