@@ -6,19 +6,17 @@
         <v-row align="center" justify="space-between" class="top-row">
           <v-col cols="12" md="8" class="d-flex align-center">
             <v-img :src="logoSrc" alt="Logo" max-height="40" class="mr-4 logo-img"></v-img>
-            <v-text-field
-              class="mx-4 search-bar custom-search-bar jua-regular"
-              solo
-              flat
-              placeholder="무엇이 궁금하신가요?"
-              prepend-inner-icon="mdi-magnify"
-              hide-details
-            ></v-text-field>
+            <v-text-field class="mx-4 search-bar custom-search-bar jua-regular" solo flat placeholder="무엇이 궁금하신가요?"
+              prepend-inner-icon="mdi-magnify" hide-details></v-text-field>
           </v-col>
 
           <v-col cols="12" md="4" class="d-flex justify-end align-center">
-            <v-btn text v-if="!isLogin" :to="{ path: '/login' }" class="jua-regular" style="font-size: 20px;">로그인</v-btn>
-            <v-btn text v-if="!isLogin" :to="{ path: '/member/create' }" class="jua-regular" style="font-size: 20px;">회원가입</v-btn>
+            <v-btn text v-if="!isLogin" :to="{ path: '/login' }" class="jua-regular"
+              style="font-size: 20px;">로그인</v-btn>
+            <v-btn text v-if="!isLogin" :to="{ path: '/member/create' }" class="jua-regular"
+              style="font-size: 20px;">회원가입</v-btn>
+            <v-btn text v-if="isLogin" :to="{ path: '/mypage' }" class="jua-regular"
+              style="font-size: 20px;">마이페이지</v-btn>
             <v-btn text v-if="isLogin" @click="doLogout" class="jua-regular" style="font-size: 20px;">로그아웃</v-btn>
             <v-icon class="mx-2">mdi-bell</v-icon>
             <v-icon class="mx-2">mdi-cart</v-icon>
