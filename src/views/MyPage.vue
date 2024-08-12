@@ -1,17 +1,7 @@
 <template>
     <v-container>
-        <v-row justify="center">
-            <v-col cols="4">
-                <v-btn :to="{ path: '/mypage' }" block>마이페이지</v-btn>
-            </v-col>
-            <v-col cols="4">
-                <v-btn :to="{ path: '/wishlist' }" block>찜한 목록</v-btn>
-            </v-col>
-            <v-col cols="4">
-                <v-btn :to="{ path: '/reviewList' }" block>내가 쓴 후기</v-btn>
-            </v-col>
-        </v-row>
 
+        <MypageHeaderComponent />
         <v-card-text>
             <!-- 이미지는 dto에 존재하지 않아서 어떻게 가져와야할지 추후 수정필요 -->
             <v-card-actions>
@@ -27,7 +17,7 @@
                 </v-btn>
             </v-card-actions>
             <v-form v-for="element in memberInfoList" :key="element.id">
-                <v-text-field :label="element.key" v-model="element.name">{{ element.value }}</v-text-field>
+                <v-text-field :label="element.key" v-model="element.value"></v-text-field>
             </v-form>
         </v-card-text>
 
@@ -36,7 +26,11 @@
 
 <script>
 import axios from 'axios';
+import MypageHeaderComponent from '@/components/MypageHeaderComponent.vue'
 export default {
+    components: {
+        MypageHeaderComponent
+    },
     data() {
         return {
             memberInfo: {},
@@ -49,27 +43,21 @@ export default {
         this.memberInfo = response.data.result;
         this.memberInfoList = [
             // { key: "프로필이미지", value: this.memberInfo.image },
-            { key: "이름", value: this.memberInfo.username },
-            { key: "닉네임", value: this.memberInfo.nickname },
-            { key: "이메일", value: this.memberInfo.email },
-            // { key: "비밀번호", value: this.memberInfo.password },
-            { key: "전화번호", value: this.memberInfo.phoneNumber },
-
+            { key: "username", value: this.memberInfo.username },
+            { key: "nickname", value: this.memberInfo.nickname },
+            { key: "phone_number", value: this.memberInfo.phone_number },
+            { key: "age", value: this.memberInfo.age },
         ];
-        console.log(this.memberInfoList);
     },
     methods: {
         async updateMember() {
             try {
+                console.log(this.memberInfoList);
                 // 수정된 정보로 업데이트
-                const updateData = {
-                    name: this.name,
-                    email: this.email,
-                    password: this.memberInfo.password,
-                    age: this.age,
-                    phone_number: this.phone_number,
-                    nickname: this.nickname
-                }
+                const updateData = {};
+                this.memberInfoList.forEach(element => {
+                    updateData[element.key] = element.value;
+                });
                 await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/member/update`, updateData);
                 window.location.reload();
             } catch (e) {
@@ -78,6 +66,7 @@ export default {
                 alert(error_message);
             }
         },
+
         updaetIsEditing() {
             this.isEditing = !this.isEditing
         }
