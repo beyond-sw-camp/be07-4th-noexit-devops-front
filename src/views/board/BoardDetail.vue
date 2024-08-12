@@ -1,13 +1,12 @@
 <template>
-    <div>board detail</div>
+<BoardDetailComponent />
 </template>
 
 <script>
+import BoardDetailComponent from '@/components/BoardDetailComponent.vue'
 
 export default {
-    data() {
-
-    }
+  components: { BoardDetailComponent },
     
 }
 </script>
