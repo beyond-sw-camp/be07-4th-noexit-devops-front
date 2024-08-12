@@ -3,12 +3,14 @@ import { memberRouter } from './memberRouter'; //라우터 임포트할때 중�
 import { reviewRouter } from './reviewRouter';
 import { reservationRouter } from './reservationRouter';
 import { boardRouter } from './boardRouter';
+import { findBoardRouter } from './findBoardRouter';
 
 const routes = [
     ...memberRouter,
     ...reviewRouter,
     ...reservationRouter,
     ...boardRouter,
+    ...findBoardRouter,
 ]
 
 
