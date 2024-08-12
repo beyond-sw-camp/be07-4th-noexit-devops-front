@@ -48,7 +48,7 @@
           <!-- 날짜 및 마감 시한 선택 -->
           <v-card flat class="pa-4" style="background-color: #f5f5f5;">
             <v-row>
-              <v-col cols="6">
+              <v-col cols="4">
                 <v-form>
                   <label for="date">날짜 선택<br></label>
                   <input 
@@ -61,7 +61,7 @@
                 </v-form>
               </v-col>
               
-              <v-col cols="6">
+              <v-col cols="4">
                 <v-form>
                   <label for="time">마감 시한<br></label>
                   <input 
@@ -73,6 +73,21 @@
                   />
                 </v-form>
               </v-col>
+              <v-col cols="3" >
+                
+                <v-select
+                v-model="personCount"
+                :items="[1,2,3,4,5,6,7,8,9,10]"
+                label="희망 인원"
+                outlined
+                shaped
+                elevation="3"
+                prepend-icon="mdi-account"
+                style="border-radius: 8px; padding: 0 8px; height:2px; padding: 25px;"
+                ></v-select>
+
+            </v-col>
+
             </v-row>
           </v-card>  
           <!-- 작성 완료 버튼 -->
