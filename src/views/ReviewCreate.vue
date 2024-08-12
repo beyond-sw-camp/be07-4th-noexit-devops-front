@@ -1,20 +1,34 @@
 <template>
     <v-container>
         <v-row justify="center">
-            <v-col cols="12" sm="7" md="6">
+            <v-col cols="12" md="8">
                 <v-card>
-                    <v-card-title class="text-h5">리뷰 작성</v-card-title>
+                    <v-card-title class="text-center text-h5">
+                        리뷰 작성
+                    </v-card-title>
                     <v-card-text>
                         <v-form @submit.prevent="reviewCreate">
-                            <v-text-field label="내용" v-model="content" required></v-text-field>
-                            <v-rating v-model="rating" label="평점" required></v-rating>
-                            <v-file-input label="리뷰 이미지" v-model="reviewImage" accept="image/*"></v-file-input>
-
-                            <!-- 후 마이페이지 > 예약내역조회 > 리뷰 작성 순으로 해서 회원정보와 예약 정보 파싱-->
-                            <v-text-field label="회원 ID" v-model="memberId" required></v-text-field>       
-                            <v-text-field label="예약 ID" v-model="reservationId" required></v-text-field>
-                            
-                            <v-btn type="submit" block>리뷰 작성</v-btn>
+                            <v-text-field
+                                label="리뷰 내용"
+                                v-model="content"
+                                required
+                            ></v-text-field>
+                            <v-rating
+                                label="평점"
+                                v-model="rating"
+                                required
+                            ></v-rating>
+                            <v-file-input
+                                label="리뷰 이미지"
+                                accept="image/*"
+                                @change="fileUpdate"
+                            ></v-file-input>
+                            <v-text-field
+                                label="예약 ID"
+                                v-model="reservationId"
+                                required
+                            ></v-text-field>
+                            <v-btn type="submit" color="primary" block>등록</v-btn>
                         </v-form>
                     </v-card-text>
                 </v-card>
@@ -25,6 +39,7 @@
 
 <script>
 import axios from 'axios';
+import jwtDecode from 'jwt-decode';
 
 export default {
     data() {
@@ -32,37 +47,56 @@ export default {
             content: "",
             rating: 0,
             reviewImage: null,
-            memberId: "",
             reservationId: "",
+            memberId: "",
         };
     },
+    created() {
+        this.getMemberId();
+    },
     methods: {
+        async getMemberId() {
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const decodedToken = jwtDecode(token);
+                    this.memberId = decodedToken.userId || decodedToken.sub; // 토큰에서 userId를 추출
+                } else {
+                    alert('로그인이 필요합니다.');
+                    this.$router.push('/login');
+                }
+            } catch (error) {
+                console.error('회원 정보를 가져오는 데 실패했습니다.', error);
+            }
+        },
         async reviewCreate() {
             try {
-                const formData = new FormData();
-                formData.append('content', this.content);
-                formData.append('rating', this.rating);
-                formData.append('reviewImage', this.reviewImage);
-                formData.append('memberId', this.memberId);
-                formData.append('reservationId', this.reservationId);
+                let formData = new FormData();
+                formData.append("content", this.content);
+                formData.append("rating", this.rating);
+                formData.append("reviewImage", this.reviewImage);
+                formData.append("reservationId", this.reservationId);
+                formData.append("memberId", this.memberId);
 
                 await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/review/create`, formData, {
                     headers: {
-                        'Content-Type': 'multipart/form-data'
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 });
-
-                this.$router.push("/");
+                this.$router.push('/review/list');
             } catch (e) {
-                const error_message = e.response.data.error_message;
-                console.error(error_message);
-                alert(error_message);
+                console.error(e);
+                alert("리뷰 등록에 실패하였습니다.");
             }
+        },
+        fileUpdate(event) {
+            this.reviewImage = event.target.files[0];
         }
     }
 }
 </script>
 
 <style scoped>
-/* 스타일을 여기에 추가할 수 있습니다 */
+/* 필요한 경우 스타일을 여기에 추가할 수 있습니다 */
 </style>
