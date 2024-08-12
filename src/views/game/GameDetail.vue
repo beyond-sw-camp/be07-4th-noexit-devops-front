@@ -62,15 +62,23 @@
                 </div>
             </v-col>
         </v-row>
+
+        <!-- 리뷰 목록 섹션 -->
+        <ReviewListComponent :gameId="gameId" />
     </v-container>
 </template>
   
 <script>
 import axios from 'axios';
+import ReviewListComponent from '@/components/ReviewListComponent.vue';
 
 export default {
+    components: {
+        ReviewListComponent
+    },
     data() {
         return {
+            gameId: this.$route.params.id,
             game: {},
             difficultyLevel: 1
         };
