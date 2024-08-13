@@ -1,75 +1,156 @@
 <template>
     <v-container>
-        <v-row>
-            <v-col cols="12" v-for="(review, index) in visibleReviews" :key="index">
-                <v-card @click="showDetail(review)" class="mb-4">
-                    <v-card-title>{{ review.title }}</v-card-title>
-                    <v-card-text>{{ review.excerpt }}</v-card-text>
-                </v-card>
-            </v-col>
-        </v-row>
+        <v-row justify="center">
+            <v-col cols="12" md="8">
+                <div v-for="review in reviewList" :key="review.id" class="review-item mb-4">
+                    <v-row>
+                        <v-col cols="4" class="review-image-col">
+                            <v-img
+                            :src="review.imagePath"
+                            class="review-image"
+                            contain
+                            ></v-img>
+                        </v-col>
 
-        <v-row v-if="!showAll">
-            <v-col cols="12" class="text-center">
-                <v-btn @click="loadMoreReviews">더보기</v-btn>
-            </v-col>
-        </v-row>
+                        <v-col cols="8">
 
-        <v-dialog v-model="dialog" max-width="600px">
-            <v-card>
-                <v-card-title>{{ selectedReview.title }}</v-card-title>
-                <v-card-text>
-                    {{ selectedReview.content }}
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn color="primary" @click="dialog = false">닫기</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+                            <v-row>
+                                <v-col cols="8">
+                                    <v-row no-gutters>
+                                        <v-col cols="auto" v-for="n in 5" :key="n">
+                                            <v-icon color="yellow" v-if="n <= review.rating">mdi-star</v-icon>
+                                            <v-icon color="grey" v-else>mdi-star-outline</v-icon>
+                                        </v-col>
+                                        <span>{{ review.rating }}</span>
+                                    </v-row>
+                                </v-col>
+                                <v-col cols="4" class="text-right">
+                                    <span>{{ formatRelativeTime(review.createdAt) }}</span>
+                                </v-col>
+                            </v-row>
+        
+                            <v-row class="mt-2">
+                                <v-col cols="12">
+                                    <strong>{{ review.memberNickname }}</strong>
+                                </v-col>
+                            </v-row>
+
+                            <v-row class="mt-2">
+                                <v-col cols="12">
+                                    <div><strong>Game:</strong> {{ review.gameName }}</div>
+                                </v-col>
+                            </v-row>
+        
+                            <v-row class="mt-2">
+                                <v-col cols="12">
+                                    <div>{{ review.content }}</div>
+                                </v-col>
+                            </v-row>
+        
+                            <v-row class="mt-2">
+                                <v-col cols="12">
+                                    <v-btn v-if="canDeleteReview(review)" color="secondary" @click="deleteReview(review.id)">
+                                    삭제
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                    </v-row>
+                </div>
+            </v-col>
+      </v-row>
     </v-container>
 </template>
-
+  
 <script>
-export default {
-    data() {
-        return {
-            reviews: [
-                {
-                    title: "후기 1",
-                    excerpt: "이것은 후기 1의 요약입니다.",
-                    content: "이것은 후기 1의 전체 내용입니다."
-                },
-                {
-                    title: "후기 2",
-                    excerpt: "이것은 후기 2의 요약입니다.",
-                    content: "이것은 후기 2의 전체 내용입니다."
-                },
-                // 추가적인 후기를 여기에 넣으세요
-            ],
-            visibleReviews: [], // 화면에 표시할 후기 목록
-            selectedReview: {}, // 선택한 후기 상세보기
-            dialog: false, // 상세보기 다이얼로그 표시 여부
-            showAll: false, // 전체 후기 표시 여부
-            itemsPerPage: 5, // 한 번에 표시할 후기 개수
-        };
-    },
-    methods: {
-        showDetail(review) {
-            this.selectedReview = review;
-            this.dialog = true;
-        },
-        loadMoreReviews() {
-            const currentLength = this.visibleReviews.length;
-            const nextItems = this.reviews.slice(currentLength, currentLength + this.itemsPerPage);
-            this.visibleReviews = [...this.visibleReviews, ...nextItems];
+import axios from 'axios';
+import { formatDistanceToNow } from 'date-fns';
+import { ko } from 'date-fns/locale';
 
-            if (this.visibleReviews.length >= this.reviews.length) {
-                this.showAll = true;
+export default {
+props: ['gameId', 'isUserReviews'],
+data() {
+    return {
+    reviewList: [],
+    pageSize: 10,
+    currentPage: 0,
+    isLastPage: false,
+    isLoading: false,
+    };
+},
+created() {
+    this.loadReviews();
+},
+methods: {
+    async loadReviews() {
+        try {
+            if (this.isLoading || this.isLastPage) return;
+
+            this.isLoading = true;
+            let params = { size: this.pageSize, page: this.currentPage };
+
+            if (this.isUserReviews) {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/review/myall`, { params });
+                this.reviewList = response.data.result.content;
+            } else if (this.gameId) {
+                console.log("Game ID:", this.gameId);
+                params.gameId = this.gameId;
+                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/review/all`, { params });
+                this.reviewList = response.data.result.content;
             }
+
+            this.currentPage++;
+            this.isLoading = false;
+        } catch (e) {
+            console.error(e);
+            this.isLoading = false;
         }
     },
-    mounted() {
-        this.loadMoreReviews(); // 초기 로딩 시 첫 페이지 로드
-    }
+
+    formatRelativeTime(date) {
+        return formatDistanceToNow(new Date(date), { addSuffix: true, locale: ko });
+    },
+
+    canDeleteReview(review) {
+        const currentUserNickname = localStorage.getItem('nickname');
+        return review.memberNickname === currentUserNickname;
+    },
+    async deleteReview(reviewId) {
+        try {
+            await axios.put(`${process.env.VUE_APP_API_BASIC_URL}/review/delete/${reviewId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            this.reviewList = this.reviewList.filter(r => r.id !== reviewId);
+            alert('리뷰가 삭제되었습니다.');
+        } catch (e) {
+            console.error(e);
+            alert('리뷰 삭제에 실패하였습니다.');
+        }
+    },
+},
 };
 </script>
+
+<style scoped>
+.review-item {
+    padding: 16px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.review-image-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.review-image {
+    max-height: 150px;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+</style>
