@@ -3,6 +3,7 @@ import LoginPage from '@/views/member/LoginPage.vue'
 import MyPage from '@/views/member/MyPage.vue'
 import MemberReviewList from '@/views/member/MemberReviewList.vue'
 import WishList from '@/views/member/WishList.vue'
+import HomeComponent from '@/views/HomeComponent.vue'
 
 export const memberRouter = [
     {
@@ -29,6 +30,12 @@ export const memberRouter = [
         path: '/wishList',
         name: 'WishList',
         component: WishList
+    },
+    {
+        path: '/',
+        name: 'HomeComponent',
+        component: HomeComponent
+
     }
 
 
