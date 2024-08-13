@@ -1,8 +1,8 @@
-import MemberCreate from '@/views/MemberCreate.vue'
-import LoginPage from '@/views/LoginPage.vue'
-import MyPage from '@/views/MyPage.vue'
-import MemberReviewList from '@/views/MemberReviewList.vue'
-import WishList from '@/views/WishList.vue'
+import MemberCreate from '@/views/member/MemberCreate.vue'
+import LoginPage from '@/views/member/LoginPage.vue'
+import MyPage from '@/views/member/MyPage.vue'
+import MemberReviewList from '@/views/member/MemberReviewList.vue'
+import WishList from '@/views/member/WishList.vue'
 
 export const memberRouter = [
     {

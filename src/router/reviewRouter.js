@@ -1,5 +1,5 @@
 import ReviewCreate from '@/views/ReviewCreate.vue';
-// import ReviewList from '@/views/ReviewList.vue';
+import ReviewList from '@/views/ReviewList.vue';
 
 export const reviewRouter = [
   {
@@ -7,11 +7,11 @@ export const reviewRouter = [
     name: 'ReviewCreate',
     component: ReviewCreate,
   },
-  // {
-  //   path: '/review/list',
-  //   name: 'ReviewList',
-  //   component: ReviewList,
-  // },
+  {
+    path: '/review/list',
+    name: 'ReviewList',
+    component: ReviewList,
+  },
 
 
 ];
