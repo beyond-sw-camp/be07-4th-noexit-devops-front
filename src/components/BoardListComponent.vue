@@ -47,26 +47,30 @@
                 <tr v-for="b in boardList" :key="b.id">
                   <td>
                     <v-img
-                      :src="b.imagePath"
+                      :src="b.thumbNail"
                       style="height: 100px; width: auto"
                     ></v-img>
                   </td>
-                  <td>{{ b.memberId }}</td>
+                  <td>{{ b.writer }}</td>
                   <td>{{ b.title }}</td>
                   <td>{{ b.boardHits }}</td>
                   <td>{{ b.likes }}</td>
-                  <td>{{ b.comments.length }}</td>
+                  <td>{{ b.comments }}</td>
                 </tr>
               </tbody>
             </v-table>
           </v-card-text>
         </v-card>
+        <div v-if="!isLastPage">
+       <button @click="loadBoard(currentPage - 1)" :disabled="currentPage === 0">이전    </button>
+       <button @click="loadBoard(currentPage + 1)">다음</button>
+     </div>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
-<script>
+ <script>
 import axios from "axios";
 
 export default {
@@ -100,9 +104,36 @@ export default {
         this.currentPage = 0;
         this.isLastPage = false;
         this.isLoading = false;
-        this.loadBoard();  
+        this.loadBoard();
+
     },
-    async loadBoard() {
+    async loadBoard(page = this.currentPage) {
+      try {
+        if(this.isLoading || (page < 0) || this.isLastPage) return;
+        this.isLoading = true;
+        let params = {
+            size: this.pageSize,
+            page: page,
+        };
+        if(this.searchType === 'title') {
+            params.title = this.searchValue;
+        } else if(this.searchType === 'boardType') {
+            params.boardType = this.searchValue;
+        }
+        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/board/list`, {params});
+        const additionalData = response.data.result.content.map(b => ({...b, quantity: 0}));
+        if(additionalData.length === 0) {
+            this.isLastPage = true;
+        } else {
+            this.boardList = page === this.currentPage ? [...this.boardList, ...additionalData] : additionalData;
+            this.currentPage = page;
+        }
+        this.isLoading = false;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async loadBoard1() {
       try {
         if(this.isLoading || this.isLastPage) return;
         this.isLoading = true;
@@ -115,8 +146,8 @@ export default {
         }else if(this.searchType === 'boardType') {
             params.boardType = this.searchValue;
         }
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/board/list`, {params});
-        console.log(response)
+        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/board/list`, {params});
+        console.log(response);
         const additionalData = response.data.result.content.map(b=>({...b, quantity:0}));
         if(additionalData.length==0) {
             this.isLastPage = true;
@@ -138,3 +169,4 @@ export default {
   },
 };
 </script>
+
