@@ -6,7 +6,7 @@
 
 <script>
 import ReviewListComponent from '@/components/ReviewListComponent.vue';
-import MypageHeaderComponent from '@/components/MypageHeaderComponent.vue'
+import MypageHeaderComponent from '@/components/MypageSideBarComponent.vue'
 
 export default {
     components: {

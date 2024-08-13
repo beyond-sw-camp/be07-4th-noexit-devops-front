@@ -1,32 +1,54 @@
 <template>
     <v-container>
+        <v-row>
 
-        <MypageHeaderComponent />
-        <v-card-text>
-            <!-- 이미지는 dto에 존재하지 않아서 어떻게 가져와야할지 추후 수정필요 -->
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" v-if="isEditing" @click="updateMember">
-                    저장
-                </v-btn>
-                <v-btn color="primary" v-if="!isEditing" @click="updaetIsEditing">
-                    프로필 수정
-                </v-btn>
-                <v-btn color="secondary" v-if="isEditing" @click="updaetIsEditing">
-                    취소
-                </v-btn>
-            </v-card-actions>
-            <v-form v-for="element in memberInfoList" :key="element.id">
-                <v-text-field :label="element.key" v-model="element.value"></v-text-field>
-            </v-form>
-        </v-card-text>
 
+            <MypageHeaderComponent />
+            <v-col>
+                <v-card-text>
+                    <v-col cols="3" class="d-flex align-center">
+                        <v-avatar size="80" class="mr-3">
+                            <img :src="memberInfoList.find(item => item.key === 'profileImage')?.value" alt="프로필 이미지"
+                                @click="selectImage" />
+                        </v-avatar>
+                        <input type="file" ref="fileInput" @change="onImageChange" accept="image/*"
+                            style="display: none;" />
+                        <v-btn color="primary" v-if="isEditing" @click="updateMember">
+                            저장
+                        </v-btn>
+                        <v-btn color="primary" v-if="!isEditing" @click="updaetIsEditing">
+                            프로필 수정
+                        </v-btn>
+                        <v-btn color="secondary" v-if="isEditing" @click="updaetIsEditing">
+                            취소
+                        </v-btn>
+                    </v-col>
+                    <!-- 이미지는 dto에 존재하지 않아서 어떻게 가져와야할지 추후 수정필요 -->
+                    <!-- <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" v-if="isEditing" @click="updateMember">
+                            저장
+                        </v-btn>
+                        <v-btn color="primary" v-if="!isEditing" @click="updaetIsEditing">
+                            프로필 수정
+                        </v-btn>
+                        <v-btn color="secondary" v-if="isEditing" @click="updaetIsEditing">
+                            취소
+                        </v-btn>
+                    </v-card-actions> -->
+                    <v-form v-for="element in memberInfoList" :key="element.id">
+                        <v-text-field :label="element.key" v-model="element.value"></v-text-field>
+                    </v-form>
+                </v-card-text>
+            </v-col>
+
+        </v-row>
     </v-container>
 </template>
 
 <script>
 import axios from 'axios';
-import MypageHeaderComponent from '@/components/MypageHeaderComponent.vue'
+import MypageHeaderComponent from '@/components/MypageSideBarComponent.vue'
 export default {
     components: {
         MypageHeaderComponent
@@ -66,11 +88,25 @@ export default {
                 alert(error_message);
             }
         },
-
         updaetIsEditing() {
             this.isEditing = !this.isEditing
+        },
+        selectImage() {
+            this.$refs.fileInput.click();
+        },
+        onImageChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const profileImage = this.memberInfoList.find(item => item.key === 'profileImage');
+                    if (profileImage) {
+                        profileImage.value = e.target.result; // Update profile image in the list
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
         }
     }
 }
-
 </script>

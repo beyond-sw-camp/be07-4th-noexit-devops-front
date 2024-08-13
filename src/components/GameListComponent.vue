@@ -1,8 +1,9 @@
 <template>
     <v-container>
         <v-row>
-            <v-col v-for="game in games" :key="game.name" sm="3" md="3">
+            <v-col v-for="game in games" :key="game.name" sm="4" md="4">
                 <v-card>
+                    <!-- 넣을 데이터 조금씩 더 추가예정 -->
                     <v-img :src="game.image" height="200px"></v-img>
                     <v-card-title>{{ game.gameName }}</v-card-title>
                     <v-card-text>{{ game.difficult }}</v-card-text>

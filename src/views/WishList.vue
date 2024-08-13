@@ -1,11 +1,21 @@
 <template>
-    <MypageHeaderComponent />
-    <GameListComponent :games="wishlist" />
+    <v-row>
+        <MypageHeaderComponent />
+
+        <v-col>
+            <GameListComponent :games="wishlist" />
+
+        </v-col>
+
+
+
+    </v-row>
+
 </template>
 
 <script>
 import GameListComponent from '@/components/GameListComponent.vue'
-import MypageHeaderComponent from '@/components/MypageHeaderComponent.vue'
+import MypageHeaderComponent from '@/components/MypageSideBarComponent.vue'
 import axios from 'axios';
 
 export default {
