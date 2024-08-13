@@ -2,17 +2,12 @@
 
     <v-app-bar app class="px-4">
         <v-toolbar-title class="d-flex align-center title-style">
-            <span>NoExit</span>
+            <v-btn text class="link-btn" :to="'/'">NoExit</v-btn>
             <v-divider class="mx-3" vertical></v-divider>
-            <!-- 페이지 링크 -->
             <v-btn text class="link-btn" to="/board/list">Board</v-btn>
-            <v-btn text class="link-btn" to="/findboard/list">Escape-With-Me</v-btn>
+            <v-btn text class="link-btn" to="/findboard">Escape-With-Me</v-btn>
         </v-toolbar-title>
-
-        <!-- Spacer for alignment -->
         <v-spacer></v-spacer>
-
-        <!-- 오른쪽 끝: 마이페이지, 위시리스트, 알림, 로그아웃 버튼 -->
         <v-btn icon :to="isLogin ? '/mypage' : '/member/create'">
             <v-icon>mdi-account</v-icon>
         </v-btn>
@@ -73,6 +68,5 @@ body {
     font-size: 18px;
     font-weight: 400;
     font-family: 'Nunito Sans', sans-serif;
-    /* 타이틀에 적용 */
 }
 </style>

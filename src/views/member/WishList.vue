@@ -2,25 +2,23 @@
     <v-app>
         <v-container>
             <v-row>
-                <MypageHeaderComponent />
                 <v-col>
+                    <h2 class="font-weight-bold">WishList({{ wishlist.length }})</h2>
+                    <v-divider></v-divider>
                     <GameListComponent :games="wishlist" />
                 </v-col>
             </v-row>
         </v-container>
     </v-app>
-
 </template>
 
 <script>
 import GameListComponent from '@/components/GameListComponent.vue'
-import MypageHeaderComponent from '@/components/common/MypageSideBarComponent.vue'
 import axios from 'axios';
 
 export default {
     components: {
         GameListComponent,
-        MypageHeaderComponent,
     },
     data() {
         return {

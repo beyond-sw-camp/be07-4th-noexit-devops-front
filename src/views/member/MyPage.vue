@@ -6,36 +6,27 @@
             <MypageSideBarComponent />
             <v-col>
                 <v-card-text>
-                    <v-col cols="3" class="d-flex align-center">
-                        <v-avatar size="80" class="mr-3">
-                            <img :src="memberInfoList.find(item => item.key === 'profileImage')?.value" alt="프로필 이미지"
-                                @click="selectImage" />
-                        </v-avatar>
-                        <input type="file" ref="fileInput" @change="onImageChange" accept="image/*"
-                            style="display: none;" />
-                        <v-btn color="primary" v-if="isEditing" @click="updateMember">
-                            저장
-                        </v-btn>
-                        <v-btn color="primary" v-if="!isEditing" @click="updaetIsEditing">
-                            프로필 수정
-                        </v-btn>
-                        <v-btn color="secondary" v-if="isEditing" @click="updaetIsEditing">
-                            취소
-                        </v-btn>
-                    </v-col>
-                    <!-- 이미지는 dto에 존재하지 않아서 어떻게 가져와야할지 추후 수정필요 -->
-                    <!-- <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="primary" v-if="isEditing" @click="updateMember">
-                            저장
-                        </v-btn>
-                        <v-btn color="primary" v-if="!isEditing" @click="updaetIsEditing">
-                            프로필 수정
-                        </v-btn>
-                        <v-btn color="secondary" v-if="isEditing" @click="updaetIsEditing">
-                            취소
-                        </v-btn>
-                    </v-card-actions> -->
+                    <v-row class="d-flex align-center justify-space-between">
+                        <v-col cols="auto" class="d-flex align-center">
+                            <v-avatar size="80" class="mr-3">
+                                <img :src="memberInfoList.find(item => item.key === 'profileImage')?.value"
+                                    alt="프로필 이미지" @click="selectImage" />
+                            </v-avatar>
+                            <input type="file" @change="onImageChange" accept="image/*" style="display: none;" />
+                        </v-col>
+                        <v-col cols="auto" class="d-flex justify-end">
+                            <v-btn v-if="isEditing" @click="updateMember">
+                                저장
+                            </v-btn>
+                            <v-btn v-if="!isEditing" @click="updaetIsEditing">
+                                프로필 수정
+                            </v-btn>
+                            <v-btn v-if="isEditing" @click="updaetIsEditing">
+                                취소
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+
                     <v-form v-for="element in memberInfoList" :key="element.id">
                         <v-text-field :label="element.key" v-model="element.value"></v-text-field>
                     </v-form>

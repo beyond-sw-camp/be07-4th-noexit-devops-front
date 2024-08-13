@@ -68,8 +68,4 @@ export default {}
     text-transform: none;
     padding: 0;
 }
-
-.custom-button:hover {
-    color: #FF0066;
-}
 </style>
