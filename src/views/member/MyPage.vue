@@ -32,7 +32,6 @@
                     </v-form>
                 </v-card-text>
             </v-col>
-
         </v-row>
     </v-container>
 
