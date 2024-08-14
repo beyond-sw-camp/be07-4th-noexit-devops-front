@@ -1,21 +1,22 @@
 <template>
   <v-app>
-    <HeaderComponent />
-
-    <!-- <v-main> -->
-      <!-- <router-view /> -->
-    <!-- </v-main> -->
-  
+    <!-- <HeaderComponent /> -->
+    <NewHeaderComponent />
+    <v-main>
+      <router-view />
+    </v-main>
   </v-app>
 
 </template>
 
 <script>
-import HeaderComponent from './components/common/HeaderComponent.vue'
+// import HeaderComponent from './components/common/HeaderComponent.vue'
+import NewHeaderComponent from './components/common/NewHeaderComponent.vue';
 export default {
   name: "App",
   components: {
-    HeaderComponent,
+    // HeaderComponent,
+    NewHeaderComponent
   }
 };
 </script>
