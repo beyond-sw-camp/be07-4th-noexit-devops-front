@@ -1,10 +1,10 @@
 // reservationRouter.js
 
-import ReservationCreate from '@/views/ReservationCreate.vue';
-import ReservationList from '@/views/ReservationList.vue';
-import ReservationDetail from '@/views/ReservationDetail.vue';
+import ReservationCreate from '@/views/reservation/ReservationCreate.vue';
+import ReservationList from '@/views/reservation/ReservationList.vue';
+import ReservationDetail from '@/views/reservation/ReservationDetail.vue';
 
-import StoreReservationList from '@/views/StoreReservationList.vue';
+import StoreReservationList from '@/views/reservation/StoreReservationList.vue';
 
 import MemberReservationList from '@/views/member/MemberReservationList';
 
@@ -39,7 +39,7 @@ export const reservationRouter = [
     // name: 'ReservationDetail',
     // component: ,
 
-  },
+  // },
   {
     path: '/reservation/myreservation',
     name: 'MemberReservationList',
