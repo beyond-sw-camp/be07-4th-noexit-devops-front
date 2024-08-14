@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col>
-        <div style="font-size: 24px">{{ board.title }}</div>
+        <div style="margin-top: 100px; font-size: 24px">{{ board.title }}</div>
       </v-col>
     </v-row>
     <v-row>
@@ -39,22 +39,20 @@
     <div v-for="i in board.images" :key="i.id">
       <v-img
         :src="i.imageUrl"
-        style="width: auto"
+        style="width: 500px;"
       ></v-img>
     </div>
   </div>
   <div v-else>
-    <!-- 이미지가 없을 때의 내용 -->
-    No images available
   </div>
 </v-col>
     </v-row>
     <v-row style="margin-top: 150px" class="d-flex justify-center align-center">
       <v-col class="d-flex justify-center" cols="auto">
-        <v-btn color="pink">좋아요 {{ board.likes }}</v-btn>
+        <v-btn color="pink" @click="likeBoard">좋아요 {{ board.likes }}</v-btn>
       </v-col>
       <v-col class="d-flex justify-center" cols="auto">
-        <v-btn color="black">싫어요 {{ board.dislikes }}</v-btn>
+        <v-btn color="black" @click="dislikeBoard">싫어요 {{ board.dislikes }}</v-btn>
       </v-col>
     </v-row>
     <v-row>
@@ -140,6 +138,26 @@ export default {
         }catch(e){
             console.log(e);
             alert("댓글이 작성되지 않았습니다.")
+        }
+    },
+    async likeBoard() {
+      try{
+            await axios.patch(`${process.env.VUE_APP_API_BASIC_URL}/board/like/${this.board.id}`);
+            alert("게시글을 좋아합니다.")
+            window.location.reload()
+        }catch(e){
+            console.log(e);
+            alert("좋아요 실패했습니다.")
+        }
+    },
+    async dislikeBoard() {
+      try{
+            await axios.patch(`${process.env.VUE_APP_API_BASIC_URL}/board/dislike/${this.board.id}`);
+            alert("게시글을 싫어합니다.")
+            window.location.reload()
+        }catch(e){
+            console.log(e);
+            alert("싫어요 실패했습니다.")
         }
     }
   },
