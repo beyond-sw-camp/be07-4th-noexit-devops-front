@@ -33,7 +33,7 @@ export const reservationRouter = [
     name: 'StoreReservationList',
     component: StoreReservationList,
   },
-
+  {
     // 로그인한 멤버의 예약 내역
     // path: '/reservation/detail/:id',
     // name: 'ReservationDetail',

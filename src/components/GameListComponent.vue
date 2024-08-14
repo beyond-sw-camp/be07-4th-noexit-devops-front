@@ -2,9 +2,9 @@
     <v-container>
         <v-row>
             <v-col v-for="game in games" :key="game.name" sm="3" md="3">
-                <v-card>
+                <v-card @click="moveToDetail(game.id)">
                     <!-- 넣을 데이터 조금씩 더 추가예정 -->
-                    <v-img :src="game.image" height="200px"></v-img>
+                    <v-img :src="game.imagePath" height="200px"></v-img>
                     <v-card-title>{{ game.gameName }}</v-card-title>
                     <v-card-text>{{ game.difficult }}</v-card-text>
                     <v-card-text>{{ game.price }}</v-card-text>
@@ -28,6 +28,12 @@ export default {
             required: true
         }
     },
+    methods: {
+        moveToDetail(id) {
+            // console.log(id);
+            this.$router.push("/game/detail/" + id)
+        }
+    }
 
 };
 </script>

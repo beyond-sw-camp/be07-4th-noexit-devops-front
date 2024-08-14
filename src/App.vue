@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="common-margin">
     <!-- <HeaderComponent /> -->
     <NewHeaderComponent />
     <v-main>
@@ -20,4 +20,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.common-margin {
+  margin: 100px 200px;
+}
+</style>
