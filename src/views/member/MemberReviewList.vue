@@ -13,7 +13,7 @@
 <script>
 import ReviewListComponent from '@/components/ReviewListComponent.vue';
 import MypageHeaderComponent from '@/components/common/MypageSideBarComponent.vue'
-import ReviewList from '@/views/ReviewList.vue'
+import ReviewList from '@/views/review/ReviewList.vue'
 
 export default {
     components: {
