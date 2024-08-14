@@ -8,7 +8,7 @@
             <v-btn text class="link-btn" to="/findboard">Escape-With-Me</v-btn>
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon :to="isLogin ? '/mypage' : '/member/create'">
+        <v-btn icon :to="isLogin ? '/mypage' : '/login'">
             <v-icon>mdi-account</v-icon>
         </v-btn>
         <v-btn icon :to="isLogin ? '/wishlist' : '/login'">

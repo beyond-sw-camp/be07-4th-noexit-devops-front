@@ -18,10 +18,10 @@
                                     <v-btn type="submit" block>로그인</v-btn>
                                 </v-col>
                                 <v-col cols="4">
-                                    <v-btn type="submit" block>이메일 찾기</v-btn>
+                                    <v-btn :to="{ path: '/member/create' }" block>회원가입</v-btn>
                                 </v-col>
                                 <v-col cols="4">
-                                    <v-btn type="submit" block>비밀번호 찾기</v-btn>
+                                    <v-btn type="submit" block>이메일/ 비밀번호 찾기</v-btn>
                                 </v-col>
 
                             </v-row>
