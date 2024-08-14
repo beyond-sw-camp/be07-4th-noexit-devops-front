@@ -35,36 +35,32 @@
             <v-table>
               <thead>
                 <tr>
-                  <th>썸네일</th>
-                  <th>작성자</th>
-                  <th >제목</th>
-                  <th>조회수</th>
-                  <th>좋아요</th>
-                  <th>댓글수</th>
+                  <th style="text-align: center;">썸네일</th>
+                  <th style="text-align: center;">제목</th>
+                  <th style="text-align: center;">작성자</th>
+                  <th style="text-align: center;">조회수</th>
+                  <th style="text-align: center;">좋아요</th>
+                  <th style="text-align: center;">댓글수</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="b in boardList" :key="b.id">
                   <td>
                     <v-img
-                      :src="b.thumbNail"
-                      style="height: 100px; width: auto"
+                      :src="b.thumbnail"
+                      style="height: 70px; width: auto"
                     ></v-img>
                   </td>
-                  <td>{{ b.writer }}</td>
-                  <td>{{ b.title }}</td>
-                  <td>{{ b.boardHits }}</td>
-                  <td>{{ b.likes }}</td>
-                  <td>{{ b.comments }}</td>
+                  <td style="width: 550px; text-align: center;"><a :href="`/board/detail/${b.id}`" style="text-decoration:none;">{{ b.title }}</a></td>
+                  <td style="width: 100px; text-align: center;">{{ b.writer }}</td>
+                  <td style="width: 100px; text-align: center;">{{ b.boardHits }}</td>
+                  <td style="width: 100px; text-align: center;">{{ b.likes }}</td>
+                  <td style="width: 100px; text-align: center;">{{ b.comments }}</td>
                 </tr>
               </tbody>
             </v-table>
           </v-card-text>
         </v-card>
-        <div v-if="!isLastPage">
-       <button @click="loadBoard(currentPage - 1)" :disabled="currentPage === 0">이전    </button>
-       <button @click="loadBoard(currentPage + 1)">다음</button>
-     </div>
       </v-col>
     </v-row>
   </v-container>
@@ -84,7 +80,7 @@ export default {
       ],
       searchValue: "",
       boardList: [],
-      pageSize: 5,
+      pageSize: 10,
       currentPage:0,
       isLastPage:false,
       isLoading:false,

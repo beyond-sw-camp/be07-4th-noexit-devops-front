@@ -1,66 +1,78 @@
 <template>
   <v-container>
-    <v-row class="d-flex justify-content-between mt-5">
+    <v-row>
       <v-col>
-        <v-form @submit.prevent="searchBoards">
-          <v-row>
-            <v-col cols="auto">
-              <v-select
-                v-model="searchType"
-                :items="searchOptions"
-                item-title="text"
-                item-value="value"
-              >
-              </v-select>
-            </v-col>
-            <v-col>
-              <v-text-field v-model="searchValue" label="Search">
-              </v-text-field>
-            </v-col>
-            <v-col cols="auto">
-              <v-btn type="submit">검색 </v-btn>
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-col>
-      <v-col cols="auto">
-        <v-btn href="/board/create" color="pink">게시글 쓰기</v-btn>
+        <div style="font-size: 24px">{{ board.title }}</div>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-card>
-          <!-- <v-card-title class="text-h6 text-center">{{pageTitle}}</v-card-title> -->
-          <v-card-text>
-            <v-table>
-              <thead>
-                <tr>
-                  <th>썸네일</th>
-                  <th>작성자</th>
-                  <th >제목</th>
-                  <th>조회수</th>
-                  <th>좋아요</th>
-                  <th>댓글수</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="b in boardList" :key="b.id">
-                  <td>
-                    <v-img
-                      :src="b.imagePath"
-                      style="height: 100px; width: auto"
-                    ></v-img>
-                  </td>
-                  <td>{{ b.memberId }}</td>
-                  <td>{{ b.title }}</td>
-                  <td>{{ b.boardHits }}</td>
-                  <td>{{ b.likes }}</td>
-                  <td>{{ b.comments.length }}</td>
-                </tr>
-              </tbody>
-            </v-table>
-          </v-card-text>
-        </v-card>
+        <hr class="divider" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="6">
+        <div class="d-flex flex-column" style="text-align: left">
+          <div>번호 {{ board.id }}</div>
+          <div>작성자 {{ board.writer }}</div>
+          <div>작성일 {{ board.createdDate }}</div>
+        </div>
+      </v-col>
+      <v-col cols="6">
+        <div class="d-flex flex-column" style="text-align: right">
+          <div>조회수 {{ board.boardHits }}</div>
+          <div>추천수 {{ board.likes }}</div>
+          <div v-if="board.comments">댓글수 {{ board.comments.length }}</div>
+          <div v-else>0</div>
+        </div>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <hr class="divider" />
+      </v-col>
+    </v-row>
+    <v-row class="mt- d-flex justify-center align-center">
+      <v-col>
+        <div style="font-size: 24px">{{ board.contents }}</div>
+      </v-col>
+    </v-row>
+    <v-row style="margin-top: 150px" class="d-flex justify-center align-center">
+      <v-col class="d-flex justify-center" cols="auto">
+        <v-btn color="pink">좋아요 {{ board.likes }}</v-btn>
+      </v-col>
+      <v-col class="d-flex justify-center" cols="auto">
+        <v-btn color="black">싫어요 {{ board.dislikes }}</v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <hr class="divider" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-table>
+        <tbody>
+          <tr v-for="c in board.comments" :key="c.id">
+            <td style="width: 200px">{{ c.writer }}</td>
+            <td style="width: 1000px">{{ c.content }}</td>
+            <td style="width: 100px">{{ c.createdTime }}</td>
+          </tr>
+        </tbody>
+      </v-table>
+    </v-row>
+    <v-row style="margin-bottom: 100px">
+      <v-col>
+        <v-form @submit.prevent="createComment">
+          <v-row>
+            <v-col>
+              <v-text-field v-model="commentContent"> </v-text-field>
+            </v-col>
+          <v-col cols="auto">
+            <v-btn color="pink" type="submit">댓글 등록</v-btn>
+          </v-col>
+          </v-row>
+        </v-form>
       </v-col>
     </v-row>
   </v-container>
@@ -70,71 +82,59 @@
 import axios from "axios";
 
 export default {
+  props: ["id"],
   data() {
     return {
-      searchType: "optional",
-      searchOptions: [
-        { text: "선택", value: "optional" },
-        { text: "제목", value: "title" },
-        { text: "게시글유형", value: "boardType" },
-      ],
-      searchValue: "",
-      boardList: [],
-      pageSize: 5,
-      currentPage:0,
-      isLastPage:false,
-      isLoading:false,
-      selected:{}
+      board: {},
+      comment: {},
+      commentContent: "",
+      isLastPage: false,
+      isLoading: false,
+      selected: {},
     };
   },
-  created() {
+  async created() {
+    console.log("Component created");
     this.loadBoard();
-    window.addEventListener('scroll', this.scrollPagination)
-  },
-  beforeUnmount() {
-    window.removeEventListener('scroll', this.scrollPagination);
   },
   methods: {
-    searchBoards() {
-        this.boardList = [];
-        this.currentPage = 0;
-        this.isLastPage = false;
-        this.isLoading = false;
-        this.loadBoard();  
-    },
     async loadBoard() {
       try {
-        if(this.isLoading || this.isLastPage) return;
+        if (this.isLoading || this.isLastPage) return;
         this.isLoading = true;
-        let params = {
-            size: this.pageSize,
-            page: this.currentPage,
+        try {
+          // API 요청을 통해 데이터 로딩
+          const response = await axios.get(
+            `${process.env.VUE_APP_API_BASIC_URL}/board/detail/${this.id}`
+          );
+          this.board = response.data.result; // 데이터 할당
+        } catch (error) {
+          console.error("Failed to load board details:", error); // 오류 처리
         }
-        if(this.searchType === 'title') {
-            params.title = this.searchValue;
-        }else if(this.searchType === 'boardType') {
-            params.boardType = this.searchValue;
-        }
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/board/list`, {params});
-        console.log(response)
-        const additionalData = response.data.result.content.map(b=>({...b, quantity:0}));
-        if(additionalData.length==0) {
-            this.isLastPage = true;
-            return;
-        }
-        this.boardList = [...this.boardList, ...additionalData]
-        this.currentPage++;
         this.isLoading = false;
       } catch (e) {
         console.log(e);
       }
     },
-    scrollPagination() {
-        const isBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
-        if(isBottom && !this.isLastPage && !this.isLoading) {
-            this.loadBoard();
+    async createComment() {
+      const newComment = {
+        boardId: this.board.id,
+        // writer: 'user',
+        content: this.commentContent
+        // createdTime: new Date().toLocaleString()  // 현재 시간 문자열
+      };
+
+      // this.board.comments.push(newComment);
+      // this.commentContent = '';
+      try{
+            await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/comment/create`, newComment);
+            alert("댓글이 성공적으로 작성되었습니다.")
+            window.location.reload()
+        }catch(e){
+            console.log(e);
+            alert("댓글이 작성되지 않았습니다.")
         }
-    },
+    }
   },
-};
+}
 </script>
