@@ -46,10 +46,12 @@
               <tbody>
                 <tr v-for="b in boardList" :key="b.id">
                   <td>
+                    <a :href="`/board/detail/${b.id}`" style="text-decoration:none;">
                     <v-img
                       :src="b.thumbnail"
                       style="height: 70px; width: auto"
                     ></v-img>
+                    </a>
                   </td>
                   <td style="width: 550px; text-align: center;"><a :href="`/board/detail/${b.id}`" style="text-decoration:none;">{{ b.title }}</a></td>
                   <td style="width: 100px; text-align: center;">{{ b.writer }}</td>
@@ -89,10 +91,6 @@ export default {
   },
   created() {
     this.loadBoard();
-    window.addEventListener('scroll', this.scrollPagination)
-  },
-  beforeUnmount() {
-    window.removeEventListener('scroll', this.scrollPagination);
   },
   methods: {
     searchBoards() {
@@ -105,64 +103,17 @@ export default {
     },
     async loadBoard(page = this.currentPage) {
       try {
-        if(this.isLoading || (page < 0) || this.isLastPage) return;
-        this.isLoading = true;
         let params = {
             size: this.pageSize,
             page: page,
         };
-        if(this.searchType === 'title') {
-            params.title = this.searchValue;
-        } else if(this.searchType === 'boardType') {
-            params.boardType = this.searchValue;
-        }
         const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/board/list`, {params});
-        const additionalData = response.data.result.content.map(b => ({...b, quantity: 0}));
-        if(additionalData.length === 0) {
-            this.isLastPage = true;
-        } else {
-            this.boardList = page === this.currentPage ? [...this.boardList, ...additionalData] : additionalData;
-            this.currentPage = page;
-        }
+        this.boardList = response.data.result.content;
         this.isLoading = false;
       } catch (e) {
         console.log(e);
       }
-    },
-    async loadBoard1() {
-      try {
-        if(this.isLoading || this.isLastPage) return;
-        this.isLoading = true;
-        let params = {
-            size: this.pageSize,
-            page: this.currentPage,
-        }
-        if(this.searchType === 'title') {
-            params.title = this.searchValue;
-        }else if(this.searchType === 'boardType') {
-            params.boardType = this.searchValue;
-        }
-        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/board/list`, {params});
-        console.log(response);
-        const additionalData = response.data.result.content.map(b=>({...b, quantity:0}));
-        if(additionalData.length==0) {
-            this.isLastPage = true;
-            return;
-        }
-        this.boardList = [...this.boardList, ...additionalData]
-        this.currentPage++;
-        this.isLoading = false;
-      } catch (e) {
-        console.log(e);
-      }
-    },
-    scrollPagination() {
-        const isBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
-        if(isBottom && !this.isLastPage && !this.isLoading) {
-            this.loadBoard();
-        }
     },
   },
 };
 </script>
-
