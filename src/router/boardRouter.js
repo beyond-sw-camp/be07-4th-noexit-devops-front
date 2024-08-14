@@ -14,9 +14,10 @@ export const boardRouter = [
         component: BoardList
     },
     {
-        path: '/board/detail',
+        path: '/board/detail/:id',
         name: 'BoardDetail',
-        component: BoardDetail
+        component: BoardDetail,
+        props: true
     }
 
 
