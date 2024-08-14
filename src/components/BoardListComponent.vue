@@ -35,27 +35,27 @@
             <v-table>
               <thead>
                 <tr>
-                  <th>썸네일</th>
-                  <th>작성자</th>
-                  <th >제목</th>
-                  <th>조회수</th>
-                  <th>좋아요</th>
-                  <th>댓글수</th>
+                  <th style="text-align: center;">썸네일</th>
+                  <th style="text-align: center;">제목</th>
+                  <th style="text-align: center;">작성자</th>
+                  <th style="text-align: center;">조회수</th>
+                  <th style="text-align: center;">좋아요</th>
+                  <th style="text-align: center;">댓글수</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="b in boardList" :key="b.id">
                   <td>
                     <v-img
-                      :src="b.imagePath"
-                      style="height: 100px; width: auto"
+                      :src="b.thumbnail"
+                      style="height: 70px; width: auto"
                     ></v-img>
                   </td>
-                  <td>{{ b.memberId }}</td>
-                  <td>{{ b.title }}</td>
-                  <td>{{ b.boardHits }}</td>
-                  <td>{{ b.likes }}</td>
-                  <td>{{ b.comments.length }}</td>
+                  <td style="width: 550px; text-align: center;"><a :href="`/board/detail/${b.id}`" style="text-decoration:none;">{{ b.title }}</a></td>
+                  <td style="width: 100px; text-align: center;">{{ b.writer }}</td>
+                  <td style="width: 100px; text-align: center;">{{ b.boardHits }}</td>
+                  <td style="width: 100px; text-align: center;">{{ b.likes }}</td>
+                  <td style="width: 100px; text-align: center;">{{ b.comments }}</td>
                 </tr>
               </tbody>
             </v-table>
@@ -66,7 +66,7 @@
   </v-container>
 </template>
 
-<script>
+ <script>
 import axios from "axios";
 
 export default {
@@ -80,7 +80,7 @@ export default {
       ],
       searchValue: "",
       boardList: [],
-      pageSize: 5,
+      pageSize: 10,
       currentPage:0,
       isLastPage:false,
       isLoading:false,
@@ -100,9 +100,36 @@ export default {
         this.currentPage = 0;
         this.isLastPage = false;
         this.isLoading = false;
-        this.loadBoard();  
+        this.loadBoard();
+
     },
-    async loadBoard() {
+    async loadBoard(page = this.currentPage) {
+      try {
+        if(this.isLoading || (page < 0) || this.isLastPage) return;
+        this.isLoading = true;
+        let params = {
+            size: this.pageSize,
+            page: page,
+        };
+        if(this.searchType === 'title') {
+            params.title = this.searchValue;
+        } else if(this.searchType === 'boardType') {
+            params.boardType = this.searchValue;
+        }
+        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/board/list`, {params});
+        const additionalData = response.data.result.content.map(b => ({...b, quantity: 0}));
+        if(additionalData.length === 0) {
+            this.isLastPage = true;
+        } else {
+            this.boardList = page === this.currentPage ? [...this.boardList, ...additionalData] : additionalData;
+            this.currentPage = page;
+        }
+        this.isLoading = false;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async loadBoard1() {
       try {
         if(this.isLoading || this.isLastPage) return;
         this.isLoading = true;
@@ -115,8 +142,8 @@ export default {
         }else if(this.searchType === 'boardType') {
             params.boardType = this.searchValue;
         }
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/board/list`, {params});
-        console.log(response)
+        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/board/list`, {params});
+        console.log(response);
         const additionalData = response.data.result.content.map(b=>({...b, quantity:0}));
         if(additionalData.length==0) {
             this.isLastPage = true;
@@ -138,3 +165,4 @@ export default {
   },
 };
 </script>
+

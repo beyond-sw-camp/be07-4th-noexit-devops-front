@@ -1,4 +1,5 @@
 <template>
+
     <div>
         <v-container v-if="isAuthenticated">
             <ReviewListComponent :isUserReviews="true" />
@@ -18,11 +19,13 @@
   import ReviewListComponent from '@/components/ReviewListComponent.vue';
   
   export default {
+
     components: {
         ReviewListComponent,
     },
     data() {
         return {
+
             isAuthenticated: false, // 사용자 인증 상태를 확인하는 변수
 
         };
@@ -31,15 +34,17 @@
       this.checkAuthStatus();
     },
     methods: {
+
         checkAuthStatus() {
             const token = localStorage.getItem('token');
     this.isAuthenticated = !!token;
     console.log('Authenticated:', this.isAuthenticated); // 인증 상태 로그
+
         },
     },
 };
 </script>
-  
+
 <style scoped>
 /* 필요한 스타일 추가 가능 */
 </style>
