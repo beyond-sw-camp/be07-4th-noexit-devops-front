@@ -1,5 +1,7 @@
 <template>
     <v-container>
+        <MypageSideBarComponent />
+            <ReviewListComponent />
         <v-row justify="center">
             <v-col cols="12" md="8">
                 <v-card>
@@ -74,8 +76,13 @@
   
 <script>
 import axios from 'axios';
-
+import ReviewListComponent from '@/components/ReviewListComponent.vue';
+import MypageSideBarComponent from '@/components/common/MypageSideBarComponent.vue';
 export default {
+    components: {
+        ReviewListComponent,
+        MypageSideBarComponent
+    },
     data() {
         return {
             reservations: [],
@@ -122,7 +129,6 @@ export default {
             }
         },
         writeReview(id) {
-            // 리뷰 작성 페이지로 이동하거나 작성 모달을 띄우는 로직을 추가합니다.
             this.$router.push(`/review/create?reservationId=${id}`);
         }
     },
