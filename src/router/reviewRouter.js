@@ -1,5 +1,5 @@
-import ReviewCreate from '@/views/ReviewCreate.vue';
-import ReviewList from '@/views/ReviewList.vue';
+import ReviewCreate from '@/views/review/ReviewCreate.vue';
+import ReviewList from '@/views/review/ReviewList.vue';
 
 export const reviewRouter = [
   {
