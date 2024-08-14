@@ -7,7 +7,7 @@
           <v-col cols="12" md="8" class="d-flex align-center">
             <v-img :src="logoSrc" alt="Logo" max-height="40" class="mr-4 logo-img"></v-img>
             <v-text-field
-              class="mx-4 search-bar custom-search-bar jua-regular"
+              class="mx-4 search-bar custom-search-bar"
               solo
               flat
               placeholder="무엇이 궁금하신가요?"
@@ -15,10 +15,13 @@
               hide-details
             ></v-text-field>
           </v-col>
-
           <v-col cols="12" md="4" class="d-flex justify-end align-center">
-            <v-btn text v-if="!isLogin" :to="{ path: '/login' }" class="jua-regular" style="font-size: 20px;">로그인</v-btn>
-            <v-btn text v-if="!isLogin" :to="{ path: '/member/create' }" class="jua-regular" style="font-size: 20px;">회원가입</v-btn>
+            <v-btn text v-if="!isLogin" :to="{ path: '/login' }" class="jua-regular"
+              style="font-size: 20px;">로그인</v-btn>
+            <v-btn text v-if="!isLogin" :to="{ path: '/member/create' }" class="jua-regular"
+              style="font-size: 20px;">회원가입</v-btn>
+            <v-btn text v-if="isLogin" :to="{ path: '/mypage' }" class="jua-regular"
+              style="font-size: 20px;">마이페이지</v-btn>
             <v-btn text v-if="isLogin" @click="doLogout" class="jua-regular" style="font-size: 20px;">로그아웃</v-btn>
             <v-icon class="mx-2">mdi-bell</v-icon>
             <v-icon class="mx-2">mdi-cart</v-icon>
@@ -31,17 +34,21 @@
     <v-main class="main-content">
       <v-container class="nav-container">
         <v-row align="center" justify="flex-start" class="nav-row">
-          <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/')">RESERVATION</v-col>
+          <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/reservation/list')">RESERVATION</v-col>
+          <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/review/list')">REVIEW</v-col>
           <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/board/list')">BOARD</v-col>
-          <v-col cols="auto" class="nav-link jua-regular" @click="navigateTo('/curation')">ESCAPE WITH ME</v-col>
+          <v-col cols="auto"> <router-link :to="{ path: '/findboard' }" style="cursor: pointer; text-decoration: none; color: inherit;">ESCAPE WITH ME</router-link></v-col>
         </v-row>
       </v-container>
       <v-divider class="custom-divider"></v-divider>
-      <!-- 메인 컨텐츠 -->
+
+      
       <v-container>
         <router-view />
       </v-container>
+      
     </v-main>
+
   </v-app>
 </template>
 
@@ -72,10 +79,11 @@ export default {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+@import url('https://webfontworld.github.io/gmarket/GmarketSans.css');
 
 body {
-  font-family: 'Jua', sans-serif;
+  font-family: 'GmarketSansMedium', sans-serif;
+  font-weight: 500;
 }
 
 .custom-app-bar {
@@ -139,9 +147,4 @@ body {
   height: 2px; /* 구분선의 두께 설정 */
 }
 
-.jua-regular {
-  font-family: 'Jua', sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
 </style>

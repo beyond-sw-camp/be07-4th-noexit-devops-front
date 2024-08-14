@@ -37,7 +37,7 @@
 <script>
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
-import ResetPasswordModal from './ResetPasswordModal.vue'
+import ResetPasswordModal from '../ResetPasswordModal.vue'
 
 export default {
     components: {
@@ -47,7 +47,7 @@ export default {
         return {
             email: "",
             password: "",
-            role: "",
+            role: "일반 사용자",
             resetPassword: false
         }
     },
@@ -74,8 +74,6 @@ export default {
                 localStorage.setItem('role', role)
                 window.location.href = "/"
                 // this.$router.push("/")
-
-
             } catch (e) {
                 const error_message = e.response.data.error_message
                 console.error(error_message);
