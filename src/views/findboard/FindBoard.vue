@@ -142,6 +142,9 @@
         class="d-flex justify-center"
       >
         <v-card
+        :class="{
+          'expired-card': getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',
+        }"
           variant="outlined"
           class="pa-4 d-flex align-center"
           outlined
@@ -171,7 +174,13 @@
                 </div>
                 <br />
               </div>
+
               <div class="ml-auto text-right">
+                <div>
+                  <strong
+                    >작성 시각: {{ formatDateTime(f.createdTime) }}</strong
+                  >
+                </div>
                 <div
                   class="text-right"
                   style="
@@ -183,16 +192,34 @@
                 >
                   글쓴이 : {{ f.writer }}
                 </div>
-                <div>
-                  <strong>마감 시각: {{ f.expirationTime }}</strong>
-                </div>
-                <v-btn width="180" height="50" color="pink" class="mt-2"
-                  >참여</v-btn
+                <br />
+                <v-btn
+                  width="180"
+                  height="50"
+                  color="pink"
+                  class="mt-2"
+                  :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
+                  @click="participateInFindBoard(f.id)"
+                  >PARTICPATE</v-btn
                 >
               </div>
             </div>
             <div class="text-right mt-2">모집 인원 : {{ f.totalCapacity }}</div>
             <div class="text-right mt-2">현재 인원 : {{ f.currentCount }}</div>
+            <br />
+            <div
+              v-if="getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'"
+              style="text-align: right"
+            >
+              <strong
+                >마감 시각:
+                {{ getTimeDifferenceInMinutes(f.expirationTime) }}</strong
+              >
+            </div>
+            <div v-else style="text-align: right">
+              <em>FINISH</em>
+            </div>
+
             <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
             <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
           </v-col>
@@ -309,6 +336,24 @@ export default {
     this.loadFindBoard();
   },
   methods: {
+    getTimeDifferenceInMinutes(expirationTime) {
+      const now = new Date();
+      const expiration = new Date(expirationTime);
+      const differenceInMs = expiration - now; // 차이를 밀리초 단위로 계산
+      const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60); // 분 단위로 변환
+
+      if (differenceInMinutes > 30) {
+        // 30분 이상 남았으면 날짜만 반환
+        return expirationTime.substring(0, 10); // YYYY-MM-DD 형식 반환
+      } else if (differenceInMinutes > 0) {
+        // 30분 이하로 남았으면 남은 시간 표시
+        return `${differenceInMinutes}분 남음`;
+      } else {
+        // 시간이 이미 지난 경우
+        return "마감됨";
+      }
+    },
+
     async searchFindBoard() {
       this.findBoardList = [];
       await this.loadFindBoard();
@@ -349,12 +394,33 @@ export default {
         const response = await axios.get(
           `http://localhost:8080/findboard/list`
         );
-        this.findBoardList = response.data.result.content;
+        // 데이터 변환 부분 추가
+        this.findBoardList = response.data.result.content.map((item) => {
+          return {
+            ...item,
+            formattedExpirationTime: this.formatDateTime(item.expirationTime),
+          };
+        });
       } catch (error) {
         console.error("Error loading findBoardList:", error);
       } finally {
         this.loading = false;
       }
+    },
+
+    formatDateTime(isoString) {
+      const date = new Date(isoString);
+      const formattedDate = `${date.getFullYear()}년 ${
+        date.getMonth() + 1
+      }월 ${date.getDate()}일`;
+      const formattedTime = `${date
+        .getHours()
+        .toString()
+        .padStart(2, "0")}시 ${date
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}분`;
+      return `${formattedDate} ${formattedTime}`;
     },
 
     async deleteFB(fbId) {
@@ -409,6 +475,30 @@ export default {
       this.updateTotalCapacity = findBoard.totalCapacity;
       this.isUpdateModalOpen = true;
     },
+
+    async participateInFindBoard(id) {
+      try {
+        const response = await axios.put(
+          `http://localhost:8080/findboard/participate/${id}`
+        );
+
+        if (response.data.status_code === 200) {
+          alert("참여 완료");
+          this.loadFindBoard(); // 업데이트된 데이터를 다시 로드
+        } else {
+          alert("새로고침 후 다시 시도해주세요");
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 400) {
+          alert("자신의 글에는 참가 신청을 할수없습니다.");
+        } else if (error.response && error.response.status === 404) {
+          alert("게시글이 존재하지 않거나 삭제된 게시글입니다.");
+        } else {
+          console.error("참가 요청 실패:", error);
+          alert("참가 요청에 실패했습니다.");
+        }
+      }
+    },
   },
 };
 </script>
@@ -434,5 +524,10 @@ body,
 .v-card {
   margin-bottom: 16px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+/* 시간 마감 시 변경되는 색상 */
+.expired-card {
+  background-color: #f8d7da; /* 연한 빨간색 배경 */
+  color: #721c24; /* 진한 빨간색 텍스트 */
 }
 </style>
