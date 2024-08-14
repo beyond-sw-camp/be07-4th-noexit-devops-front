@@ -34,8 +34,20 @@
     </v-row>
     <v-row class="mt- d-flex justify-center align-center">
       <v-col>
-        <div style="font-size: 24px">{{ board.contents }}</div>
-      </v-col>
+  <div style="font-size: 24px">{{ board.contents }}</div>
+  <div v-if="board.images && board.images.length">
+    <div v-for="i in board.images" :key="i.id">
+      <v-img
+        :src="i.imageUrl"
+        style="width: auto"
+      ></v-img>
+    </div>
+  </div>
+  <div v-else>
+    <!-- 이미지가 없을 때의 내용 -->
+    No images available
+  </div>
+</v-col>
     </v-row>
     <v-row style="margin-top: 150px" class="d-flex justify-center align-center">
       <v-col class="d-flex justify-center" cols="auto">
@@ -119,13 +131,8 @@ export default {
     async createComment() {
       const newComment = {
         boardId: this.board.id,
-        // writer: 'user',
         content: this.commentContent
-        // createdTime: new Date().toLocaleString()  // 현재 시간 문자열
       };
-
-      // this.board.comments.push(newComment);
-      // this.commentContent = '';
       try{
             await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/comment/create`, newComment);
             alert("댓글이 성공적으로 작성되었습니다.")
