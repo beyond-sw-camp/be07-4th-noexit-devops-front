@@ -332,10 +332,12 @@ export default {
     };
   },
   mounted() {
-    const now = new Date();
-    this.date = now.toISOString().substr(0, 10);
-    this.time = now.toTimeString().substr(0, 5);
-  },
+  const now = new Date();
+  // 현지 날짜를 YYYY-MM-DD 형식으로 변환
+  this.date = now.toLocaleDateString('en-CA'); // 'en-CA'는 'YYYY-MM-DD' 형식을 반환합니다.
+  // 현지 시간 설정
+  this.time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+},
   created() {
     this.loadFindBoard();
   },
@@ -358,6 +360,7 @@ export default {
       }
     },
 
+    
     async searchFindBoard() {
       this.findBoardList = [];
       await this.loadFindBoard();
@@ -434,6 +437,7 @@ export default {
         );
         console.log("삭제 완료:", response.data);
         alert("삭제 완료");
+        window.location.reload();
         this.findBoardList = this.findBoardList.filter((fb) => fb.id !== fbId);
       } catch (error) {
         console.error("삭제 실패:", error);

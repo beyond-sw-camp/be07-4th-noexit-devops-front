@@ -1,6 +1,6 @@
 <template>
   <v-container class="pa-4 d-flex justify-center">
-    <v-row class="d-flex justify-center" style="max-width: 1500px">
+    <v-row class="d-flex justify-center" style="max-width: 2000px">
       <v-col>
         <v-form @submit.prevent="loadFindBoard">
           <v-row>
@@ -36,7 +36,7 @@
         class="pa-4"
         outlined
         rounded="lg"
-        style="width: 98%; max-width: 1500px; background-color: #f5f5f5"
+        style="width: 98%; max-width: 2000px; background-color: #f5f5f5"
       >
         <div>
           <v-form ref="form" @submit.prevent="onSubmit">
@@ -133,102 +133,102 @@
       </v-card>
 
       <br />
-      <v-divider :thickness="3" color="gray"></v-divider>
+      <!-- 여기부터 글 시작 -->
+      <v-divider :thickness="3" color="gray"></v-divider> 
 
-      <v-col
-        cols="12"
-        v-for="f in findBoardList"
-        :key="f.id"
-        class="d-flex justify-center"
-      >
-        <v-card
-        :class="{
-          'expired-card': getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',
-        }"
-          variant="outlined"
-          class="pa-4 d-flex align-center"
-          outlined
-          style="width: 100%; max-width: 1500px"
-          rounded="lg"
+      <v-row>
+        <v-col
+          cols="6"
+          v-for="f in findBoardList"
+          :key="f.id"
+          class="d-flex justify-center"
         >
-          <v-col cols="2">
-            <v-img
-              :src="f.imagePath"
-              alt="프로필 이미지"
-              contain
-              width="200"
-              height="200"
-              class="rounded-circle"
-            ></v-img>
-          </v-col>
-          <v-col>
-            <div class="d-flex justify-space-between align-center">
-              <div>
-                <br />
-                <div style="font-size: 30px">
-                  <strong>{{ f.title }}</strong>
-                </div>
-                <br />
-                <div class="text-left" style="font-size: 18px">
-                  {{ f.contents }}
-                </div>
-                <br />
-              </div>
-
-              <div class="ml-auto text-right">
+          <v-card
+            :class="{
+              'expired-card': getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',
+            }"
+            variant="outlined"
+            class="pa-4 d-flex align-center"
+            outlined
+            style="width: 100%; max-width: 2000px"
+            rounded="lg"
+          >
+            <v-col cols="4">
+              <v-img
+                :src="f.imagePath"
+                alt="프로필 이미지"
+                contain
+                width="200"
+                height="200"
+                class="rounded-circle"
+              ></v-img>
+            </v-col>
+            <v-col>
+              <div class="d-flex justify-space-between align-center">
                 <div>
-                  <strong
-                    >작성 시각: {{ formatDateTime(f.createdTime) }}</strong
+                  <br />
+                  <div style="font-size: 30px">
+                    <strong>{{ f.title }}</strong>
+                  </div>
+                  <br />
+                  <div class="text-left" style="font-size: 18px">
+                    {{ f.contents }}
+                  </div>
+                  <br />
+                </div>
+      
+                <div class="ml-auto text-right">
+                  <div>
+                    <strong>작성 시각: {{ formatDateTime(f.createdTime) }}</strong>
+                  </div>
+                  <div
+                    class="text-right"
+                    style="
+                      position: absolute;
+                      top: 15px;
+                      right: 26px;
+                      font-size: 18px;
+                    "
+                  >
+                    글쓴이 : {{ f.writer }}
+                  </div>
+                  <br />
+                  <v-btn
+                    width="180"
+                    height="50"
+                    color="pink"
+                    class="mt-2"
+                    :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
+                    @click="participateInFindBoard(f.id)"
+                    >PARTICPATE</v-btn
                   >
                 </div>
-                <div
-                  class="text-right"
-                  style="
-                    position: absolute;
-                    top: 15px;
-                    right: 26px;
-                    font-size: 18px;
-                  "
-                >
-                  글쓴이 : {{ f.writer }}
-                </div>
-                <br />
-                <v-btn
-                  width="180"
-                  height="50"
-                  color="pink"
-                  class="mt-2"
-                  :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
-                  @click="participateInFindBoard(f.id)"
-                  >PARTICPATE</v-btn
+              </div>
+              <div class="text-right mt-2">모집 인원 : {{ f.totalCapacity }}</div>
+              <div class="text-right mt-2">현재 인원 : {{ f.currentCount }}</div>
+              <br />
+              <div
+                v-if="getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'"
+                style="text-align: right"
+              >
+                <strong
+                  >마감 시각:
+                  {{ getTimeDifferenceInMinutes(f.expirationTime) }}</strong
                 >
               </div>
-            </div>
-            <div class="text-right mt-2">모집 인원 : {{ f.totalCapacity }}</div>
-            <div class="text-right mt-2">현재 인원 : {{ f.currentCount }}</div>
-            <br />
-            <div
-              v-if="getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'"
-              style="text-align: right"
-            >
-              <strong
-                >마감 시각:
-                {{ getTimeDifferenceInMinutes(f.expirationTime) }}</strong
-              >
-            </div>
-            <div v-else style="text-align: right">
-              <em>FINISH</em>
-            </div>
-
-            <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
-            <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
-          </v-col>
-        </v-card>
-      </v-col>
+              <div v-else style="text-align: right">
+                <em>FINISH</em>
+              </div>
+      
+              <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
+              <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
+            </v-col>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-row>
-
+      
     
-
 
     <div v-if="loading" class="text-center my-4">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
@@ -332,32 +332,56 @@ export default {
     };
   },
   mounted() {
-    const now = new Date();
-    this.date = now.toISOString().substr(0, 10);
-    this.time = now.toTimeString().substr(0, 5);
-  },
+  const now = new Date();
+  // 현지 날짜를 YYYY-MM-DD 형식으로 변환
+  this.date = now.toLocaleDateString('en-CA'); // 'en-CA'는 'YYYY-MM-DD' 형식을 반환합니다.
+  // 현지 시간 설정
+  this.time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+},
   created() {
     this.loadFindBoard();
   },
   methods: {
+    // getTimeDifferenceInMinutes(expirationTime) {
+    //   const now = new Date();
+    //   const expiration = new Date(expirationTime);
+    //   const differenceInMs = expiration - now; // 차이를 밀리초 단위로 계산
+    //   const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60); // 분 단위로 변환
+
+    //   if (differenceInMinutes > 30) {
+    //     // 30분 이상 남았으면 날짜만 반환
+    //     return expirationTime.substring(0, 10); // YYYY-MM-DD 형식 반환
+    //   } else if (differenceInMinutes > 0) {
+    //     // 30분 이하로 남았으면 남은 시간 표시
+    //     return `${differenceInMinutes}분 남음`;
+    //   } else {
+    //     // 시간이 이미 지난 경우
+    //     return "마감됨";
+    //   }
+    // },
+
     getTimeDifferenceInMinutes(expirationTime) {
-      const now = new Date();
-      const expiration = new Date(expirationTime);
-      const differenceInMs = expiration - now; // 차이를 밀리초 단위로 계산
-      const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60); // 분 단위로 변환
+  const now = new Date();
+  const expiration = new Date(expirationTime);
 
-      if (differenceInMinutes > 30) {
-        // 30분 이상 남았으면 날짜만 반환
-        return expirationTime.substring(0, 10); // YYYY-MM-DD 형식 반환
-      } else if (differenceInMinutes > 0) {
-        // 30분 이하로 남았으면 남은 시간 표시
-        return `${differenceInMinutes}분 남음`;
-      } else {
-        // 시간이 이미 지난 경우
-        return "마감됨";
-      }
-    },
+  if (isNaN(expiration.getTime())) {
+    console.error("Invalid expiration time format:", expirationTime);
+    return "시간 형식 오류";
+  }
 
+  const differenceInMs = expiration.getTime() - now.getTime();
+  const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60);
+
+  if (differenceInMinutes <= 0) {
+    return "마감됨";
+  } else {
+    return `${differenceInMinutes}분 남음`;
+  }
+},
+
+
+
+    
     async searchFindBoard() {
       this.findBoardList = [];
       await this.loadFindBoard();
