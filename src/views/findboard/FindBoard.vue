@@ -1,6 +1,9 @@
 <template>
   <v-container class="pa-4 d-flex justify-center">
-    <v-row class="d-flex justify-center" style="max-width: 2000px">
+    
+    <v-row 
+    :style="{ color: 'white' }"
+    class="d-flex justify-center" style="max-width: 2000px">
       <v-col>
         <v-form @submit.prevent="loadFindBoard">
           <v-row>
@@ -32,7 +35,10 @@
         </v-form>
       </v-col>
 
+
+
       <v-card
+      :style="{ color: 'white' }"
         v-if="userRole == 'USER' && isLogin"
         class="pa-4"
         outlined
@@ -138,13 +144,16 @@
       <v-divider :thickness="3" color="gray"></v-divider> 
 
       <v-row>
+        
         <v-col
+        
           cols="6"
           v-for="f in findBoardList"
           :key="f.id"
           class="d-flex justify-center"
         >
           <v-card
+          :style="{ color: 'white' }"
             :class="{
               'expired-card': getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',
             }"
