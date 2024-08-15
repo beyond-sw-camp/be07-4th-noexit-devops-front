@@ -1,48 +1,77 @@
 <template>
-    <div>
-        <v-container v-if="isAuthenticated">
-            <v-row justify="center">
-                <v-col cols="12" md="8">
-                    <v-card>
-                        <v-card-title>{{ isOwner ? '가게 예약 목록' : '나의 예약 목록' }}</v-card-title>
-                        <v-card-text>
-                            <!-- 예약 목록 출력 -->
-                            <v-list v-if="reservations.length">
+    <v-container>
+        <v-row justify="center">
+            <v-col cols="12" md="8">
+                <v-card>
+                    <v-card-title>{{ isOwner ? '가게 예약 목록' : '내 예약 목록' }}</v-card-title>
+                    <v-card-text>
+                        <v-alert v-if="reservations.length === 0" type="info">
+                            예약 내역이 없습니다.
+                        </v-alert>
+                        <div v-else>
+                            <v-list>
                                 <v-list-item
                                     v-for="reservation in reservations"
                                     :key="reservation.id"
+                                    :class="{
+                                        'text-muted': reservation.reservationStatus === 'REJECT' || reservation.reservationStatus === 'CANCELLED',
+                                    }"
                                 >
                                     <v-list-item-content>
                                         <v-list-item-title>
-                                            {{ reservation.gameName }} - {{ reservation.storeName }}
+                                            {{ reservation.gameName }} - {{ isOwner ? reservation.resName : reservation.storeName }}
                                         </v-list-item-title>
                                         <v-list-item-subtitle>
-                                            예약 날짜: {{ reservation.resDate }} <br>
-                                            예약 시간: {{ reservation.resDateTime }} <br>
-                                            예약 인원: {{ reservation.numberOfPlayers }}명
+                                            예약일: {{ reservation.resDate }} 시간: {{ reservation.resDateTime }} <br>
+                                            상태: {{ reservation.reservationStatus }}
                                         </v-list-item-subtitle>
                                     </v-list-item-content>
+
+                                    <!-- Actions for the owner -->
+                                    <v-list-item-action
+                                        v-if="isOwner && reservation.reservationStatus === 'WAITING'"
+                                    >
+                                        <v-btn
+                                            color="success"
+                                            @click="approveReservation(reservation)"
+                                            :disabled="reservation.reservationStatus !== 'WAITING'"
+                                        >
+                                            승인
+                                        </v-btn>
+                                        <v-btn
+                                            color="error"
+                                            @click="rejectReservation(reservation)"
+                                            :disabled="reservation.reservationStatus !== 'WAITING'"
+                                        >
+                                            거절
+                                        </v-btn>
+                                    </v-list-item-action>
+
+                                    <!-- Actions for the user -->
+                                    <v-list-item-action v-if="!isOwner">
+                                        <v-btn
+                                            v-if="reservation.reservationStatus === 'WAITING'"
+                                            color="error"
+                                            @click="cancelReservation(reservation)"
+                                        >
+                                            예약 취소
+                                        </v-btn>
+                                        <v-btn
+                                            v-if="reservation.reservationStatus === 'ACCEPT'"
+                                            color="primary"
+                                            @click="goToReviewCreate(reservation)"
+                                        >
+                                            리뷰 작성
+                                        </v-btn>
+                                    </v-list-item-action>
                                 </v-list-item>
                             </v-list>
-                            <!-- 예약이 없을 경우 -->
-                            <v-alert v-else type="info">
-                                예약 내역이 없습니다.
-                            </v-alert>
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-            </v-row>
-        </v-container>
-
-        <!-- 로그인하지 않은 경우 -->
-        <v-container v-else>
-            <v-row justify="center">
-                <v-col cols="12" md="8">
-                    <v-alert type="warning">로그인이 필요합니다. 로그인 후 이용해주세요.</v-alert>
-                </v-col>
-            </v-row>
-        </v-container>
-    </div>
+                        </div>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script>
@@ -53,7 +82,7 @@ export default {
         return {
             isAuthenticated: false,
             isOwner: false,
-            reservations: [], // 예약 목록 저장
+            reservations: [],
         };
     },
     created() {
@@ -67,19 +96,15 @@ export default {
         }
     },
     methods: {
-        // 인증 상태 확인 및 역할 확인
         checkAuthStatus() {
             const token = localStorage.getItem('token');
             this.isAuthenticated = !!token;
 
-            // 사용자 역할이 OWNER인지 확인
-            const decodedToken = this.decodeToken(token);
-            this.isOwner = decodedToken && decodedToken.role === 'ROLE_OWNER';
-
-            console.log('Authenticated:', this.isAuthenticated);
-            console.log('Is Owner:', this.isOwner);
+            if (token) {
+                const decodedToken = this.decodeToken(token);
+                this.isOwner = decodedToken && decodedToken.role === 'OWNER';
+            }
         },
-        // JWT 토큰 디코딩
         decodeToken(token) {
             if (!token) return null;
             const base64Url = token.split('.')[1];
@@ -94,36 +119,126 @@ export default {
             );
             return JSON.parse(jsonPayload);
         },
-        // 사용자의 예약 목록 가져오기
         async fetchUserReservations() {
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/reservations/mine`, {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/reservation/myreservation`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
                 });
                 this.reservations = response.data.result;
             } catch (error) {
-                console.error('예약 목록을 불러오는 데 실패했습니다.', error);
+                console.error('예약 목록을 불러오는 중 오류가 발생했습니다:', error);
             }
         },
-        // Owner의 가게 예약 목록 가져오기
         async fetchOwnerReservations() {
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/reservations/owner`, {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/reservation/storeReservation`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
                 });
                 this.reservations = response.data.result;
             } catch (error) {
-                console.error('가게 예약 목록을 불러오는 데 실패했습니다.', error);
+                console.error('예약 목록을 불러오는 중 오류가 발생했습니다:', error);
             }
+        },
+        async approveReservation(reservation) {
+            try {
+                await axios.put(
+                    `${process.env.VUE_APP_API_BASIC_URL}/reservation/approval`,
+                    {
+                        gameId: reservation.gameId,
+                        resDate: reservation.resDate,
+                        resDateTime: reservation.resDateTime,
+                        approvalStatus: 'OK',
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        },
+                    }
+                );
+                alert('예약이 승인되었습니다.');
+                this.fetchOwnerReservations();
+            } catch (error) {
+                console.error('예약 승인 중 오류가 발생했습니다:', error);
+            }
+        },
+        async rejectReservation(reservation) {
+            try {
+                await axios.put(
+                    `${process.env.VUE_APP_API_BASIC_URL}/reservation/approval`,
+                    {
+                        gameId: reservation.gameId,
+                        resDate: reservation.resDate,
+                        resDateTime: reservation.resDateTime,
+                        approvalStatus: 'NO',
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        },
+                    }
+                );
+                alert('예약이 거절되었습니다.');
+                this.fetchOwnerReservations();
+            } catch (error) {
+                console.error('예약 거절 중 오류가 발생했습니다:', error);
+            }
+        },
+        async cancelReservation(reservation) {
+            try {
+                await axios.put(
+                    `${process.env.VUE_APP_API_BASIC_URL}/reservation/delete/${reservation.id}`,
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        },
+                    }
+                );
+                alert('예약이 취소되었습니다.');
+                this.fetchUserReservations();
+            } catch (error) {
+                console.error('예약 취소 중 오류가 발생했습니다:', error);
+            }
+        },
+        goToReviewCreate(reservation) {
+            this.$router.push({ name: 'ReviewCreate', params: { reservationId: reservation.id } });
         },
     },
 };
 </script>
 
 <style scoped>
-/* 스타일을 필요에 따라 추가하세요 */
+.v-card-title {
+    font-weight: bold;
+}
+
+.v-list-item {
+    border-bottom: 1px solid #eee;
+}
+
+.v-list-item-title {
+    font-weight: bold;
+}
+
+.v-list-item-subtitle {
+    font-size: 14px;
+    color: #555;
+}
+
+.v-list-item-action {
+    display: flex;
+    gap: 10px;
+}
+
+.v-btn {
+    min-width: 80px;
+}
+
+.text-muted {
+    opacity: 0.5;
+}
 </style>
