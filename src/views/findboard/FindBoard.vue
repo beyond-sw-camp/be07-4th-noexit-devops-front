@@ -38,14 +38,17 @@
 
 
       <v-card
+      
       :style="{ color: 'white' }"
         v-if="userRole == 'USER' && isLogin"
         class="pa-4"
         outlined
         rounded="lg"
-        style="width: 98%; max-width: 2000px; background-color: #f5f5f5"
+        style="width: 98%; max-width: 2000px; background-color: #1b1b1b; color:#ffffff;"
       >
-        <div>
+        <div
+          style=" background-color: #1b1b1b; color:#ffffff;"
+        >
           <v-form ref="form" @submit.prevent="onSubmit">
             <v-text-field
               v-model="title"
