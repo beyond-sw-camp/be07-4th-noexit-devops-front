@@ -46,6 +46,10 @@
                 <tr v-for="b in boardList" :key="b.id">
                   <td>
                     <a :href="`/board/detail/${b.id}`" style="text-decoration:none;">
+                    <v-img
+                      :src="b.thumbnail"
+                      style="height: 70px; width: auto"
+                    ></v-img>
                       <v-img
                         :src="b.thumbnail"
                         style="height: 70px; width: auto"

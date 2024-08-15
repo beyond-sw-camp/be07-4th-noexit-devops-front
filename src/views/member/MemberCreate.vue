@@ -92,10 +92,10 @@ export default {
                     };
                     registerData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
                     registerData.append("file", this.profileImage); // 이미지 파일 추가
-
+                    console.log(data)
                     await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/owner/create`, registerData);
                 }
-                this.$router.push("/"); //메인페이지로 이동
+                this.$router.push("/doLogin");
 
             } catch (e) {
                 const error_message = e.response.data.error_message

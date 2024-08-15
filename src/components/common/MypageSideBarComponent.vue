@@ -1,6 +1,5 @@
 <template>
-
-    <v-col cols="12" md="3">
+    <v-col cols="12" md="3" style=" background-color: #1b1b1b; color:#ffffff;">
         <div class="gray-background">
             <v-row>
                 <v-col>
@@ -35,20 +34,19 @@
                 </v-btn>
             </v-col>
             <v-col cols="12">
-                <v-btn :to="{ path: '/reservation/myreservation' }" block class="custom-button">예약 내역</v-btn>
+                <v-btn :to="{ path: '/reservation/list' }" block class="custom-button">예약 내역</v-btn>
             </v-col>
             <v-col cols="12">
                 <v-btn :to="{ path: '/review/myall' }" block class="custom-button">내가 쓴 후기</v-btn>
             </v-col>
         </v-row>
     </v-col>
-
 </template>
 <script>
 export default {}
 </script>
 
-<style scoped>
+<style>
 .gray-background {
     background-color: #565656;
     padding: 20px;

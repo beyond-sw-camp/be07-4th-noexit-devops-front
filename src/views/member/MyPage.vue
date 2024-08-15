@@ -1,7 +1,7 @@
 <template>
     <NewHeaderComponent />
 
-    <v-container>
+    <v-container style="color:#ffffff;">
         <v-row>
             <MypageSideBarComponent />
             <v-col>
@@ -15,14 +15,8 @@
                             <input type="file" @change="onImageChange" accept="image/*" style="display: none;" />
                         </v-col>
                         <v-col cols="auto" class="d-flex justify-end">
-                            <v-btn v-if="isEditing" @click="updateMember">
-                                저장
-                            </v-btn>
-                            <v-btn v-if="!isEditing" @click="updaetIsEditing">
+                            <v-btn v-if="!isEditing" @click="updateMember">
                                 프로필 수정
-                            </v-btn>
-                            <v-btn v-if="isEditing" @click="updaetIsEditing">
-                                취소
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -32,7 +26,6 @@
                     </v-form>
                 </v-card-text>
             </v-col>
-
         </v-row>
     </v-container>
 

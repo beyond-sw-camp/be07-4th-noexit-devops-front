@@ -1,18 +1,22 @@
 <template>
-    <v-app>
+    <v-app style=" background-color: #1b1b1b; color:#ffffff;">
         <v-container>
-            <MypageSideBarComponent />
-            <ReviewListComponent />
+            <v-row>
+                <MypageSideBarComponent />
+                <v-col>
+                    <ReservationList />
+                </v-col>
+            </v-row>
         </v-container>
     </v-app>
 </template>
   
 <script>
-import ReviewListComponent from '@/components/ReviewListComponent.vue';
+import ReservationList from '@/views/reservation/ReservationList.vue';
 import MypageSideBarComponent from '@/components/common/MypageSideBarComponent.vue';
 export default {
     components: {
-        ReviewListComponent,
+        ReservationList,
         MypageSideBarComponent
     },
     data() {
