@@ -95,7 +95,7 @@ export default {
                     console.log(data)
                     await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/owner/create`, registerData);
                 }
-                this.$router.push("/"); //메인페이지로 이동
+                this.$router.push("/doLogin");
 
             } catch (e) {
                 const error_message = e.response.data.error_message

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container style="color:#ffffff">
     <v-row>
       <v-col>
         <div style="margin-top: 100px; font-size: 24px">{{ board.title }}</div>
@@ -34,18 +34,15 @@
     </v-row>
     <v-row class="mt- d-flex justify-center align-center">
       <v-col>
-  <div style="font-size: 24px">{{ board.contents }}</div>
-  <div v-if="board.images && board.images.length">
-    <div v-for="i in board.images" :key="i.id">
-      <v-img
-        :src="i.imageUrl"
-        style="width: 500px;"
-      ></v-img>
-    </div>
-  </div>
-  <div v-else>
-  </div>
-</v-col>
+        <div style="font-size: 24px">{{ board.contents }}</div>
+        <div v-if="board.images && board.images.length">
+          <div v-for="i in board.images" :key="i.id">
+            <v-img :src="i.imageUrl" style="width: 500px;"></v-img>
+          </div>
+        </div>
+        <div v-else>
+        </div>
+      </v-col>
     </v-row>
     <v-row style="margin-top: 150px" class="d-flex justify-center align-center">
       <v-col class="d-flex justify-center" cols="auto">
@@ -78,9 +75,9 @@
             <v-col>
               <v-text-field v-model="commentContent"> </v-text-field>
             </v-col>
-          <v-col cols="auto">
-            <v-btn color="pink" type="submit">댓글 등록</v-btn>
-          </v-col>
+            <v-col cols="auto">
+              <v-btn color="pink" type="submit">댓글 등록</v-btn>
+            </v-col>
           </v-row>
         </v-form>
       </v-col>
@@ -131,34 +128,34 @@ export default {
         boardId: this.board.id,
         content: this.commentContent
       };
-      try{
-            await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/comment/create`, newComment);
-            alert("댓글이 성공적으로 작성되었습니다.")
-            window.location.reload()
-        }catch(e){
-            console.log(e);
-            alert("댓글이 작성되지 않았습니다.")
-        }
+      try {
+        await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/comment/create`, newComment);
+        alert("댓글이 성공적으로 작성되었습니다.")
+        window.location.reload()
+      } catch (e) {
+        console.log(e);
+        alert("댓글이 작성되지 않았습니다.")
+      }
     },
     async likeBoard() {
-      try{
-            await axios.patch(`${process.env.VUE_APP_API_BASIC_URL}/board/like/${this.board.id}`);
-            alert("게시글을 좋아합니다.")
-            window.location.reload()
-        }catch(e){
-            console.log(e);
-            alert("좋아요 실패했습니다.")
-        }
+      try {
+        await axios.patch(`${process.env.VUE_APP_API_BASIC_URL}/board/like/${this.board.id}`);
+        alert("게시글을 좋아합니다.")
+        window.location.reload()
+      } catch (e) {
+        console.log(e);
+        alert("좋아요 실패했습니다.")
+      }
     },
     async dislikeBoard() {
-      try{
-            await axios.patch(`${process.env.VUE_APP_API_BASIC_URL}/board/dislike/${this.board.id}`);
-            alert("게시글을 싫어합니다.")
-            window.location.reload()
-        }catch(e){
-            console.log(e);
-            alert("싫어요 실패했습니다.")
-        }
+      try {
+        await axios.patch(`${process.env.VUE_APP_API_BASIC_URL}/board/dislike/${this.board.id}`);
+        alert("게시글을 싫어합니다.")
+        window.location.reload()
+      } catch (e) {
+        console.log(e);
+        alert("싫어요 실패했습니다.")
+      }
     }
   },
 }
