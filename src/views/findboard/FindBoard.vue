@@ -220,8 +220,11 @@
                 <em>FINISH</em>
               </div>
       
-              <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
-              <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
+              <div v-if="f.isAuthor" >
+                <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
+                <v-btn @click="openUpdateModal(f.id)">수정하기</v-btn>
+              </div>
+
             </v-col>
           </v-card>
         </v-col>
@@ -310,6 +313,11 @@ export default {
         { text: "내용", value: "contents" },
       ],
 
+
+      // 권한
+      isAuthor: false,
+      // 
+
       searchValue: "",
       title: "",
       contents: "",
@@ -340,8 +348,32 @@ export default {
 },
   created() {
     this.loadFindBoard();
+    this.checkAuthor();
   },
   methods: {
+
+// 권한
+async checkAuthor() {
+  try {
+    const myInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`);
+    const findboardInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/findboard/list`);
+    
+    const myNickname = myInfo.data.result.nickname;
+    this.findBoardList = findboardInfo.data.result.content.map(item => {
+      return {
+        ...item,
+        isAuthor: item.writer === myNickname
+      };
+    });
+
+  } catch (e) {
+    console.log(e);
+  }
+},
+
+    // 권한
+
+
     getTimeDifferenceInMinutes(expirationTime) {
       const now = new Date();
       const expiration = new Date(expirationTime);
@@ -359,8 +391,6 @@ export default {
         return "마감됨";
       }
     },
-
-    
     async searchFindBoard() {
       this.findBoardList = [];
       await this.loadFindBoard();
@@ -394,13 +424,13 @@ export default {
         alert("작성 실패");
       }
     },
-
     async loadFindBoard() {
       this.loading = true;
       try {
         const response = await axios.get(
           `http://localhost:8080/findboard/list`
         );
+        console.log(response.data.result.content.writer);
         // 데이터 변환 부분 추가
         this.findBoardList = response.data.result.content.map((item) => {
           return {
@@ -429,7 +459,6 @@ export default {
         .padStart(2, "0")}분`;
       return `${formattedDate} ${formattedTime}`;
     },
-
     async deleteFB(fbId) {
       try {
         const response = await axios.put(
@@ -443,17 +472,16 @@ export default {
         console.error("삭제 실패:", error);
       }
     },
-
     async updateFindBoard() {
       try {
-        const expirationDateTime = new Date(
+        const updateExpirationDateTime = new Date(
           `${this.updateDate}T${this.updateTime}:00`
         ).toISOString();
 
         const requestData = {
           title: this.updateTitle,
           contents: this.updateContents,
-          expirationTime: expirationDateTime,
+          expirationDate: updateExpirationDateTime,
           totalCapacity: this.updateTotalCapacity,
         };
 
@@ -469,11 +497,9 @@ export default {
         console.error("업데이트 실패:", error);
       }
     },
-
     closeUpdateModal() {
       this.isUpdateModalOpen = false;
     },
-
     openUpdateModal(findBoard) {
       this.updateId = findBoard.id;
       this.updateTitle = findBoard.title;
@@ -483,7 +509,6 @@ export default {
       this.updateTotalCapacity = findBoard.totalCapacity;
       this.isUpdateModalOpen = true;
     },
-
     async participateInFindBoard(id) {
       try {
         const response = await axios.put(
