@@ -1,5 +1,5 @@
 <template>
-    <v-app>
+    <v-app style="background-color: #1b1b1b; color:#ffffff;">
         <v-container>
             <v-row>
                 <v-col>
@@ -22,7 +22,8 @@ export default {
     },
     data() {
         return {
-            wishlist: []
+            wishlist: [],
+            // difficultyLevel: 1,
         };
     },
     methods: {
@@ -30,11 +31,13 @@ export default {
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`);
                 this.wishlist = response.data.result;
-                console.log(this.wishlist)
+                console.log(this.wishlist);
+
             } catch (e) {
                 console.error("정보가 존재하지 않습니다", e);
             }
-        }
+        },
+
     },
     mounted() {
         this.fetchWishlist();
