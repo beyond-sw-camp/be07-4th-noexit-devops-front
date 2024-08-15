@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container style=" background-color: #1b1b1b; color:#ffffff;">
         <v-row>
             <MypageSideBarComponent />
             <v-col>
@@ -80,7 +80,7 @@ export default {
         };
     },
     created() {
-      this.fetchReservations();
+        this.fetchReservations();
     },
     methods: {
         async fetchReservations() {
@@ -127,12 +127,12 @@ export default {
 </script>
 
 <style scoped>
-  .v-list-item-subtitle {
+.v-list-item-subtitle {
     margin-top: 8px;
     font-size: 14px;
-  }
-  
-  .rejected-reservation {
-        opacity: 0.5;
-  }
+}
+
+.rejected-reservation {
+    opacity: 0.5;
+}
 </style>

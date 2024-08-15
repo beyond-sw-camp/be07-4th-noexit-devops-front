@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container style=" background-color: #1b1b1b; color:#ffffff;">
         <v-row justify="center">
             <v-col cols="12">
                 <div v-for="review in reviewList" :key="review.id" class="review-item mb-4">
@@ -160,4 +160,3 @@ export default{
     
 }
 </script> -->
-

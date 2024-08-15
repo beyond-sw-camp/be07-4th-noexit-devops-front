@@ -2,7 +2,7 @@
     <v-container>
         <v-row justify="center">
             <v-col cols="12" md="8">
-                <v-card>
+                <v-card style=" background-color: #1b1b1b; color:#ffffff;">
                     <v-card-title>{{ isOwner ? '가게 예약 목록' : '내 예약 목록' }}</v-card-title>
                     <v-card-text>
                         <v-alert v-if="reservations.length === 0" type="info">
@@ -10,16 +10,13 @@
                         </v-alert>
                         <div v-else>
                             <v-list>
-                                <v-list-item
-                                    v-for="reservation in reservations"
-                                    :key="reservation.id"
-                                    :class="{
-                                        'text-muted': reservation.reservationStatus === 'REJECT' || reservation.reservationStatus === 'CANCELLED',
-                                    }"
-                                >
+                                <v-list-item v-for="reservation in reservations" :key="reservation.id" :class="{
+                                    'text-muted': reservation.reservationStatus === 'REJECT' || reservation.reservationStatus === 'CANCELLED',
+                                }">
                                     <v-list-item-content>
                                         <v-list-item-title>
-                                            {{ reservation.gameName }} - {{ isOwner ? reservation.resName : reservation.storeName }}
+                                            {{ reservation.gameName }} - {{ isOwner ? reservation.resName :
+                                                reservation.storeName }}
                                         </v-list-item-title>
                                         <v-list-item-subtitle>
                                             예약일: {{ reservation.resDate }} 시간: {{ reservation.resDateTime }} <br>
@@ -28,39 +25,25 @@
                                     </v-list-item-content>
 
                                     <!-- Actions for the owner -->
-                                    <v-list-item-action
-                                        v-if="isOwner && reservation.reservationStatus === 'WAITING'"
-                                    >
-                                        <v-btn
-                                            color="success"
-                                            @click="approveReservation(reservation)"
-                                            :disabled="reservation.reservationStatus !== 'WAITING'"
-                                        >
+                                    <v-list-item-action v-if="isOwner && reservation.reservationStatus === 'WAITING'">
+                                        <v-btn color="success" @click="approveReservation(reservation)"
+                                            :disabled="reservation.reservationStatus !== 'WAITING'">
                                             승인
                                         </v-btn>
-                                        <v-btn
-                                            color="error"
-                                            @click="rejectReservation(reservation)"
-                                            :disabled="reservation.reservationStatus !== 'WAITING'"
-                                        >
+                                        <v-btn color="error" @click="rejectReservation(reservation)"
+                                            :disabled="reservation.reservationStatus !== 'WAITING'">
                                             거절
                                         </v-btn>
                                     </v-list-item-action>
 
                                     <!-- Actions for the user -->
                                     <v-list-item-action v-if="!isOwner">
-                                        <v-btn
-                                            v-if="reservation.reservationStatus === 'WAITING'"
-                                            color="error"
-                                            @click="cancelReservation(reservation)"
-                                        >
+                                        <v-btn v-if="reservation.reservationStatus === 'WAITING'" color="error"
+                                            @click="cancelReservation(reservation)">
                                             예약 취소
                                         </v-btn>
-                                        <v-btn
-                                            v-if="reservation.reservationStatus === 'ACCEPT'"
-                                            color="primary"
-                                            @click="goToReviewCreate(reservation)"
-                                        >
+                                        <v-btn v-if="reservation.reservationStatus === 'ACCEPT'" color="primary"
+                                            @click="goToReviewCreate(reservation)">
                                             리뷰 작성
                                         </v-btn>
                                     </v-list-item-action>
