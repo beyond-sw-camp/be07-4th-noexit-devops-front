@@ -18,7 +18,7 @@
               </v-text-field>
             </v-col>
             <v-col cols="auto">
-              <v-btn type="submit">검색 </v-btn>
+              <v-btn type="submit">검색</v-btn>
             </v-col>
           </v-row>
         </v-form>
@@ -30,7 +30,6 @@
     <v-row>
       <v-col>
         <v-card>
-          <!-- <v-card-title class="text-h6 text-center">{{pageTitle}}</v-card-title> -->
           <v-card-text>
             <v-table>
               <thead>
@@ -47,13 +46,17 @@
                 <tr v-for="b in boardList" :key="b.id">
                   <td>
                     <a :href="`/board/detail/${b.id}`" style="text-decoration:none;">
-                    <v-img
-                      :src="b.thumbnail"
-                      style="height: 70px; width: auto"
-                    ></v-img>
+                      <v-img
+                        :src="b.thumbnail"
+                        style="height: 70px; width: auto"
+                      ></v-img>
                     </a>
                   </td>
-                  <td style="width: 550px; text-align: center;"><a :href="`/board/detail/${b.id}`" style="text-decoration:none;">{{ b.title }}</a></td>
+                  <td style="width: 550px; text-align: center;">
+                    <a :href="`/board/detail/${b.id}`" style="text-decoration:none;">
+                      {{ b.title }}
+                    </a>
+                  </td>
                   <td style="width: 100px; text-align: center;">{{ b.writer }}</td>
                   <td style="width: 100px; text-align: center;">{{ b.boardHits }}</td>
                   <td style="width: 100px; text-align: center;">{{ b.likes }}</td>
@@ -61,6 +64,30 @@
                 </tr>
               </tbody>
             </v-table>
+            <div class="pagination-controls">
+              <span
+                class="pagination-arrow"
+                @click="prevPageRange"
+                :class="{ 'disabled': currentPageRangeStart <= 1 }"
+              >
+                « 이전
+              </span>
+              <span
+                v-for="page in visiblePages"
+                :key="page"
+                @click="setPage(page)"
+                :class="{ 'active-page': currentPage === page }"
+              >
+                {{ page }}
+              </span>
+              <span
+                class="pagination-arrow"
+                @click="nextPageRange"
+                :class="{ 'disabled': currentPageRangeEnd >= totalPages }"
+              >
+                다음 »
+              </span>
+            </div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -68,52 +95,113 @@
   </v-container>
 </template>
 
- <script>
-import axios from "axios";
+<script>
+import axios from 'axios';
 
 export default {
   data() {
     return {
-      searchType: "optional",
+      searchType: 'optional',
       searchOptions: [
-        { text: "선택", value: "optional" },
-        { text: "제목", value: "title" },
-        { text: "게시글유형", value: "boardType" },
+        { text: '선택', value: 'optional' },
+        { text: '제목', value: 'title' },
+        { text: '게시글유형', value: 'boardType' },
       ],
-      searchValue: "",
+      searchValue: '',
       boardList: [],
       pageSize: 10,
-      currentPage:0,
-      isLastPage:false,
-      isLoading:false,
-      selected:{}
+      currentPage: 1,
+      totalPages: 1,
+      currentPageRangeStart: 1,
+      currentPageRangeEnd: 5,
+      pagesPerRange: 5,
+      isLoading: false
     };
+  },
+  computed: {
+    visiblePages() {
+      const pages = [];
+      for (let i = this.currentPageRangeStart; i <= this.currentPageRangeEnd; i++) {
+        if (i <= this.totalPages) pages.push(i);
+      }
+      return pages;
+    }
   },
   created() {
     this.loadBoard();
   },
   methods: {
-    searchBoards() {
-        this.boardList = [];
-        this.currentPage = 0;
-        this.isLastPage = false;
-        this.isLoading = false;
-        this.loadBoard();
-
+    async searchBoards() {
+      this.currentPage = 1;
+      this.currentPageRangeStart = 1;
+      this.currentPageRangeEnd = this.pagesPerRange;
+      this.boardList = [];
+      this.loadBoard();
     },
-    async loadBoard(page = this.currentPage) {
+    async loadBoard() {
+      this.isLoading = true;
       try {
         let params = {
-            size: this.pageSize,
-            page: page,
+          size: this.pageSize,
+          page: this.currentPage - 1,
+          searchType: this.searchType,
+          searchValue: this.searchValue
         };
-        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/board/list`, {params});
+        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/board/list`, { params });
         this.boardList = response.data.result.content;
-        this.isLoading = false;
+        this.totalPages = Math.ceil(response.data.result.totalElements / this.pageSize);
       } catch (e) {
         console.log(e);
+      } finally {
+        this.isLoading = false;
       }
     },
-  },
+    setPage(page) {
+      this.currentPage = page;
+      this.loadBoard();
+    },
+    prevPageRange() {
+      if (this.currentPageRangeStart > 1) {
+        this.currentPageRangeStart = Math.max(1, this.currentPageRangeStart - this.pagesPerRange);
+        this.currentPageRangeEnd = Math.min(this.totalPages, this.currentPageRangeStart + this.pagesPerRange - 1);
+        this.setPage(this.currentPageRangeStart);
+      }
+    },
+    nextPageRange() {
+      if (this.currentPageRangeEnd < this.totalPages) {
+        this.currentPageRangeStart = Math.min(this.totalPages - this.pagesPerRange + 1, this.currentPageRangeStart + this.pagesPerRange);
+        this.currentPageRangeEnd = Math.min(this.totalPages, this.currentPageRangeStart + this.pagesPerRange - 1);
+        this.setPage(this.currentPageRangeStart);
+      }
+    }
+  }
 };
 </script>
+
+<style scoped>
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.pagination-controls span {
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.pagination-controls .pagination-arrow {
+  font-weight: bold;
+}
+
+.pagination-controls .pagination-arrow.disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.pagination-controls .active-page {
+  font-weight: bold;
+  text-decoration: underline;
+}
+</style>
