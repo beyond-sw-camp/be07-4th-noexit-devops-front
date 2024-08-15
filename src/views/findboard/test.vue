@@ -342,23 +342,44 @@ export default {
     this.loadFindBoard();
   },
   methods: {
-    getTimeDifferenceInMinutes(expirationTime) {
-      const now = new Date();
-      const expiration = new Date(expirationTime);
-      const differenceInMs = expiration - now; // 차이를 밀리초 단위로 계산
-      const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60); // 분 단위로 변환
+    // getTimeDifferenceInMinutes(expirationTime) {
+    //   const now = new Date();
+    //   const expiration = new Date(expirationTime);
+    //   const differenceInMs = expiration - now; // 차이를 밀리초 단위로 계산
+    //   const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60); // 분 단위로 변환
 
-      if (differenceInMinutes > 30) {
-        // 30분 이상 남았으면 날짜만 반환
-        return expirationTime.substring(0, 10); // YYYY-MM-DD 형식 반환
-      } else if (differenceInMinutes > 0) {
-        // 30분 이하로 남았으면 남은 시간 표시
-        return `${differenceInMinutes}분 남음`;
-      } else {
-        // 시간이 이미 지난 경우
-        return "마감됨";
-      }
-    },
+    //   if (differenceInMinutes > 30) {
+    //     // 30분 이상 남았으면 날짜만 반환
+    //     return expirationTime.substring(0, 10); // YYYY-MM-DD 형식 반환
+    //   } else if (differenceInMinutes > 0) {
+    //     // 30분 이하로 남았으면 남은 시간 표시
+    //     return `${differenceInMinutes}분 남음`;
+    //   } else {
+    //     // 시간이 이미 지난 경우
+    //     return "마감됨";
+    //   }
+    // },
+
+    getTimeDifferenceInMinutes(expirationTime) {
+  const now = new Date();
+  const expiration = new Date(expirationTime);
+
+  if (isNaN(expiration.getTime())) {
+    console.error("Invalid expiration time format:", expirationTime);
+    return "시간 형식 오류";
+  }
+
+  const differenceInMs = expiration.getTime() - now.getTime();
+  const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60);
+
+  if (differenceInMinutes <= 0) {
+    return "마감됨";
+  } else {
+    return `${differenceInMinutes}분 남음`;
+  }
+},
+
+
 
     
     async searchFindBoard() {
@@ -437,7 +458,6 @@ export default {
         );
         console.log("삭제 완료:", response.data);
         alert("삭제 완료");
-        window.location.reload();
         this.findBoardList = this.findBoardList.filter((fb) => fb.id !== fbId);
       } catch (error) {
         console.error("삭제 실패:", error);
