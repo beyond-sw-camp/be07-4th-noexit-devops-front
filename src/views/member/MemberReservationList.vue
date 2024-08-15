@@ -10,7 +10,7 @@
         </v-container>
     </v-app>
 </template>
-
+  
 <script>
 import ReservationList from '@/views/reservation/ReservationList.vue';
 import MypageSideBarComponent from '@/components/common/MypageSideBarComponent.vue';

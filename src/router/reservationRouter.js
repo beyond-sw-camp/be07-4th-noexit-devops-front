@@ -35,8 +35,8 @@ export const reservationRouter = [
   // path: '/reservation/detail/:id',
   // name: 'ReservationDetail',
   // component: ,
-
   // },
+
   {
     path: '/reservation/myreservation',
     name: 'MemberReservationList',

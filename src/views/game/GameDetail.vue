@@ -3,74 +3,205 @@
         <v-row justify="center" class="mt-5">
             <v-col cols="12" md="10">
                 <div class="game-detail-container">
-                <v-row>
-                    <v-col cols="12" md="5">
-                        <v-img
-                            :src="game.imagePath"
-                            alt="Game Image"
-                            class="game-image mx-auto"
-                        ></v-img>
-                    </v-col>
+                    <v-row>
+                        <v-col cols="12" md="5">
+                            <v-img
+                                :src="game.imagePath"
+                                alt="Game Image"
+                                class="game-image mx-auto"
+                            ></v-img>
+                        </v-col>
 
-                    <v-col cols="12" md="7">
-                        <div class="game-info-container">
-                            <h4 class="store-name">{{ game.storeName }}</h4>
-                            <h2 class="game-name">{{ game.gameName }}</h2>
+                        <v-col cols="12" md="7">
+                            <div class="game-info-container">
+                                <h4 class="store-name">{{ game.storeName }}</h4>
+                                <h2 class="game-name">{{ game.gameName }}</h2>
+                                
+                                <!-- 별 -->
+                                <div class="difficulty-container">
+                                    <v-row>
+                                        <v-col class="stars">
+                                            <v-icon
+                                                v-for="n in 5"
+                                                :key="n"
+                                                :color="n <= difficultyLevel ? 'pink' : 'grey'"
+                                            >mdi-star</v-icon>
+                                            <span class="difficulty-level">{{ difficultyLevel }}</span>
+                                        </v-col>
+                                    </v-row>
+                                </div>
+                                
+                                <v-divider class="my-3"></v-divider>
+
+                                <div class="game-details">
+
+                                    <div class="price-container" style="display: flex; ">
+                                        <span class="price">{{ game.price }} ~ </span>
+                                        <v-icon 
+                                            @click="openPriceModal" 
+                                            color="pink" 
+                                            class="expand-icon"
+                                            style="cursor: pointer; top: -8px;"
+                                        >
+                                            mdi-chevron-down
+                                        </v-icon>
+                                    </div>
+
+                                    <v-divider class="my-3"></v-divider>
+
+                                    <br>
+
+                                    <div class="game-info-grid" style="display: flex; justify-content: space-between;">
+                                        <div class="info-item" style="text-align: center;">
+                                            <v-icon size="32" color="pink">mdi-clock-outline</v-icon>
+                                            <div class="info-text" style="margin-top: 5px;">{{ game.runningTime }}분</div>
+                                        </div>
+
+                                        <div class="info-item" style="text-align: center;">
+                                            <v-icon size="32" color="pink">mdi-account-group-outline</v-icon>
+                                            <div class="info-text" style="margin-top: 5px;"> ~ {{ game.maximunPerson }}명 </div>
+                                        </div>
+
+                                        <div class="info-item" style="text-align: center;">
+                                            <v-icon size="32" color="pink">mdi-alert-circle-outline</v-icon>
+                                            <div class="info-text" style="margin-top: 5px;">{{ getAgeLimitLabel(game.ageLimit) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </v-col>
+                    </v-row>
+                    <v-row class="mt-4">
+                        <v-col cols="12">
                             <v-divider class="my-3"></v-divider>
-
-                            <div class="difficulty-container">
-                                <v-row>
-                                    <v-col class="stars">
-                                        <v-icon
-                                            v-for="n in 5"
-                                            :key="n"
-                                            :color="n <= difficultyLevel ? 'yellow' : 'grey'"
-                                        >mdi-star</v-icon>
-                                        <span class="difficulty-level">{{ difficultyLevel }}</span>
-                                    </v-col>
-                                </v-row>
-                            </div>
-
-                            <div class="game-details">
-                                <div class="price">{{ game.price }}</div>
-
-                                <div class="running-time">
-                                    <v-icon left>mdi-clock-outline</v-icon>
-                                    {{ game.runningTime }}분
-                                </div>
-
-                                <div class="max-person">
-                                    <v-icon left>mdi-account-group-outline</v-icon>
-                                    최대 인원: {{ game.maximunPerson }}명
-                                </div>
-
-                                <div class="age-limit">
-                                    <v-icon left>mdi-alert-circle-outline</v-icon>
-                                    {{ getAgeLimitLabel(game.ageLimit) }}
-                                </div>
-                            </div>
-                        </div>
-                    </v-col>
-                </v-row>
-                <v-row class="mt-4">
-                    <v-col cols="12">
-                    <v-divider class="my-3"></v-divider>
-                    <div class="game-info-title">게임 설명</div>
-                    <p class="game-info">{{ game.gameInfo }}</p>
-                    </v-col>
-                </v-row>
+                            <br>
+                            <div class="game-info-title">INFO</div>
+                            <p class="game-info">{{ game.gameInfo }}</p>
+                        </v-col>
+                    </v-row>
                 </div>
             </v-col>
         </v-row>
+        
+        <!-- 가격 보여주는 modal -->
+        <v-dialog v-model="isPriceModalOpen" max-width="350px">
+            <v-card style="position: relative; padding: 16px;">
+                <!-- 닫기 버튼 (X) -->
+                <v-btn
+                    icon
+                    @click="isPriceModalOpen = false"
+                    style="position: absolute; top: 8px; right: 8px; color: #e91e63; box-shadow: none;"
+                >
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
 
-        <!-- 리뷰 목록 섹션 -->
-        <ReviewListComponent :gameId="gameId" />
+                <v-card-title style="color: #000; text-align: left; font-weight: bold; font-size: 20px;">
+                    가격 상세
+                </v-card-title>
+                <v-card-text style="padding-top: 8px;">
+                    <v-simple-table dense>
+                        <tbody>
+                            <tr v-for="price in calculatedPrices" :key="price.people">
+                                <td style="font-size: 20px; padding-right: 100px; text-align: left; font-weight: 600;">{{ price.people }}인</td>
+                                <td style="font-size: 20px; text-align: right;font-weight: 600;">{{ price.totalPrice }}원</td>
+                            </tr>
+                        </tbody>
+                    </v-simple-table>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+        
+        <!-- 예약 섹션 -->
+        <v-row justify="center" class="mt-5">
+            <v-col cols="12" md="8">
+                <v-card>
+                    <v-card-text>
+                        <v-form @submit.prevent="reservationCreate">
+                            <v-row>
+                                <v-col cols="12" md="6">
+                                    <v-text-field
+                                        label="예약자 이름"
+                                        v-model="resName"
+                                        required
+                                        color="pink"
+                                    ></v-text-field>
+                                    <v-text-field
+                                        label="전화번호"
+                                        v-model="phoneNumber"
+                                        required
+                                        color="pink"
+                                    />
+                                    <v-text-field
+                                        label="인원 수"
+                                        v-model="numberOfPlayers"
+                                        type="number"
+                                        required
+                                        color="pink"
+                                    ></v-text-field>
+                                </v-col>
+
+                                <v-col cols="12" md="5">
+                                    <v-date-picker
+                                        label="예약 날짜"
+                                        v-model="resDate"
+                                        required
+                                        :min="new Date().toISOString().substr(0, 10)"
+                                        style="max-width: 350px;"
+                                        color="grey"
+                                        :input-format="'HH:mm'"
+                                    ></v-date-picker>
+                                </v-col>
+                            </v-row>
+
+                            <v-row class="mt-4" align="center">
+                                <v-col cols="12">
+                                    <div class="time-selector">
+                                        <v-btn
+                                            v-for="hour in availableHours"
+                                            :key="hour"
+                                            class="time-button"
+                                            @click="selectTime(hour)"
+                                            :color="hour === resDateTime ? 'pink' : 'default'"
+                                            outlined
+                                            small
+                                            style="width: 70px; height: 70px;"
+                                        >
+                                            {{ formatTime(hour) }}
+                                        </v-btn>
+                                    </div>
+                                </v-col>
+                            </v-row>
+
+                            <v-row class="mt-4">
+                                <v-col cols="12">
+                                    <v-btn type="submit" color="pink" block>예약 등록</v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-form>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
+
+        <!-- 리뷰 섹션 -->
+        <v-row justify="center" class="mt-4">
+            <v-col cols="12" md="8">
+                <div class="reviews-summary">
+                    <p>
+                        <span style="color: palevioletred;">{{ reviewCount }}</span>개의 리뷰
+                    </p>
+                </div>
+                <v-divider class="my-3" style="border: 1px solid #ccc;"></v-divider>
+                <ReviewListComponent :gameId="gameId" />
+            </v-col>
+        </v-row>
     </v-container>
 </template>
-  
+
 <script>
 import axios from 'axios';
 import ReviewListComponent from '@/components/ReviewListComponent.vue';
+import jwtDecode from 'jwt-decode';
 
 export default {
     components: {
@@ -80,11 +211,23 @@ export default {
         return {
             gameId: this.$route.params.id,
             game: {},
-            difficultyLevel: 1
+            difficultyLevel: 1,
+            resName: "",
+            phoneNumber: "",
+            numberOfPlayers: 1,
+            resDate: null,
+            resDateTime: "",
+            memberId: "",
+            availableHours: [], // 예약 가능한 시간
+            reviewCount: 0, // 총 리뷰 개수
+            isPriceModalOpen: false, // 모달 창의 상태 관리
+            calculatedPrices: [] // 가격 배열
         };
     },
     created() {
         this.fetchGameDetail();
+        this.fetchAvailableHours();
+        this.fetchTotalReviews();
     },
     methods: {
         async fetchGameDetail() {
@@ -96,6 +239,70 @@ export default {
             } catch (e) {
                 console.error(e);
                 alert('게임 정보를 불러오는 데 실패했습니다.');
+            }
+        },
+        async fetchUserInfo() {
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const decodedToken = jwtDecode(token);
+                    this.memberId = decodedToken.userId || decodedToken.sub;
+                    this.resName = decodedToken.name || '';
+                    this.phoneNumber = decodedToken.phone || '';
+
+                    if (!this.memberId || !this.resName || !this.phoneNumber) {
+                        alert('로그인이 필요합니다.');
+                        this.$router.push('/login'); // 로그인 페이지로 리다이렉트 (불필요시 주석)
+                    }
+                } else {
+                    alert('로그인이 필요합니다.');
+                    this.$router.push('/login'); // 로그인 페이지로 리다이렉트 (불필요시 주석)
+                }
+            } catch (error) {
+                console.error('회원 정보를 가져오는 데 실패했습니다.', error);
+                // alert('회원 정보를 가져오는 데 실패했습니다.');
+                this.$router.push('/login'); // 로그인 페이지로 리다이렉트 (불필요시 주석)
+            }
+        },
+        async fetchAvailableHours() {
+            const gameId = this.$route.params.id;
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/${gameId}/available-hours`);
+                this.availableHours = response.data;
+            } catch (e) {
+                console.error(e);
+                alert('예약 가능한 시간대를 불러오는 데 실패했습니다.');
+            }
+        },
+        selectTime(hour) {
+            this.resDateTime = hour;
+        },
+        formatTime(time) {
+            return time.slice(0, 5);
+        },
+        async fetchTotalReviews() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/review/count`, {
+                    params: {
+                        gameId: this.gameId
+                    }
+                });
+                this.reviewCount = response.data;
+            } catch (error) {
+                console.error("리뷰 개수를 불러오는 데 실패했습니다.", error);
+            }
+        },
+        openPriceModal() {
+            this.calculatePrices();
+            this.isPriceModalOpen = true;
+        },
+        calculatePrices() {
+            this.calculatedPrices = [];
+            for (let i = 1; i <= this.game.maximunPerson; i++) {
+                this.calculatedPrices.push({
+                    people: i,
+                    totalPrice: this.game.price * i
+                });
             }
         },
         getDifficultyLevel(difficulty) {
@@ -110,97 +317,156 @@ export default {
         },
         getAgeLimitLabel(ageLimit) {
             const labels = {
-                adult: "미성년자 출입금지",
+                adult: "19세 제한",
                 student: "전체이용가"
             };
             return labels[ageLimit?.toLowerCase()] || "전체이용가";
+        },
+        
+        async reservationCreate() {
+            await this.fetchUserInfo();
+
+            try {
+                const reservationData = {
+                    resName: this.resName,
+                    phoneNumber: this.phoneNumber,
+                    numberOfPlayers: this.numberOfPlayers,
+                    resDate: this.resDate,
+                    resDateTime: this.resDateTime,
+                    gameId: this.gameId,
+                };
+
+                await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/reservation/create`, reservationData, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                this.$router.push('/reservation/list');
+            } catch (e) {
+                console.error(e);
+                alert("예약 등록에 실패하였습니다.");
+            }
         }
     }
 };
 </script>
+
 <style scoped>
     .game-detail-container {
-    padding: 30px;
-    background-color: white;
-    border-radius: 10px;
-    max-width: 1200px;
-    margin: auto;
-}
+        padding: 30px;
+        background-color: white;
+        border-radius: 10px;
+        max-width: 1200px;
+        margin: auto;
+    }
 
-.game-image {
-    border-radius: 10px;
-    width: 400px;
-    height: 500px;
-    object-fit: cover;
-}
+    .game-image {
+        border-radius: 10px;
+        width: 400px;
+        height: 500px;
+        object-fit: cover;
+    }
 
-h6.store-name {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #333;
-}
+    h6.store-name {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #333;
+    }
 
-h2.game-name {
-    font-size: 36px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #2c3e50;
-}
+    h2.game-name {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #2c3e50;
+    }
 
-.difficulty-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
+    .difficulty-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
 
-.stars {
-    display: flex;
-    align-items: center;
-}
+    .stars {
+        display: flex;
+        align-items: center;
+    }
 
-.difficulty-level {
-    margin-left: 10px;
-    font-size: 16px;
-}
+    .difficulty-level {
+        margin-left: 10px;
+        font-size: 16px;
+    }
 
-.game-details > div {
-    margin-bottom: 20px;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-}
+    .game-details > div {
+        margin-bottom: 20px;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+    }
 
-.price {
-    font-size: 30px;
-    margin-bottom: 20px;
-}
+    .price {
+        font-size: 30px;
+        margin-bottom: 20px;
+    }
 
-.running-time,
-.max-person,
-.age-limit {
-    display: flex;
-    align-items: center;
-}
+    .running-time,
+    .max-person,
+    .age-limit {
+        display: flex;
+        align-items: center;
+    }
 
-.game-info-container {
-    padding: 20px;
-}
+    .game-info-container {
+        padding: 20px;
+    }
 
-.game-info-title {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
+    .game-info-title {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: rgb(201, 46, 72);
+    }
 
-.game-info {
-    font-size: 18px;
-    line-height: 1.6;
-    color: #666;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    margin-top: 20px;
-}
+    .game-info {
+        font-size: 18px;
+        line-height: 1.6;
+        color: #666;
+        padding: 15px;
+        /* border: 1px solid #ccc; */
+        border-radius: 8px;
+        /* background-color: #f9f9f9; */
+        margin-top: 20px;
+    }
+
+    /* 시간 선택 버튼 스타일 */
+    .time-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .time-button {
+        width: 80px; /* 크기를 키웁니다 */
+        height: 80px;
+        font-size: 15px; /* 글씨 크기를 키웁니다 */
+    }
+
+    /* 카드의 그림자 및 외곽선 제거 */
+    .v-card {
+        box-shadow: none;
+        border: none;
+    }
+
+    /* 예약 날짜 입력란 크기 조절 */
+    .v-date-picker {
+        max-width: 250px;
+        margin: auto;
+    }
+
+    /* 리뷰 요약 스타일 */
+    .reviews-summary {
+        font-size: 20px;
+        margin-top: 20px;
+    }
 </style>
-  

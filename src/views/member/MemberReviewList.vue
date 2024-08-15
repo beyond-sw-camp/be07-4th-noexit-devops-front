@@ -20,6 +20,7 @@ import ReviewListComponent from '@/components/ReviewListComponent.vue';
 import MypageSideBarComponent from '@/components/common/MypageSideBarComponent.vue'
 // import ReviewList from '@/views/review/ReviewList.vue'
 
+
 export default {
     components: {
         ReviewListComponent,

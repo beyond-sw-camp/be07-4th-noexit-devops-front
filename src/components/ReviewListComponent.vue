@@ -1,3 +1,4 @@
+
 <template>
     <v-container>
         <v-row justify="center">
@@ -150,3 +151,14 @@ export default {
     border-radius: 8px;
 }
 </style>
+
+<!-- <template>
+<div>
+</div>
+</template>
+<script>
+export default{
+    
+}
+</script> -->
+

@@ -34,15 +34,18 @@
     </v-row>
     <v-row class="mt- d-flex justify-center align-center">
       <v-col>
-        <div style="font-size: 24px">{{ board.contents }}</div>
-        <div v-if="board.images && board.images.length">
-          <div v-for="i in board.images" :key="i.id">
-            <v-img :src="i.imageUrl" style="width: 500px;"></v-img>
-          </div>
-        </div>
-        <div v-else>
-        </div>
-      </v-col>
+  <div style="font-size: 24px">{{ board.contents }}</div>
+  <div v-if="board.images && board.images.length">
+    <div v-for="i in board.images" :key="i.id">
+      <v-img
+        :src="i.imageUrl"
+        style="width: 500px;"
+      ></v-img>
+    </div>
+  </div>
+  <div v-else>
+  </div>
+</v-col>
     </v-row>
     <v-row style="margin-top: 150px" class="d-flex justify-center align-center">
       <v-col class="d-flex justify-center" cols="auto">
