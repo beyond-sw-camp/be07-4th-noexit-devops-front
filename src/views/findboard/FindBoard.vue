@@ -33,6 +33,7 @@
       </v-col>
 
       <v-card
+        v-if="userRole == 'USER' && isLogin"
         class="pa-4"
         outlined
         rounded="lg"
@@ -316,6 +317,8 @@ export default {
 
       // 권한
       isAuthor: false,
+      isLogin:false,
+      userRole: null,
       // 
 
       searchValue: "",
@@ -345,8 +348,20 @@ export default {
   this.date = now.toLocaleDateString('en-CA'); // 'en-CA'는 'YYYY-MM-DD' 형식을 반환합니다.
   // 현지 시간 설정
   this.time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+  const userRole = localStorage.getItem('role');
+  if (userRole === 'USER') {
+    this.isUser = true;
+  }
 },
+
   created() {
+    const token = localStorage.getItem("token")
+        if(token){
+            this.isLogin = true
+            this.userRole = localStorage.getItem("role")
+        }
+        
     this.loadFindBoard();
     this.checkAuthor();
   },
