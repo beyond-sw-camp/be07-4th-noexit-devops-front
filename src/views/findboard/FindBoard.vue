@@ -222,7 +222,7 @@
       
               <div v-if="f.isAuthor" >
                 <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
-                <v-btn @click="openUpdateModal(f.id)">수정하기</v-btn>
+                <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
               </div>
 
             </v-col>
