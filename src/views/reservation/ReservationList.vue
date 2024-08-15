@@ -1,86 +1,77 @@
 <template>
     <v-container>
-        <MypageSideBarComponent />
-            <ReviewListComponent />
-        <v-row justify="center">
-            <v-col cols="12" md="8">
-                <v-card>
-                    <v-card-title class="text-center text-h5">
-                        예약 목록
-                    </v-card-title>
-                <v-card-text>
-            <v-list>
-                <v-list-item
-                    v-for="reservation in reservations"
-                    :key="reservation.id"
-                    class="mb-4"
-                    :class="{'rejected-reservation': reservation.reservationStatus === 'REJECT'}"
-                >
-                <v-list-item-content>
-                    <v-list-item-title>
-                        {{ reservation.gameName }} - {{ reservation.storeName }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                        <v-row>
-                            <v-col cols="12" sm="6">
-                                예약자: {{ reservation.resName }}
-                            </v-col>
-                            <v-col cols="12" sm="6">
-                                인원: {{ reservation.numberOfPlayers }}명
-                            </v-col>
-                            <v-col cols="12" sm="6">
-                                날짜: {{ reservation.resDate }}
-                            </v-col>
-                            <v-col cols="12" sm="6">
-                                시간: {{ reservation.resDateTime }}
-                            </v-col>
-                            <v-col cols="12" sm="6">
-                                상태: {{ reservation.reservationStatus }}
-                            </v-col>
-                        </v-row>
-                    </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-spacer></v-spacer>
-                <v-list-item-action>
-                    <v-btn color="primary" @click="viewReservation(reservation.id)">상세보기</v-btn>
-                    <v-btn
-                        v-if="reservation.reservationStatus === 'WAITING'"
-                        color="red"
-                        @click="cancelReservation(reservation.id)"
-                    >
-                        취소하기
-                    </v-btn>
-                    <v-btn
-                        v-if="reservation.reservationStatus === 'ACCEPT' && !reservation.hasReview"
-                        color="green"
-                        @click="writeReview(reservation.id)"
-                    >
-                        리뷰 작성
-                    </v-btn>
-                    <v-btn
-                        v-if="reservation.reservationStatus === 'ACCEPT' && reservation.hasReview"
-                        color="grey"
-                        disabled
-                    >
-                        리뷰 작성 완료
-                    </v-btn>
-                </v-list-item-action>
-                </v-list-item>
-            </v-list>
-            </v-card-text>
-            </v-card>
+        <v-row>
+            <MypageSideBarComponent />
+            <v-col>
+                <v-row justify="center">
+                    <v-col cols="12" md="8">
+                        <v-card>
+                            <v-card-title class="text-center text-h5">
+                                예약 목록
+                            </v-card-title>
+                            <v-card-text>
+                                <v-list>
+                                    <v-list-item v-for="reservation in reservations" :key="reservation.id" class="mb-4"
+                                        :class="{ 'rejected-reservation': reservation.reservationStatus === 'REJECT' }">
+                                        <v-list-item-content>
+                                            <v-list-item-title>
+                                                {{ reservation.gameName }} - {{ reservation.storeName }}
+                                            </v-list-item-title>
+                                            <v-list-item-subtitle>
+                                                <v-row>
+                                                    <v-col cols="12" sm="6">
+                                                        예약자: {{ reservation.resName }}
+                                                    </v-col>
+                                                    <v-col cols="12" sm="6">
+                                                        인원: {{ reservation.numberOfPlayers }}명
+                                                    </v-col>
+                                                    <v-col cols="12" sm="6">
+                                                        날짜: {{ reservation.resDate }}
+                                                    </v-col>
+                                                    <v-col cols="12" sm="6">
+                                                        시간: {{ reservation.resDateTime }}
+                                                    </v-col>
+                                                    <v-col cols="12" sm="6">
+                                                        상태: {{ reservation.reservationStatus }}
+                                                    </v-col>
+                                                </v-row>
+                                            </v-list-item-subtitle>
+                                        </v-list-item-content>
+                                        <v-spacer></v-spacer>
+                                        <v-list-item-action>
+                                            <v-btn color="primary" @click="viewReservation(reservation.id)">상세보기</v-btn>
+                                            <v-btn v-if="reservation.reservationStatus === 'WAITING'" color="red"
+                                                @click="cancelReservation(reservation.id)">
+                                                취소하기
+                                            </v-btn>
+                                            <v-btn
+                                                v-if="reservation.reservationStatus === 'ACCEPT' && !reservation.hasReview"
+                                                color="green" @click="writeReview(reservation.id)">
+                                                리뷰 작성
+                                            </v-btn>
+                                            <v-btn
+                                                v-if="reservation.reservationStatus === 'ACCEPT' && reservation.hasReview"
+                                                color="grey" disabled>
+                                                리뷰 작성 완료
+                                            </v-btn>
+                                        </v-list-item-action>
+                                    </v-list-item>
+                                </v-list>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
             </v-col>
         </v-row>
+
     </v-container>
 </template>
-  
+
 <script>
 import axios from 'axios';
-import ReviewListComponent from '@/components/ReviewListComponent.vue';
 import MypageSideBarComponent from '@/components/common/MypageSideBarComponent.vue';
 export default {
     components: {
-        ReviewListComponent,
         MypageSideBarComponent
     },
     data() {
@@ -89,7 +80,7 @@ export default {
         };
     },
     created() {
-      this.fetchReservations();
+        this.fetchReservations();
     },
     methods: {
         async fetchReservations() {
@@ -134,14 +125,14 @@ export default {
     },
 };
 </script>
-  
+
 <style scoped>
-    .v-list-item-subtitle {
+.v-list-item-subtitle {
     margin-top: 8px;
     font-size: 14px;
 }
 
-    .rejected-reservation {
-        opacity: 0.5;
+.rejected-reservation {
+    opacity: 0.5;
 }
 </style>

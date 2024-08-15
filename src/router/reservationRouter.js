@@ -1,13 +1,10 @@
 // reservationRouter.js
 
 import ReservationCreate from '@/views/reservation/ReservationCreate.vue';
-import ReservationList from '@/views/reservation/ReservationList.vue';
+import MemberReservationList from '@/views/member/MemberReservationList.vue';
 import ReservationDetail from '@/views/reservation/ReservationDetail.vue';
-
 import StoreReservationList from '@/views/reservation/StoreReservationList.vue';
-
-import MemberReservationList from '@/views/member/MemberReservationList';
-
+import ReservationList from '@/views/reservation/ReservationList.vue'
 
 
 export const reservationRouter = [
@@ -33,11 +30,11 @@ export const reservationRouter = [
     name: 'StoreReservationList',
     component: StoreReservationList,
   },
-  {
-    // 로그인한 멤버의 예약 내역
-    // path: '/reservation/detail/:id',
-    // name: 'ReservationDetail',
-    // component: ,
+  // {
+  // 로그인한 멤버의 예약 내역
+  // path: '/reservation/detail/:id',
+  // name: 'ReservationDetail',
+  // component: ,
 
   // },
   {

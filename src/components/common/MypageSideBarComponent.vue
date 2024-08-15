@@ -48,7 +48,7 @@
 export default {}
 </script>
 
-<style scoped>
+<style>
 .gray-background {
     background-color: #565656;
     padding: 20px;

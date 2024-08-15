@@ -88,7 +88,7 @@ export default {
                         email: this.email,
                         password: this.password,
                         storeName: this.storeName,
-                        phoneNumber: this.phoneNumber,
+                        phoneNumber: this.phone_number,
                     };
                     registerData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
                     registerData.append("file", this.profileImage); // 이미지 파일 추가

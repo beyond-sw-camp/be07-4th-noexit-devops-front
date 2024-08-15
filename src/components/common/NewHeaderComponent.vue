@@ -1,8 +1,7 @@
 <template>
-
     <v-app-bar app class="px-4">
         <v-toolbar-title class="d-flex align-center title-style">
-            <v-btn text class="link-btn" :to="'/'">NoExit</v-btn>
+            <v-btn text class="title-btn" :to="'/'">NoExit</v-btn>
             <v-divider class="mx-3" vertical></v-divider>
             <v-btn text class="link-btn" to="/board/list">Board</v-btn>
             <v-btn text class="link-btn" to="/findboard">Escape-With-Me</v-btn>
@@ -21,7 +20,6 @@
             <v-icon>mdi-logout</v-icon>
         </v-btn>
     </v-app-bar>
-
 </template>
 
 <script>
@@ -64,8 +62,14 @@ body {
     font-size: 24px;
 }
 
+.title-btn {
+    font-size: 24px;
+    font-weight: 800;
+    color: #FF0066;
+}
+
 .link-btn {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 400;
     font-family: 'Nunito Sans', sans-serif;
 }
