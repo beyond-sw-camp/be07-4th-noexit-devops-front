@@ -1,5 +1,5 @@
 <template>
-    <v-app-bar app class="px-4">
+    <v-app-bar app class="px-4" style=" background-color: #1b1b1b; color:#ffffff;">
         <v-toolbar-title class="d-flex align-center title-style">
             <v-btn text class="title-btn" :to="'/'">NoExit</v-btn>
             <v-divider class="mx-3" vertical></v-divider>
@@ -50,6 +50,7 @@ body {
 }
 
 .px-4 {
+
     padding: 10px 20px;
 }
 

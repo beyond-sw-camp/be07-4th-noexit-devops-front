@@ -1,5 +1,5 @@
 <template>
-  <v-app class="common-margin">
+  <v-app class="common-margin" style="background-color:#1b1b1b;">
     <!-- <HeaderComponent /> -->
     <NewHeaderComponent />
     <v-main>
@@ -23,5 +23,14 @@ export default {
 <style>
 .common-margin {
   margin: 100px 200px;
+}
+
+.v-app {
+  background-color: #1b1b1b;
+
+}
+
+html {
+  background-color: #1b1b1b;
 }
 </style>

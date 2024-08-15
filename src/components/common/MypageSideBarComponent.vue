@@ -1,6 +1,5 @@
 <template>
-
-    <v-col cols="12" md="3">
+    <v-col cols="12" md="3" style=" background-color: #1b1b1b; color:#ffffff;">
         <div class="gray-background">
             <v-row>
                 <v-col>
@@ -42,7 +41,6 @@
             </v-col>
         </v-row>
     </v-col>
-
 </template>
 <script>
 export default {}

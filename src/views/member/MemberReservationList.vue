@@ -1,5 +1,5 @@
 <template>
-    <v-app>
+    <v-app style=" background-color: #1b1b1b; color:#ffffff;">
         <v-container>
             <v-row>
                 <MypageSideBarComponent />
