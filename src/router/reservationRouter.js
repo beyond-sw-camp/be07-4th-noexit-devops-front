@@ -5,6 +5,8 @@ import MemberReservationList from '@/views/member/MemberReservationList.vue';
 import ReservationDetail from '@/views/reservation/ReservationDetail.vue';
 import StoreReservationList from '@/views/reservation/StoreReservationList.vue';
 import ReservationList from '@/views/reservation/ReservationList.vue'
+import MemberReservationList from '@/views/member/MemberReservationList';
+import ResList from '@/views/ResView.vue';
 
 
 export const reservationRouter = [
@@ -41,5 +43,10 @@ export const reservationRouter = [
     path: '/reservation/myreservation',
     name: 'MemberReservationList',
     component: MemberReservationList
-  }
+  },
+  {
+    path: '/resview',
+    name: 'ResList',
+    component: ResList,
+  },
 ];
