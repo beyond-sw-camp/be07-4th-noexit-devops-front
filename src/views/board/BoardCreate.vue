@@ -16,7 +16,7 @@
             <v-col>
               <v-text-field
                 v-model="titleValue" required
-                label="제목"
+                label="제목을 입력해주세요."
                 style="width: 850px"
               >
               </v-text-field>
@@ -40,6 +40,7 @@
         </v-file-input>
         <v-text-field
           v-model="contentValue" required
+          label="내용을 입력해주세요."
           style="width: 1200px; height: 700px"
         >
         </v-text-field>
