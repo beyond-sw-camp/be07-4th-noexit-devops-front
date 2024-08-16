@@ -50,7 +50,10 @@
         "
       >
         <div style="background-color: #1b1b1b; color: #ffffff">
-          <v-form ref="form" @submit.prevent="onSubmit">
+          <v-form 
+          ref="form" @submit.prevent="onSubmit"
+          style="background-color:  black;"
+          >
             <v-text-field
               v-model="title"
               :rules="[(v) => !!v || '제목을 입력하세요.']"
@@ -69,10 +72,14 @@
               class="mb-4"
               required
             ></v-textarea>
-            <v-card flat class="pa-4" style="background-color: #f5f5f5">
-              <v-row>
-                <v-col cols="4">
-                  <label for="date">날짜 선택<br /></label>
+            <v-card 
+            flat class="pa-4" style="background-color: black">
+              <v-row >
+                <v-col cols="4" >
+                  <label
+
+                  for="date"
+                  >날짜 선택<br /></label>
                   <input
                     type="date"
                     id="date"
@@ -147,9 +154,7 @@
       <!-- 여기부터 글 시작 -->
       <v-divider :thickness="3" color="gray"></v-divider>
 
-      <v-row
-      justify="center"
-      >
+      <v-row justify="center">
         <v-col
           cols="6"
           v-for="f in findBoardList"
@@ -244,44 +249,51 @@
               </div>
 
               <div v-if="f.isAuthor">
+
+                
+
+                <!-- <v-icon @click="deleteFB(f.id)" :icon="`mdiSvg:${mdiDelete}`"></v-icon> -->
                 <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
                 <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
               </div>
             </v-col>
           </v-card>
         </v-col>
-        
-        <!-- 페이징 -->
-        <div 
-        class="pagination-controls text-center"
-      >
-        <span
-          class="pagination-arrow"
-          @click="prevPageRange"
-          :class="{ 'disabled': currentPageRangeStart <= 1 }"
-        >
-          <v-icon small>{{ currentPageRangeStart <= 1 ? 'mdi-menu-left' : 'mdi-chevron-left' }}</v-icon>
-        </span>
-    
-        <span
-          v-for="page in visiblePages"
-          :key="page"
-          @click="setPage(page)"
-          :class="{ 'active-page': currentPage === page }"
-          class="pagination-page"
-        >
-          {{ page }}
-        </span>
-    
-        <span
-          class="pagination-arrow"
-          @click="nextPageRange"
-          :class="{ 'disabled': currentPageRangeEnd >= totalPages }"
-        >
-          <v-icon small>{{ currentPageRangeEnd >= totalPages ? 'mdi-menu-right' : 'mdi-chevron-right' }}</v-icon>
-        </span>
-      </div>
 
+        <!-- 페이징 -->
+        <div class="pagination-controls text-center">
+          <span
+            class="pagination-arrow"
+            @click="prevPageRange"
+            :class="{ disabled: currentPageRangeStart <= 1 }"
+          >
+            <v-icon small>{{
+              currentPageRangeStart <= 1 ? "mdi-menu-left" : "mdi-chevron-left"
+            }}</v-icon>
+          </span>
+
+          <span
+            v-for="page in visiblePages"
+            :key="page"
+            @click="setPage(page)"
+            :class="{ 'active-page': currentPage === page }"
+            class="pagination-page"
+          >
+            {{ page }}
+          </span>
+
+          <span
+            class="pagination-arrow"
+            @click="nextPageRange"
+            :class="{ disabled: currentPageRangeEnd >= totalPages }"
+          >
+            <v-icon small>{{
+              currentPageRangeEnd >= totalPages
+                ? "mdi-menu-right"
+                : "mdi-chevron-right"
+            }}</v-icon>
+          </span>
+        </div>
       </v-row>
     </v-row>
 
@@ -350,7 +362,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  
   </v-container>
 </template>
 
@@ -374,6 +385,7 @@ export default {
       //
 
       searchValue: "",
+
       title: "",
       contents: "",
       date: "",
@@ -381,6 +393,7 @@ export default {
       totalCapacity: "",
       findBoardList: [],
       loading: true,
+      
       searchBy: "",
       searchTerm: "",
 
@@ -400,7 +413,6 @@ export default {
       currentPageRangeStart: 1,
       currentPageRangeEnd: 5,
       pagesPerRange: 5,
-
     };
   },
   mounted() {
@@ -472,7 +484,6 @@ export default {
       const expiration = new Date(expirationTime);
       const differenceInMs = expiration - now; // 차이를 밀리초 단위로 계산
       const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60); // 분 단위로 변환
-
       if (differenceInMinutes > 30) {
         // 30분 이상 남았으면 날짜만 반환
         return expirationTime.substring(0, 10); // YYYY-MM-DD 형식 반환
@@ -497,10 +508,11 @@ export default {
     },
     async registerFindBoard() {
       try {
-        const expirationDateTime = new Date(
-          `${this.date}T${this.time}:00`
-        ).toISOString();
-
+        let expirationDateTime = new Date(
+          `${this.date}T${this.time}`
+        );
+        expirationDateTime.setHours(expirationDateTime.getHours()+9);
+        expirationDateTime = expirationDateTime.toISOString();
         const requestData = {
           title: this.title,
           contents: this.contents,
@@ -520,16 +532,17 @@ export default {
     async loadFindBoard() {
       this.loading = true;
       try {
-
         let params = {
           size: this.pageSize,
           page: this.currentPage - 1,
           searchType: this.searchType,
-          searchValue: this.searchValue
+          searchValue: this.searchValue,
         };
 
         const response = await axios.get(
-          `http://localhost:8080/findboard/list`, { params });
+          `http://localhost:8080/findboard/list`,
+          { params }
+        );
         console.log(response.data.result.content.writer);
         // 데이터 변환 부분 추가
         this.findBoardList = response.data.result.content.map((item) => {
@@ -539,7 +552,9 @@ export default {
           };
         });
 
-        this.totalPages = Math.ceil(response.data.result.totalElements / this.pageSize);
+        this.totalPages = Math.ceil(
+          response.data.result.totalElements / this.pageSize
+        );
       } catch (error) {
         console.error("Error loading findBoardList:", error);
       } finally {
@@ -578,8 +593,7 @@ export default {
       try {
         const updateExpirationDateTime = new Date(
           `${this.updateDate}T${this.updateTime}:00`
-        ).toISOString();
-        
+        );
 
         const requestData = {
           title: this.updateTitle,
@@ -641,18 +655,30 @@ export default {
     },
     prevPageRange() {
       if (this.currentPageRangeStart > 1) {
-        this.currentPageRangeStart = Math.max(1, this.currentPageRangeStart - this.pagesPerRange);
-        this.currentPageRangeEnd = Math.min(this.totalPages, this.currentPageRangeStart + this.pagesPerRange - 1);
+        this.currentPageRangeStart = Math.max(
+          1,
+          this.currentPageRangeStart - this.pagesPerRange
+        );
+        this.currentPageRangeEnd = Math.min(
+          this.totalPages,
+          this.currentPageRangeStart + this.pagesPerRange - 1
+        );
         this.setPage(this.currentPageRangeStart);
       }
     },
     nextPageRange() {
       if (this.currentPageRangeEnd < this.totalPages) {
-        this.currentPageRangeStart = Math.min(this.totalPages - this.pagesPerRange + 1, this.currentPageRangeStart + this.pagesPerRange);
-        this.currentPageRangeEnd = Math.min(this.totalPages, this.currentPageRangeStart + this.pagesPerRange - 1);
+        this.currentPageRangeStart = Math.min(
+          this.totalPages - this.pagesPerRange + 1,
+          this.currentPageRangeStart + this.pagesPerRange
+        );
+        this.currentPageRangeEnd = Math.min(
+          this.totalPages,
+          this.currentPageRangeStart + this.pagesPerRange - 1
+        );
         this.setPage(this.currentPageRangeStart);
       }
-    }
+    },
   },
 };
 </script>
@@ -681,8 +707,8 @@ body,
 }
 /* 시간 마감 시 변경되는 색상 */
 .expired-card {
-  background-color: #585252; /* 연한 빨간색 배경 */
-  color: #721c24; /* 진한 빨간색 텍스트 */
+  background-color: #dbaaaa; /* 연한 빨간색 배경 */
+  color: #d9979d; /* 진한 빨간색 텍스트 */
 }
 .pagination-controls {
   text-align: center;
@@ -696,7 +722,6 @@ body,
 }
 
 .pagination-page {
-  
   cursor: pointer;
   margin: 0 5px;
   padding: 5px 10px;
@@ -704,7 +729,6 @@ body,
   background-color: #868383;
   color: #f6f6f6;
   transition: background-color 0.3s, color 0.3s;
-
 }
 
 .pagination-page.active-page {
@@ -721,5 +745,6 @@ body,
   font-size: 20px;
   vertical-align: middle;
 }
+
 
 </style>
