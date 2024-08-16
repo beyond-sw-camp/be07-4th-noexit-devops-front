@@ -1,38 +1,35 @@
 <template>
-    <NewHeaderComponent />
-
-    <v-container>
-        <v-row>
+    <v-container style="color:#ffffff;">
+        <v-row justify="center">
             <MypageSideBarComponent />
             <v-col>
-                <v-card-text>
-                    <v-row class="d-flex align-center justify-space-between">
-                        <v-col cols="auto" class="d-flex align-center">
-                            <v-avatar size="80" class="mr-3">
-                                <img :src="memberInfoList.find(item => item.key === 'profileImage')?.value"
-                                    alt="프로필 이미지" @click="selectImage" />
-                            </v-avatar>
-                            <input type="file" @change="onImageChange" accept="image/*" style="display: none;" />
-                        </v-col>
-                        <v-col cols="auto" class="d-flex justify-end">
-                            <v-btn v-if="isEditing" @click="updateMember">
-                                저장
-                            </v-btn>
-                            <v-btn v-if="!isEditing" @click="updaetIsEditing">
-                                프로필 수정
-                            </v-btn>
-                            <v-btn v-if="isEditing" @click="updaetIsEditing">
-                                취소
-                            </v-btn>
-                        </v-col>
-                    </v-row>
+                <v-row justify="center">
+                    <v-col cols="12" md="8">
+                        <v-card-text>
+                            <v-row class="d-flex align-center justify-space-between">
+                                <v-col cols="auto" class="d-flex align-center img-area">
+                                    <v-avatar size="80" class="mr-3">
+                                        <img :src="memberInfoList.find(item => item.key === 'profileImage')?.value"
+                                            alt="프로필 이미지" @click="selectImage" />
+                                    </v-avatar>
+                                    <input type="file" @change="onImageChange" accept="image/*"
+                                        style="display: none;" />
+                                </v-col>
+                                <v-col cols="auto" class="d-flex justify-end">
+                                    <v-btn v-if="!isEditing" @click="updateMember" class="update-btn">
+                                        프로필 수정
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
 
-                    <v-form v-for="element in memberInfoList" :key="element.id">
-                        <v-text-field :label="element.key" v-model="element.value"></v-text-field>
-                    </v-form>
-                </v-card-text>
+                            <v-form v-for=" element in memberInfoList" :key="element.id" class="form-area">
+                                <v-text-field :label="element.key" v-model="element.value"
+                                    class="custom-text-field"></v-text-field>
+                            </v-form>
+                        </v-card-text>
+                    </v-col>
+                </v-row>
             </v-col>
-
         </v-row>
     </v-container>
 
@@ -103,3 +100,26 @@ export default {
     }
 }
 </script>
+
+<style>
+.v-card-text>.v-form>.v-text-field {
+    all: unset;
+}
+
+.img-area {
+    margin-bottom: 30px;
+}
+
+.update-btn {
+    color: #ffffff;
+    background-color: #FF0066;
+}
+
+.custom-text-field .v-input__control {
+    height: 60px;
+}
+
+.v-field__input {
+    padding-top: 10px;
+}
+</style>

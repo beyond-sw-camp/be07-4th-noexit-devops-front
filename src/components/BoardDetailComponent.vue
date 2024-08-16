@@ -1,6 +1,7 @@
 <template>
-  <v-container>
-    <v-row style="margin-top: 100px">
+
+  <v-container style="color:#ffffff">
+    <v-row>
       <v-col>
         <div style="font-size: 24px">{{ board.title }}</div>
       </v-col>

@@ -1,9 +1,6 @@
 <template>
   <v-container class="pa-4 d-flex justify-center">
-    
-    <v-row 
-    :style="{ color: 'white' }"
-    class="d-flex justify-center" style="max-width: 2000px">
+    <v-row class="d-flex justify-center" style="max-width: 2000px">
       <v-col>
         <v-form @submit.prevent="loadFindBoard">
           <v-row>
@@ -35,20 +32,13 @@
         </v-form>
       </v-col>
 
-
-
       <v-card
-      
-      :style="{ color: 'white' }"
-        v-if="userRole == 'USER' && isLogin"
         class="pa-4"
         outlined
         rounded="lg"
-        style="width: 98%; max-width: 2000px; background-color: #1b1b1b; color:#ffffff;"
+        style="width: 98%; max-width: 2000px; background-color: #f5f5f5"
       >
-        <div
-          style=" background-color: #1b1b1b; color:#ffffff;"
-        >
+        <div>
           <v-form ref="form" @submit.prevent="onSubmit">
             <v-text-field
               v-model="title"
@@ -147,16 +137,13 @@
       <v-divider :thickness="3" color="gray"></v-divider> 
 
       <v-row>
-        
         <v-col
-        
           cols="6"
           v-for="f in findBoardList"
           :key="f.id"
           class="d-flex justify-center"
         >
           <v-card
-          :style="{ color: 'white' }"
             :class="{
               'expired-card': getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',
             }"
@@ -233,11 +220,8 @@
                 <em>FINISH</em>
               </div>
       
-              <div v-if="f.isAuthor" >
-                <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
-                <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
-              </div>
-
+              <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
+              <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
             </v-col>
           </v-card>
         </v-col>
@@ -326,13 +310,6 @@ export default {
         { text: "내용", value: "contents" },
       ],
 
-
-      // 권한
-      isAuthor: false,
-      isLogin:false,
-      userRole: null,
-      // 
-
       searchValue: "",
       title: "",
       contents: "",
@@ -360,64 +337,51 @@ export default {
   this.date = now.toLocaleDateString('en-CA'); // 'en-CA'는 'YYYY-MM-DD' 형식을 반환합니다.
   // 현지 시간 설정
   this.time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
-  const userRole = localStorage.getItem('role');
-  if (userRole === 'USER') {
-    this.isUser = true;
-  }
 },
-
   created() {
-    const token = localStorage.getItem("token")
-        if(token){
-            this.isLogin = true
-            this.userRole = localStorage.getItem("role")
-        }
-        
     this.loadFindBoard();
-    this.checkAuthor();
   },
   methods: {
+    // getTimeDifferenceInMinutes(expirationTime) {
+    //   const now = new Date();
+    //   const expiration = new Date(expirationTime);
+    //   const differenceInMs = expiration - now; // 차이를 밀리초 단위로 계산
+    //   const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60); // 분 단위로 변환
 
-// 권한
-async checkAuthor() {
-  try {
-    const myInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`);
-    const findboardInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/findboard/list`);
-    
-    const myNickname = myInfo.data.result.nickname;
-    this.findBoardList = findboardInfo.data.result.content.map(item => {
-      return {
-        ...item,
-        isAuthor: item.writer === myNickname
-      };
-    });
+    //   if (differenceInMinutes > 30) {
+    //     // 30분 이상 남았으면 날짜만 반환
+    //     return expirationTime.substring(0, 10); // YYYY-MM-DD 형식 반환
+    //   } else if (differenceInMinutes > 0) {
+    //     // 30분 이하로 남았으면 남은 시간 표시
+    //     return `${differenceInMinutes}분 남음`;
+    //   } else {
+    //     // 시간이 이미 지난 경우
+    //     return "마감됨";
+    //   }
+    // },
 
-  } catch (e) {
-    console.log(e);
+    getTimeDifferenceInMinutes(expirationTime) {
+  const now = new Date();
+  const expiration = new Date(expirationTime);
+
+  if (isNaN(expiration.getTime())) {
+    console.error("Invalid expiration time format:", expirationTime);
+    return "시간 형식 오류";
+  }
+
+  const differenceInMs = expiration.getTime() - now.getTime();
+  const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60);
+
+  if (differenceInMinutes <= 0) {
+    return "마감됨";
+  } else {
+    return `${differenceInMinutes}분 남음`;
   }
 },
 
-    // 권한
 
 
-    getTimeDifferenceInMinutes(expirationTime) {
-      const now = new Date();
-      const expiration = new Date(expirationTime);
-      const differenceInMs = expiration - now; // 차이를 밀리초 단위로 계산
-      const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60); // 분 단위로 변환
-
-      if (differenceInMinutes > 30) {
-        // 30분 이상 남았으면 날짜만 반환
-        return expirationTime.substring(0, 10); // YYYY-MM-DD 형식 반환
-      } else if (differenceInMinutes > 0) {
-        // 30분 이하로 남았으면 남은 시간 표시
-        return `${differenceInMinutes}분 남음`;
-      } else {
-        // 시간이 이미 지난 경우
-        return "마감됨";
-      }
-    },
+    
     async searchFindBoard() {
       this.findBoardList = [];
       await this.loadFindBoard();
@@ -451,13 +415,13 @@ async checkAuthor() {
         alert("작성 실패");
       }
     },
+
     async loadFindBoard() {
       this.loading = true;
       try {
         const response = await axios.get(
           `http://localhost:8080/findboard/list`
         );
-        console.log(response.data.result.content.writer);
         // 데이터 변환 부분 추가
         this.findBoardList = response.data.result.content.map((item) => {
           return {
@@ -486,6 +450,7 @@ async checkAuthor() {
         .padStart(2, "0")}분`;
       return `${formattedDate} ${formattedTime}`;
     },
+
     async deleteFB(fbId) {
       try {
         const response = await axios.put(
@@ -493,22 +458,22 @@ async checkAuthor() {
         );
         console.log("삭제 완료:", response.data);
         alert("삭제 완료");
-        window.location.reload();
         this.findBoardList = this.findBoardList.filter((fb) => fb.id !== fbId);
       } catch (error) {
         console.error("삭제 실패:", error);
       }
     },
+
     async updateFindBoard() {
       try {
-        const updateExpirationDateTime = new Date(
+        const expirationDateTime = new Date(
           `${this.updateDate}T${this.updateTime}:00`
         ).toISOString();
 
         const requestData = {
           title: this.updateTitle,
           contents: this.updateContents,
-          expirationDate: updateExpirationDateTime,
+          expirationTime: expirationDateTime,
           totalCapacity: this.updateTotalCapacity,
         };
 
@@ -524,9 +489,11 @@ async checkAuthor() {
         console.error("업데이트 실패:", error);
       }
     },
+
     closeUpdateModal() {
       this.isUpdateModalOpen = false;
     },
+
     openUpdateModal(findBoard) {
       this.updateId = findBoard.id;
       this.updateTitle = findBoard.title;
@@ -536,6 +503,7 @@ async checkAuthor() {
       this.updateTotalCapacity = findBoard.totalCapacity;
       this.isUpdateModalOpen = true;
     },
+
     async participateInFindBoard(id) {
       try {
         const response = await axios.put(

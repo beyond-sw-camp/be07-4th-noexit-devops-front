@@ -1,5 +1,5 @@
 <template>
-    <v-app>
+    <v-app style="background-color: #1b1b1b; color:#ffffff;">
         <v-container>
             <v-row>
                 <v-col>
@@ -32,6 +32,7 @@ export default {
       totalPages: 1,
       pagesPerRange: 5,
       isLoading: false
+            // difficultyLevel: 1,
         };
     },
     created() {
@@ -72,7 +73,8 @@ export default {
             } catch (e) {
                 console.error("정보가 존재하지 않습니다", e);
             }
-        }
+        },
+
     },
     // mounted() {
     //     this.fetchWishlist();

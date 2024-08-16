@@ -1,9 +1,13 @@
 <template>
-    <v-app>
+    <v-app style=" background-color: #1b1b1b; color:#ffffff;">
         <v-container>
-            <MypageHeaderComponent />
-            <ReviewList />
-            <ReviewListComponent />
+            <v-row>
+                <MypageSideBarComponent />
+                <v-col>
+                    <!-- <ReviewList /> -->
+                    <ReviewListComponent :isUserReviews="true" />
+                </v-col>
+            </v-row>
         </v-container>
     </v-app>
 
@@ -11,15 +15,17 @@
 
 
 <script>
+
 import ReviewListComponent from '@/components/ReviewListComponent.vue';
-import MypageHeaderComponent from '@/components/common/MypageSideBarComponent.vue'
-import ReviewList from '@/views/review/ReviewList.vue'
+import MypageSideBarComponent from '@/components/common/MypageSideBarComponent.vue'
+// import ReviewList from '@/views/review/ReviewList.vue'
+
 
 export default {
     components: {
         ReviewListComponent,
-        MypageHeaderComponent,
-        ReviewList
+        // ReviewList,
+        MypageSideBarComponent,
     },
 }
 </script>
