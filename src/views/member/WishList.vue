@@ -3,9 +3,11 @@
         <v-container>
             <v-row>
                 <v-col>
-                    <h2 class="font-weight-bold">WishList({{ wishGameList.length }})</h2>
-                    <v-divider></v-divider>
-                    <GameListComponent :games="wishGameList" />
+                    <h2 class="font-weight-bold">WishList({{ wishgamelist.length }})</h2>
+                    <h2 class="font-weight-bold">WishList</h2>
+                    <v-divider></v-divider> 
+                    <GameListComponent :games="wishgamelist" />
+                    <GameListComponent />
                 </v-col>
             </v-row>
         </v-container>
@@ -23,30 +25,59 @@ export default {
     data() {
         return {
             wishlist: [],
-            wishGameList: [],
-            gameList: []
+            gamelist: [],
+            wishgamelist: [],
+             pageSize: 10,
+      currentPage: 1,
+      totalPages: 1,
+      pagesPerRange: 5,
+      isLoading: false
         };
     },
-    // created() {
-    //     this.fetchWishlist();
-    // },
+    created() {
+        this.fetchWishlist();
+    },
     methods: {
         async fetchWishlist() {
+                            // 위시리스트 받아와서 gameId들 조회
+                // 그 번호 아이디인 놈들을 gameList에 넣음
+                // 위에서 :games = gameList로 하면 됨
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`);
-                this.wishlist = response.data.result;
-                console.log(this.wishlist)
+
+                let params = {
+          size: this.pageSize,
+          page: this.currentPage - 1,
+        };
+                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`, { params });
                 const gameInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
-                this.gameList = gameInfo.data.result;
-                // 위시리스트 받아와서 gameId들 조회
-                // 그 번호 아이디인 놈들을 
+
+                this.wishlist = response.data.result.content;
+                this.gamelist = gameInfo.data.result;
+                console.log(this.wishlist);
+                console.log(this.gamelist);
+                
+        
+
+                for (let i = 0; i < this.gamelist.length; i++) {
+                    for(let j =0; j< this.wishlist.length; j++) {
+                        if(this.wishlist[j].gameId === this.gamelist[i].id) {
+                            this.wishgamelist.push(this.gamelist[i]);
+                        }
+                    }
+                }
+                for (let i = 0; i < this.wishgamelist.length; i++) {
+                    console.log(this.wishgamelist[i]);
+                }
+
             } catch (e) {
                 console.error("정보가 존재하지 않습니다", e);
             }
         }
     },
-    mounted() {
-        this.fetchWishlist();
-    }
+    // mounted() {
+    //     this.fetchWishlist();
+    // }
 };
 </script>
+
+    

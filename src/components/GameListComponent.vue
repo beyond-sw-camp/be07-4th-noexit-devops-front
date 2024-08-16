@@ -39,9 +39,6 @@ export default {
     methods: {
         async likeGame(id) {
             try{
-            // 위시리스트에 이미 있는 게임인지 조회
-            const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`);
-            this.wishList = response.data.result;
             for (const value of this.wishList) {
                 if(value.gameId === id) { // 위시리스트에 있다 -> 삭제
                     await axios.patch(`${process.env.VUE_APP_API_BASIC_URL}/wishlist/delete/${value.id}`);

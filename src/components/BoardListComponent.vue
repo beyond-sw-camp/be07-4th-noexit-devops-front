@@ -37,6 +37,7 @@
                   <th style="text-align: center;">썸네일</th>
                   <th style="text-align: center;">제목</th>
                   <th style="text-align: center;">작성자</th>
+                  <th style="text-align: center;">작성일</th>
                   <th style="text-align: center;">조회수</th>
                   <th style="text-align: center;">좋아요</th>
                   <th style="text-align: center;">댓글수</th>
@@ -58,6 +59,7 @@
                     </a>
                   </td>
                   <td style="width: 100px; text-align: center;">{{ b.writer }}</td>
+                  <td style="width: 100px; text-align: center;">{{ b.createdDate }}</td>
                   <td style="width: 100px; text-align: center;">{{ b.boardHits }}</td>
                   <td style="width: 100px; text-align: center;">{{ b.likes }}</td>
                   <td style="width: 100px; text-align: center;">{{ b.comments }}</td>
