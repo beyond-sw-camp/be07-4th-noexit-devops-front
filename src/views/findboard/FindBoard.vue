@@ -147,7 +147,9 @@
       <!-- 여기부터 글 시작 -->
       <v-divider :thickness="3" color="gray"></v-divider>
 
-      <v-row>
+      <v-row
+      justify="center"
+      >
         <v-col
           cols="6"
           v-for="f in findBoardList"
@@ -251,32 +253,34 @@
         
         <!-- 페이징 -->
         <div 
-        class="pagination-controls"
-        >
-        
+        class="pagination-controls text-center"
+      >
         <span
-            class="pagination-arrow"
-            @click="prevPageRange"
-            :class="{ 'disabled': currentPageRangeStart <= 1 }"
-          >
-            « 이전
-          </span>
-          <span
-            v-for="page in visiblePages"
-            :key="page"
-            @click="setPage(page)"
-            :class="{ 'active-page': currentPage === page }"
-          >
-            {{ page }}
-          </span>
-          <span
-            class="pagination-arrow"
-            @click="nextPageRange"
-            :class="{ 'disabled': currentPageRangeEnd >= totalPages }"
-          >
-             다음 »
-          </span>
-        </div>
+          class="pagination-arrow"
+          @click="prevPageRange"
+          :class="{ 'disabled': currentPageRangeStart <= 1 }"
+        >
+          <v-icon small>{{ currentPageRangeStart <= 1 ? 'mdi-menu-left' : 'mdi-chevron-left' }}</v-icon>
+        </span>
+    
+        <span
+          v-for="page in visiblePages"
+          :key="page"
+          @click="setPage(page)"
+          :class="{ 'active-page': currentPage === page }"
+          class="pagination-page"
+        >
+          {{ page }}
+        </span>
+    
+        <span
+          class="pagination-arrow"
+          @click="nextPageRange"
+          :class="{ 'disabled': currentPageRangeEnd >= totalPages }"
+        >
+          <v-icon small>{{ currentPageRangeEnd >= totalPages ? 'mdi-menu-right' : 'mdi-chevron-right' }}</v-icon>
+        </span>
+      </div>
 
       </v-row>
     </v-row>
@@ -677,22 +681,45 @@ body,
 }
 /* 시간 마감 시 변경되는 색상 */
 .expired-card {
-  background-color: #f8d7da; /* 연한 빨간색 배경 */
+  background-color: #585252; /* 연한 빨간색 배경 */
   color: #721c24; /* 진한 빨간색 텍스트 */
 }
 .pagination-controls {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-  font-size: 30px;
-}
-.pagination-controls span {
-  margin: 0 5px;
-  cursor: pointer;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
 }
 
-.pagination-controls .pagination-arrow {
-  font-weight: bold;
+.pagination-arrow {
+  cursor: pointer;
+  margin: 0 10px;
+}
+
+.pagination-page {
+  
+  cursor: pointer;
+  margin: 0 5px;
+  padding: 5px 10px;
+  border-radius: 20%;
+  background-color: #868383;
+  color: #f6f6f6;
+  transition: background-color 0.3s, color 0.3s;
+
+}
+
+.pagination-page.active-page {
+  background-color: rgb(223, 139, 139);
+  color: rgb(254, 254, 254);
+}
+
+.pagination-arrow .disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-arrow v-icon {
+  font-size: 20px;
+  vertical-align: middle;
 }
 
 </style>
