@@ -1,6 +1,6 @@
 <template>
 
-    <div>
+    <div style=" background-color: #1b1b1b; color:#ffffff;">
         <v-container v-if="isAuthenticated">
             <ReviewListComponent :isUserReviews="true" />
             <!-- <review-list :gameId="gameId" :isUserReviews="true" /> -->
@@ -13,12 +13,12 @@
             </v-row>
         </v-container>
     </div>
- </template>
-  
-  <script>
-  import ReviewListComponent from '@/components/ReviewListComponent.vue';
-  
-  export default {
+</template>
+
+<script>
+import ReviewListComponent from '@/components/ReviewListComponent.vue';
+
+export default {
 
     components: {
         ReviewListComponent,
@@ -31,7 +31,7 @@
         };
     },
     created() {
-      this.checkAuthStatus();
+        this.checkAuthStatus();
     },
     methods: {
 
@@ -44,7 +44,4 @@
 };
 </script>
 
-<style scoped>
-
-</style>
-  
+<style scoped></style>

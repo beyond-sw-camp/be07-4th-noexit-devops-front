@@ -1,7 +1,6 @@
 import MemberCreate from '@/views/member/MemberCreate.vue'
 import LoginPage from '@/views/member/LoginPage.vue'
 import MyPage from '@/views/member/MyPage.vue'
-import MemberReviewList from '@/views/member/MemberReviewList.vue'
 import WishList from '@/views/member/WishList.vue'
 import HomeComponent from '@/views/HomeComponent.vue'
 
@@ -21,11 +20,7 @@ export const memberRouter = [
         name: 'MyPage',
         component: MyPage
     },
-    {
-        path: '/review/myall',
-        name: 'MemberReviewList',
-        component: MemberReviewList
-    },
+    
     {
         path: '/wishList',
         name: 'WishList',

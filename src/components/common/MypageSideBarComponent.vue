@@ -1,8 +1,8 @@
 <template>
-    <v-col cols="12" md="3" style=" background-color: #1b1b1b; color:#ffffff;">
+    <v-col cols="12" md="3" class="fixed-column" style=" background-color: #1b1b1b; color:#ffffff;">
         <div class="gray-background">
             <v-row>
-                <v-col>
+                <v-col cols="12">
                     <v-row align="center">
                         <!-- <h1>회원 등급: {{ membershipGrade }}</h1> -->
                         <div>회원 등급</div>
@@ -27,43 +27,71 @@
             </v-row>
         </div>
 
-        <v-row class="button-container">
-            <v-col cols="12">
-                <v-btn :to="{ path: '/mypage' }" block class="custom-button" elevation="0" color="transparent" text>
-                    마이페이지
-                </v-btn>
-            </v-col>
-            <v-col cols="12">
-                <v-btn :to="{ path: '/reservation/list' }" block class="custom-button">예약 내역</v-btn>
-            </v-col>
-            <v-col cols="12">
-                <v-btn :to="{ path: '/review/myall' }" block class="custom-button">내가 쓴 후기</v-btn>
-            </v-col>
+        <v-row class="button-container" style=" background-color: #1b1b1b; color:#ffffff;">
+            <v-toolbar-title class="d-flex align-center">
+                <v-col class="link-col">
+                    <v-btn text :to="{ path: '/mypage' }" block :class="{ active: isActive('/mypage') }"
+                        class="link-btn">
+                        마이페이지
+                    </v-btn>
+                </v-col>
+                <v-col class="link-col">
+                    <v-btn text :to="{ path: '/reservation/list' }" block
+                        :class="{ active: isActive('/reservation/list') }" class="link-btn">예약 내역</v-btn>
+                </v-col>
+                <v-col class="link-col">
+                    <v-btn text :to="{ path: '/review/myall' }" block :class="{ active: isActive('/review/myall') }"
+                        class="link-btn">
+                        내가 쓴
+                        후기</v-btn>
+                </v-col>
+            </v-toolbar-title>
+
         </v-row>
     </v-col>
 </template>
 <script>
-export default {}
+export default {
+    methods: {
+        isActive(path) {
+            return this.$route.path === path;
+        },
+    }
+}
 </script>
 
-<style>
+<style scoped>
+.v-btn {
+    all: unset;
+    /* 모든 스타일 초기화 */
+}
+
 .gray-background {
     background-color: #565656;
-    padding: 20px;
+    padding: 30px 40px;
     color: white;
     margin-bottom: 30px;
 }
 
-.button-container {
-    margin-top: 10px;
+.v-toolbar-title {
+    width: 100%;
 }
 
-.custom-button {
-    border: none;
-    font-weight: 600;
+.link-btn {
     font-size: 20px;
-    margin-bottom: 5px;
-    text-transform: none;
-    padding: 0;
+    font-weight: 400;
+    position: relative;
+    color: white;
+}
+
+.link-btn:hover {
+    color: #919191;
+
+}
+
+.link-btn.active {
+    background-color: rgba(27, 27, 27, 100);
+    border-bottom: 1px solid red;
+
 }
 </style>
