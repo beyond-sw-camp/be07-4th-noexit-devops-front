@@ -1,10 +1,14 @@
 <template>
     <v-app-bar app class="px-4" style=" background-color: #1b1b1b; color:#ffffff;">
         <v-toolbar-title class="d-flex align-center title-style">
-            <v-btn text class="title-btn" :to="'/'">NoExit</v-btn>
+            <v-btn text class="title-btn" :to="{ path: '/' }" :class="{ active: isActive('/') }">NoExit</v-btn>
             <v-divider class="mx-3" vertical></v-divider>
-            <v-btn text v-if="userRole == 'USER'" class="link-btn" to="/board/list">Board</v-btn>
-            <v-btn text v-if="userRole == 'USER'" class="link-btn" to="/findboard">Escape-With-Me</v-btn>
+            <!-- <v-btn text v-if="userRole == 'USER'" class="link-btn" to="/board/list">Board</v-btn>
+            <v-btn text v-if="userRole == 'USER'" class="link-btn" to="/findboard">Escape-With-Me</v-btn> -->
+            <v-btn text class="link-btn" :to="{ path: '/board/list' }"
+                :class="{ active: isActive('/board/list') }">Board</v-btn>
+            <v-btn text class="link-btn" :to="{ path: '/findboard' }"
+                :class="{ active: isActive('/findboard') }">Escape-With-Me</v-btn>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon :to="isLogin ? '/mypage' : '/login'">
@@ -71,9 +75,12 @@ export default {
                 setTimeout(this.connectSSE, 3000); // 3초 후 재연결 시도
             };
         },
+        isActive(path) {
+            return this.$route.path === path;
+        },
         doLogout() {
             localStorage.clear();
-            window.location.reload();
+            this.$router.push("/")
         },
     },
     beforeUnmount() {
@@ -90,17 +97,11 @@ body {
 }
 
 .px-4 {
-
     padding: 10px 20px;
 }
 
 .title-style {
     font-weight: 700;
-}
-
-.title-style span {
-    font-weight: 900;
-    font-size: 24px;
 }
 
 .title-btn {
@@ -113,5 +114,32 @@ body {
     font-size: 20px;
     font-weight: 400;
     font-family: 'Nunito Sans', sans-serif;
+    position: relative;
+    color: white;
+}
+
+.link-btn:hover {
+    color: #919191;
+}
+
+.link-btn.active {
+    background-color: rgba(27, 27, 27, 100);
+}
+
+.title-btn.active {
+    background-color: rgba(27, 27, 27, 100);
+}
+
+.link-btn.active::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 2px;
+    color: #FF0066;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -5px;
+    background-color: #FF0066;
 }
 </style>
