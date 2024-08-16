@@ -14,9 +14,6 @@
         <v-btn icon :to="isLogin ? '/mypage' : '/login'">
             <v-icon>mdi-account</v-icon>
         </v-btn>
-        <v-btn icon :to="isLogin ? '/wishlist' : '/login'">
-            <v-icon>mdi-heart</v-icon>
-        </v-btn>
         <v-btn v-if="userRole == 'USER'" icon :to="isLogin ? '/' : '/login'">
             <v-icon>mdi-bell ({{ totalNotification }})</v-icon>
         </v-btn>
@@ -42,14 +39,15 @@ export default {
         if (token) {
             this.isLogin = true;
             this.userRole = localStorage.getItem("role");
+            this.connectSSE();
         }
         // this.connectSSE(); // SSE 연결 시도
     },
     methods: {
         connectSSE() {
             const token = localStorage.getItem("token");
-            const userRole = localStorage.getItem("role");
-            this.sse = new EventSourcePolyfill(`${process.env.VUE_APP_API_BASIC_URL}/notification/subscribe?role=${userRole}`, {
+            // const userRole = localStorage.getItem("role");
+            this.sse = new EventSourcePolyfill(`${process.env.VUE_APP_API_BASIC_URL}/subscribe`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -67,6 +65,11 @@ export default {
                 console.log(event.data);
                 this.totalNotification++;
             });
+
+            this.sse.addEventListener('COMMENT', (event) => {
+                console.log(event.data);
+                this.totalNotification++;
+            });
             console.log(this.totalNotification)
 
             this.sse.onerror = () => {
@@ -80,6 +83,7 @@ export default {
         },
         doLogout() {
             localStorage.clear();
+            this.isLogin = false;
             this.$router.push("/")
         },
     },
