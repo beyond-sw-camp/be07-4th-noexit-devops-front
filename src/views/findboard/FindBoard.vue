@@ -1,9 +1,10 @@
 <template>
   <v-container class="pa-4 d-flex justify-center">
-    
-    <v-row 
-    :style="{ color: 'white' }"
-    class="d-flex justify-center" style="max-width: 2000px">
+    <v-row
+      :style="{ color: 'white' }"
+      class="d-flex justify-center"
+      style="max-width: 2000px"
+    >
       <v-col>
         <v-form @submit.prevent="loadFindBoard">
           <v-row>
@@ -35,20 +36,20 @@
         </v-form>
       </v-col>
 
-
-
       <v-card
-      
-      :style="{ color: 'white' }"
+        :style="{ color: 'white' }"
         v-if="userRole == 'USER' && isLogin"
         class="pa-4"
         outlined
         rounded="lg"
-        style="width: 98%; max-width: 2000px; background-color: #1b1b1b; color:#ffffff;"
+        style="
+          width: 98%;
+          max-width: 2000px;
+          background-color: #1b1b1b;
+          color: #ffffff;
+        "
       >
-        <div
-          style=" background-color: #1b1b1b; color:#ffffff;"
-        >
+        <div style="background-color: #1b1b1b; color: #ffffff">
           <v-form ref="form" @submit.prevent="onSubmit">
             <v-text-field
               v-model="title"
@@ -144,21 +145,22 @@
 
       <br />
       <!-- 여기부터 글 시작 -->
-      <v-divider :thickness="3" color="gray"></v-divider> 
+      <v-divider :thickness="3" color="gray"></v-divider>
 
-      <v-row>
-        
+      <v-row
+      justify="center"
+      >
         <v-col
-        
           cols="6"
           v-for="f in findBoardList"
           :key="f.id"
           class="d-flex justify-center"
         >
           <v-card
-          :style="{ color: 'white' }"
+            :style="{ color: 'white' }"
             :class="{
-              'expired-card': getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',
+              'expired-card':
+                getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',
             }"
             variant="outlined"
             class="pa-4 d-flex align-center"
@@ -189,10 +191,12 @@
                   </div>
                   <br />
                 </div>
-      
+
                 <div class="ml-auto text-right">
                   <div>
-                    <strong>작성 시각: {{ formatDateTime(f.createdTime) }}</strong>
+                    <strong
+                      >작성 시각: {{ formatDateTime(f.createdTime) }}</strong
+                    >
                   </div>
                   <div
                     class="text-right"
@@ -211,14 +215,20 @@
                     height="50"
                     color="pink"
                     class="mt-2"
-                    :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
+                    :disabled="
+                      getTimeDifferenceInMinutes(f.expirationTime) <= 0
+                    "
                     @click="participateInFindBoard(f.id)"
                     >PARTICPATE</v-btn
                   >
                 </div>
               </div>
-              <div class="text-right mt-2">모집 인원 : {{ f.totalCapacity }}</div>
-              <div class="text-right mt-2">현재 인원 : {{ f.currentCount }}</div>
+              <div class="text-right mt-2">
+                모집 인원 : {{ f.totalCapacity }}
+              </div>
+              <div class="text-right mt-2">
+                현재 인원 : {{ f.currentCount }}
+              </div>
               <br />
               <div
                 v-if="getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'"
@@ -232,23 +242,53 @@
               <div v-else style="text-align: right">
                 <em>FINISH</em>
               </div>
-      
-              <div v-if="f.isAuthor" >
+
+              <div v-if="f.isAuthor">
                 <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
                 <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
               </div>
-
             </v-col>
           </v-card>
         </v-col>
+        
+        <!-- 페이징 -->
+        <div 
+        class="pagination-controls text-center"
+      >
+        <span
+          class="pagination-arrow"
+          @click="prevPageRange"
+          :class="{ 'disabled': currentPageRangeStart <= 1 }"
+        >
+          <v-icon small>{{ currentPageRangeStart <= 1 ? 'mdi-menu-left' : 'mdi-chevron-left' }}</v-icon>
+        </span>
+    
+        <span
+          v-for="page in visiblePages"
+          :key="page"
+          @click="setPage(page)"
+          :class="{ 'active-page': currentPage === page }"
+          class="pagination-page"
+        >
+          {{ page }}
+        </span>
+    
+        <span
+          class="pagination-arrow"
+          @click="nextPageRange"
+          :class="{ 'disabled': currentPageRangeEnd >= totalPages }"
+        >
+          <v-icon small>{{ currentPageRangeEnd >= totalPages ? 'mdi-menu-right' : 'mdi-chevron-right' }}</v-icon>
+        </span>
+      </div>
+
       </v-row>
     </v-row>
-      
-    
 
     <div v-if="loading" class="text-center my-4">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
+
     <v-dialog v-model="isUpdateModalOpen" max-width="600px">
       <v-card>
         <v-card-title>
@@ -310,6 +350,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+  
   </v-container>
 </template>
 
@@ -326,12 +367,11 @@ export default {
         { text: "내용", value: "contents" },
       ],
 
-
       // 권한
       isAuthor: false,
-      isLogin:false,
+      isLogin: false,
       userRole: null,
-      // 
+      //
 
       searchValue: "",
       title: "",
@@ -352,54 +392,80 @@ export default {
       updateDate: "",
       updateTime: "",
       updateTotalCapacity: "",
+
+      // 페이징 데이터
+      pageSize: 6,
+      currentPage: 1,
+      totalPages: 1,
+      currentPageRangeStart: 1,
+      currentPageRangeEnd: 5,
+      pagesPerRange: 5,
+
     };
   },
   mounted() {
-  const now = new Date();
-  // 현지 날짜를 YYYY-MM-DD 형식으로 변환
-  this.date = now.toLocaleDateString('en-CA'); // 'en-CA'는 'YYYY-MM-DD' 형식을 반환합니다.
-  // 현지 시간 설정
-  this.time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    const now = new Date();
+    // 현지 날짜를 YYYY-MM-DD 형식으로 변환
+    this.date = now.toLocaleDateString("en-CA"); // 'en-CA'는 'YYYY-MM-DD' 형식을 반환합니다.
+    // 현지 시간 설정
+    this.time = `${now.getHours().toString().padStart(2, "0")}:${now
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
 
-  const userRole = localStorage.getItem('role');
-  if (userRole === 'USER') {
-    this.isUser = true;
-  }
-},
+    const userRole = localStorage.getItem("role");
+    if (userRole === "USER") {
+      this.isUser = true;
+    }
+  },
+  computed: {
+    visiblePages() {
+      const pages = [];
+      for (
+        let i = this.currentPageRangeStart;
+        i <= this.currentPageRangeEnd;
+        i++
+      ) {
+        if (i <= this.totalPages) pages.push(i);
+      }
+      return pages;
+    },
+  },
 
   created() {
-    const token = localStorage.getItem("token")
-        if(token){
-            this.isLogin = true
-            this.userRole = localStorage.getItem("role")
-        }
-        
+    const token = localStorage.getItem("token");
+    if (token) {
+      this.isLogin = true;
+      this.userRole = localStorage.getItem("role");
+    }
+
     this.loadFindBoard();
     this.checkAuthor();
   },
   methods: {
+    // 권한
+    async checkAuthor() {
+      try {
+        const myInfo = await axios.get(
+          `${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`
+        );
+        const findboardInfo = await axios.get(
+          `${process.env.VUE_APP_API_BASIC_URL}/findboard/list`
+        );
 
-// 권한
-async checkAuthor() {
-  try {
-    const myInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`);
-    const findboardInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/findboard/list`);
-    
-    const myNickname = myInfo.data.result.nickname;
-    this.findBoardList = findboardInfo.data.result.content.map(item => {
-      return {
-        ...item,
-        isAuthor: item.writer === myNickname
-      };
-    });
-
-  } catch (e) {
-    console.log(e);
-  }
-},
+        const myNickname = myInfo.data.result.nickname;
+        this.findBoardList = findboardInfo.data.result.content.map((item) => {
+          return {
+            ...item,
+            isAuthor: item.writer === myNickname,
+          };
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    },
 
     // 권한
-
 
     getTimeDifferenceInMinutes(expirationTime) {
       const now = new Date();
@@ -454,9 +520,16 @@ async checkAuthor() {
     async loadFindBoard() {
       this.loading = true;
       try {
+
+        let params = {
+          size: this.pageSize,
+          page: this.currentPage - 1,
+          searchType: this.searchType,
+          searchValue: this.searchValue
+        };
+
         const response = await axios.get(
-          `http://localhost:8080/findboard/list`
-        );
+          `http://localhost:8080/findboard/list`, { params });
         console.log(response.data.result.content.writer);
         // 데이터 변환 부분 추가
         this.findBoardList = response.data.result.content.map((item) => {
@@ -465,6 +538,8 @@ async checkAuthor() {
             formattedExpirationTime: this.formatDateTime(item.expirationTime),
           };
         });
+
+        this.totalPages = Math.ceil(response.data.result.totalElements / this.pageSize);
       } catch (error) {
         console.error("Error loading findBoardList:", error);
       } finally {
@@ -504,6 +579,7 @@ async checkAuthor() {
         const updateExpirationDateTime = new Date(
           `${this.updateDate}T${this.updateTime}:00`
         ).toISOString();
+        
 
         const requestData = {
           title: this.updateTitle,
@@ -559,6 +635,24 @@ async checkAuthor() {
         }
       }
     },
+    setPage(page) {
+      this.currentPage = page;
+      this.loadFindBoard();
+    },
+    prevPageRange() {
+      if (this.currentPageRangeStart > 1) {
+        this.currentPageRangeStart = Math.max(1, this.currentPageRangeStart - this.pagesPerRange);
+        this.currentPageRangeEnd = Math.min(this.totalPages, this.currentPageRangeStart + this.pagesPerRange - 1);
+        this.setPage(this.currentPageRangeStart);
+      }
+    },
+    nextPageRange() {
+      if (this.currentPageRangeEnd < this.totalPages) {
+        this.currentPageRangeStart = Math.min(this.totalPages - this.pagesPerRange + 1, this.currentPageRangeStart + this.pagesPerRange);
+        this.currentPageRangeEnd = Math.min(this.totalPages, this.currentPageRangeStart + this.pagesPerRange - 1);
+        this.setPage(this.currentPageRangeStart);
+      }
+    }
   },
 };
 </script>
@@ -587,7 +681,45 @@ body,
 }
 /* 시간 마감 시 변경되는 색상 */
 .expired-card {
-  background-color: #f8d7da; /* 연한 빨간색 배경 */
+  background-color: #585252; /* 연한 빨간색 배경 */
   color: #721c24; /* 진한 빨간색 텍스트 */
 }
+.pagination-controls {
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pagination-arrow {
+  cursor: pointer;
+  margin: 0 10px;
+}
+
+.pagination-page {
+  
+  cursor: pointer;
+  margin: 0 5px;
+  padding: 5px 10px;
+  border-radius: 20%;
+  background-color: #868383;
+  color: #f6f6f6;
+  transition: background-color 0.3s, color 0.3s;
+
+}
+
+.pagination-page.active-page {
+  background-color: rgb(223, 139, 139);
+  color: rgb(254, 254, 254);
+}
+
+.pagination-arrow .disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-arrow v-icon {
+  font-size: 20px;
+  vertical-align: middle;
+}
+
 </style>

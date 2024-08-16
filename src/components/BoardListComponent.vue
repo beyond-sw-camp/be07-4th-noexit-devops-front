@@ -70,6 +70,7 @@
                 </tr>
               </tbody>
             </v-table>
+
             <div class="pagination-controls">
               <span
                 class="pagination-arrow"
@@ -94,6 +95,7 @@
                 다음 »
               </span>
             </div>
+            
           </v-card-text>
         </v-card>
       </v-col>
@@ -154,8 +156,10 @@ export default {
           searchValue: this.searchValue
         };
         const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/board/list`, { params });
+      
         this.boardList = response.data.result.content;
         this.totalPages = Math.ceil(response.data.result.totalElements / this.pageSize);
+      
       } catch (e) {
         console.log(e);
       } finally {
