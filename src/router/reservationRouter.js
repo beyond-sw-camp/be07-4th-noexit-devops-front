@@ -5,7 +5,7 @@ import MemberReservationList from '@/views/member/MemberReservationList.vue';
 import ReservationDetail from '@/views/reservation/ReservationDetail.vue';
 import StoreReservationList from '@/views/reservation/StoreReservationList.vue';
 import ReservationList from '@/views/reservation/ReservationList.vue'
-// import ResList from '@/views/ResView.vue';
+import ResList from '@/views/reservation/ResView.vue';
 
 
 export const reservationRouter = [
