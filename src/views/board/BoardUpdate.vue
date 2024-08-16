@@ -15,15 +15,14 @@
             </v-col>
             <v-col>
               <v-text-field
-                v-model="titleValue" required
-                label="제목을 입력해주세요."
+                v-model="editedTitle" required
                 style="width: 850px"
               >
               </v-text-field>
             </v-col>
             <v-col cols="auto">
-              <v-btn color="pink" @click="createBoard"
-                >등록하기</v-btn
+              <v-btn color="pink" @click="updateBoard"
+                >수정하기</v-btn
               >
             </v-col>
           </v-row>
@@ -39,8 +38,7 @@
     @change="fileUpdate">
         </v-file-input>
         <v-text-field
-          v-model="contentValue" required
-          label="내용을 입력해주세요."
+          v-model="editedContents"
           style="width: 1200px; height: 700px"
         >
         </v-text-field>
@@ -53,6 +51,7 @@
 import axios from "axios";
 
 export default {
+    props: ["id"],
   data() {
     return {
       titleValue: "",
@@ -68,7 +67,7 @@ export default {
     };
   },
   methods: {
-    async createBoard() {
+    async updateBoard() {
       try {
         if (this.category == "FREE") {
           this.boardType = "FREE";
