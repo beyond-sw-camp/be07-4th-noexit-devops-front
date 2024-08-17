@@ -118,7 +118,7 @@
           const requestData = {
             title: this.updateTitle,
             contents: this.updateContents,
-            expirationTime: updateExpirationDateTime.toISOString(), // 변수명 수정: expirationTime
+            expirationDate: updateExpirationDateTime.toISOString(), // 변수명 수정: expirationTime
             totalCapacity: this.updateTotalCapacity,
           };
   
