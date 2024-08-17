@@ -47,9 +47,24 @@
           </v-row>
         </v-form>
       </v-col>
+
+      
+
+      <!-- 마감 임박 게시글 섹션 -->
+      <v-col cols="12">
+        <h1
+        :style="{
+          color: 'black',
+          fontSize: '3rem', /* 글자 크기 조정 */
+          fontWeight: 'bold', /* 글자 굵기 조정 */
+        }"
+      >
+        마감 임박 With ME!
+      </h1>
+        <ImminentClosingBoards />
+      </v-col>
+      
       <br />
-      <!-- 여기부터 글 시작 -->
-      <v-divider :thickness="3" color="gray"></v-divider>
 
       <v-row justify="center">
         <v-col
@@ -59,16 +74,26 @@
           class="d-flex justify-center"
         >
           <v-card
-            :style="{ color: 'white' }"
-            :class="{
-              'expired-card':
-                getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',
-            }"
+          :style="{
+            color: 'white',
+            backgroundColor: 'black',
+            boxShadow: '0px 8px 24px rgba(247, 4, 4, 0.8)', 
+            border: '0px solid rgb(6, 6, 6)',
+            marginTop: '15px',
+            marginLeft: '0px',
+            marginRight: '0px',
+            padding: '10px',
+            height: '500px',
+            width: '98%',
+            maxWidth: '2000px'
+          }"
+            :class="{'expired-card':getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',}"
             variant="outlined"
             class="pa-4 d-flex align-center"
             outlined
-            style="width: 100%; max-width: 2000px"
+            style="width: 98%; max-width: 2000px"
             rounded="lg"
+            
           >
             <v-col cols="4">
               <v-img
@@ -207,11 +232,13 @@
 import axios from "axios";
 import CreateFindBoardModal from "./CreateFindBoardModal.vue";
 import UpdateFindBoardModal from "./UpdateFindBoardModal.vue"; // Update 모달 컴포넌트 추가
+import ImminentClosingBoards from './ImminentClosingBoards.vue'; // 새로 추가된 컴포넌트
 
 export default {
   components: {
     CreateFindBoardModal,
     UpdateFindBoardModal, // Update 모달 컴포넌트 등록
+    ImminentClosingBoards, // 새로 추가된 컴포넌트 등록
   },
   data() {
     return {
@@ -378,29 +405,38 @@ export default {
         console.error("삭제 실패:", error);
       }
     },
-    async participateInFindBoard(id) {
-      try {
-        const response = await axios.put(
-          `http://localhost:8080/findboard/participate/${id}`
-        );
+    async participateInFindBoard(findBoardId) {
+  try {
+    // 참가 목록 가져오기
+    const response = await axios.get('http://localhost:8080/attendance/list');
 
-        if (response.data.status_code === 200) {
-          alert("참여 완료");
-          this.loadFindBoard(); // 업데이트된 데이터를 다시 로드
-        } else {
-          alert("새로고침 후 다시 시도해주세요");
-        }
-      } catch (error) {
-        if (error.response && error.response.status === 400) {
-          alert("자신의 글에는 참가 신청을 할 수 없습니다.");
-        } else if (error.response && error.response.status === 404) {
-          alert("게시글이 존재하지 않거나 삭제된 게시글입니다.");
-        } else {
-          console.error("참가 요청 실패:", error);
-          alert("참가 요청에 실패했습니다.");
-        }
-      }
-    },
+    const attendances = response.data.result;
+
+    // 참가 여부 확인
+    // 현재 사용자의 memberId를 확인하는 대신, 단순히 참가 여부를 확인
+    const alreadyParticipated = attendances.some(attendance => 
+      attendance.findBoardId === findBoardId
+    );
+
+    if (alreadyParticipated) {
+      alert("이미 이 게시글에 참가했습니다.");
+      return;
+    }
+
+    // 참가 처리
+    const participateResponse = await axios.put(`http://localhost:8080/findboard/participate/${findBoardId}`);
+
+    if (participateResponse.data.status_code === 200) {
+      alert("참여 완료");
+      this.loadFindBoard(); // 업데이트된 데이터를 다시 로드
+    } else {
+      alert("새로고침 후 다시 시도해주세요");
+    }
+  } catch (error) {
+    console.error("참가 요청 실패:", error);
+    alert("자신의 게시글에는 참여할 수 없습니다.");
+  }
+},
     setPage(page) {
       this.currentPage = page;
       this.loadFindBoard();
@@ -454,8 +490,7 @@ body,
 }
 
 .v-card {
-  margin-bottom: 16px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+
 }
 
 /* 시간 마감 시 변경되는 색상 */
