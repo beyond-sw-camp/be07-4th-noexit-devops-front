@@ -5,8 +5,6 @@
       class="d-flex justify-center"
       style="max-width: 2000px"
     >
-
-
       <v-col>
         <v-form @submit.prevent="loadFindBoard">
           <v-row>
@@ -27,20 +25,23 @@
             </v-col>
             <v-col cols="auto">
               <v-col cols="auto">
-                
                 <v-row>
-                  <v-btn height="55" type="submit" color="pink" >검색</v-btn>
+                  <v-btn height="55" type="submit" color="pink">검색</v-btn>
                   <v-spacer></v-spacer>
-                  <v-btn 
-                  height="55" 
-                  color="pink" 
-                  style="margin-left: 13px;"
-                  @click="openCreateModal"
-                  v-if="userRole == 'USER' && isLogin"
-                  >작성하기</v-btn>
+                  <v-btn
+                    height="55"
+                    color="pink"
+                    style="margin-left: 13px"
+                    @click="openCreateModal"
+                    v-if="userRole == 'USER' && isLogin"
+                    >작성하기</v-btn
+                  >
                 </v-row>
 
-                <CreateFindBoardModal :isOpen="isCreateModalOpen" @close="closeCreateModal" />
+                <CreateFindBoardModal
+                  :isOpen="isCreateModalOpen"
+                  @close="closeCreateModal"
+                />
               </v-col>
             </v-col>
           </v-row>
@@ -108,7 +109,7 @@
                       font-size: 18px;
                     "
                   >
-                    글쓴이 : {{ f.writer }}
+                    작성자 : {{ f.writer }}
                   </div>
                   <br />
                   <v-btn
@@ -146,7 +147,14 @@
 
               <div v-if="f.isAuthor">
                 <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
-                <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
+                <v-btn style="margin-left: 11px" @click="openUpdateModal(f)">수정하기</v-btn>
+                <UpdateFindBoardModal
+                  :isOpen="isUpdateModalOpen"
+                  :findBoard="selectedFindBoard"
+                  @close="closeUpdateModal"
+                  @updated="loadFindBoard"
+                />
+                <!-- Update모달 -->
               </div>
             </v-col>
           </v-card>
@@ -192,21 +200,13 @@
     <div v-if="loading" class="text-center my-4">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
-
-    <!-- Update 모달 컴포넌트 사용 -->
-    <UpdateFindBoardModal
-      :isOpen="isUpdateModalOpen"
-      :findBoard="selectedFindBoard"
-      @close="closeUpdateModal"
-      @updated="loadFindBoard"
-    />
   </v-container>
 </template>
 
 <script>
 import axios from "axios";
-import CreateFindBoardModal from './CreateFindBoardModal.vue';
-import UpdateFindBoardModal from './UpdateFindBoardModal.vue'; // Update 모달 컴포넌트 추가
+import CreateFindBoardModal from "./CreateFindBoardModal.vue";
+import UpdateFindBoardModal from "./UpdateFindBoardModal.vue"; // Update 모달 컴포넌트 추가
 
 export default {
   components: {
@@ -215,19 +215,21 @@ export default {
   },
   data() {
     return {
-      isCreateModalOpen: false,
-      isUpdateModalOpen: false, // Update 모달 상태 추가
-      selectedFindBoard: null, // 선택된 게시글 저장
+      searchValue: "",
       searchType: "optional",
       searchOptions: [
         { text: "선택", value: "optional" },
         { text: "제목", value: "title" },
         { text: "내용", value: "contents" },
       ],
-      searchValue: "",
-      findBoardList: [],
+
+      isCreateModalOpen: false,
+      isUpdateModalOpen: false,
+      selectedFindBoard: null,
       loading: true,
-      // 페이징 데이터
+
+      findBoardList: [],
+
       pageSize: 6,
       currentPage: 1,
       totalPages: 1,
@@ -434,7 +436,6 @@ export default {
 };
 </script>
 
-
 <style>
 @import url("https://webfontworld.github.io/gmarket/GmarketSans.css");
 
@@ -457,11 +458,13 @@ body,
   margin-bottom: 16px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 }
+
 /* 시간 마감 시 변경되는 색상 */
 .expired-card {
   background-color: #dbaaaa; /* 연한 빨간색 배경 */
   color: #d9979d; /* 진한 빨간색 텍스트 */
 }
+
 .pagination-controls {
   text-align: center;
   display: inline-flex;
@@ -488,7 +491,7 @@ body,
   color: rgb(254, 254, 254);
 }
 
-.pagination-arrow .disabled {
+.pagination-arrow.disabled {
   color: #ccc;
   cursor: not-allowed;
 }
@@ -497,6 +500,4 @@ body,
   font-size: 20px;
   vertical-align: middle;
 }
-
-
 </style>

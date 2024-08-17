@@ -128,7 +128,10 @@
           alert("업데이트 완료");
           this.closeModal();
           this.$emit('updated');
+  
+          // 페이지 전환 후, 데이터를 다시 로드하여 권한 상태를 반영
           window.location.reload();
+          
         } catch (error) {
           console.error("업데이트 실패:", error);
           alert("업데이트 실패");
