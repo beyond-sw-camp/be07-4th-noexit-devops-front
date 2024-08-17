@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-row justify="center">
+        <v-row justify="center" align="center">
             <v-col v-for="game in games" :key="game.name" sm="2" md="2">
                 <v-hover v-slot:default="{ isHovering, props }">
                     <v-card v-bind="props" @click="moveToDetail(game.id)" class="hover-card custom-padding-card"

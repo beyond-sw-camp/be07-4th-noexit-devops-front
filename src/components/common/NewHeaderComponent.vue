@@ -4,17 +4,19 @@
             <v-btn text class="title-btn" :to="{ path: '/' }" :class="{ active: isActive('/') }">NoExit</v-btn>
             <v-divider class="mx-3" vertical></v-divider>
             <v-btn v-if="userRole === 'USER'" text class="link-btn" :to="{ path: '/board/list' }"
-                :class="{ active: isActive('/board/list') }">Board</v-btn>
+                :class="{ active: isActive('/board/list') }" style="font-weight:300">Board</v-btn>
             <v-btn v-if="userRole === 'USER'" text class="link-btn" :to="{ path: '/findboard' }"
-                :class="{ active: isActive('/findboard') }">Escape-With-Me</v-btn>
-            <v-btn text class="link-btn" :to="{ path: '/' }"
-                :class="{ active: isActive('/board/list') }">Ranking</v-btn>
+                :class="{ active: isActive('/findboard') }" style="font-weight:300">Escape-With-Me</v-btn>
+            <v-btn text class="link-btn" :to="{ path: '/' }" :class="{ active: isActive('/board/list') }"
+                style="font-weight:300">Ranking</v-btn>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon :to="isLogin ? '/mypage' : '/login'">
             <v-icon>mdi-account</v-icon>
         </v-btn>
-
+        <v-btn>
+            <v-icon size="27px">mdi-message-reply-text-outline</v-icon>
+        </v-btn>
 
         <!-- 알림 기능 -->
         <v-btn icon>
@@ -26,7 +28,7 @@
             <v-menu activator="parent" offset-y>
                 <v-list-item>
                     <v-list-item-content>
-                        <v-list-item-title class="notification-title">
+                        <v-list-item-title class="mdi-notification-title">
                             알림
                         </v-list-item-title>
                     </v-list-item-content>
