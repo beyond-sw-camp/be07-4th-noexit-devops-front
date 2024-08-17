@@ -100,46 +100,55 @@
       },
       populateFields() {
         if (this.findBoard) {
-          this.updateTitle = this.findBoard.title;
-          this.updateContents = this.findBoard.contents;
-          // 'expirationTime'을 사용하여 날짜와 시간 설정
-          const expirationDateTime = new Date(this.findBoard.expirationTime);
-          this.updateDate = expirationDateTime.toISOString().substr(0, 10);
-          this.updateTime = expirationDateTime.toISOString().substr(11, 5);
-          this.updateTotalCapacity = this.findBoard.totalCapacity;
-        }
+      this.updateTitle = this.findBoard.title;
+      this.updateContents = this.findBoard.contents;
+      
+      // 서버에서 받은 UTC 시간을 로컬 시간으로 변환
+      const expirationDateTime = new Date(this.findBoard.expirationTime);
+      
+      // 9시간 추가 (시간대 보정)
+      expirationDateTime.setHours(expirationDateTime.getHours() + 9);
+      
+      // ISO 문자열로 변환 후 날짜와 시간 분리
+      this.updateDate = expirationDateTime.toISOString().substr(0, 10);
+      this.updateTime = expirationDateTime.toISOString().substr(11, 5);
+      
+      this.updateTotalCapacity = this.findBoard.totalCapacity;
+    }
       },
       async updateFindBoard() {
-        try {
-          const updateExpirationDateTime = new Date(
-            `${this.updateDate}T${this.updateTime}:00`
-          );
-  
-          const requestData = {
-            title: this.updateTitle,
-            contents: this.updateContents,
-            expirationDate: updateExpirationDateTime.toISOString(), // 변수명 수정: expirationTime
-            totalCapacity: this.updateTotalCapacity,
-          };
-  
-          const response = await axios.put(
-            `http://localhost:8080/findboard/update/${this.findBoard.id}`,
-            requestData
-          );
-          console.log("업데이트 완료:", response.data);
-          alert("업데이트 완료");
-          this.closeModal();
-          this.$emit('updated');
-  
-          // 페이지 전환 후, 데이터를 다시 로드하여 권한 상태를 반영
-          window.location.reload();
-          
-        } catch (error) {
-          console.error("업데이트 실패:", error);
-          alert("업데이트 실패");
-        }
-      },
+  try {
+    // 사용자가 입력한 날짜와 시간으로부터 Date 객체 생성
+    const updateExpirationDateTime = new Date(`${this.updateDate}T${this.updateTime}:00`);
+    
+    // 입력된 시간에 9시간을 추가 (로컬 시간이므로, 서버에 저장할 때는 UTC로 변환됨)
+    updateExpirationDateTime.setHours(updateExpirationDateTime.getHours() + 9);
+
+    const requestData = {
+      title: this.updateTitle,
+      contents: this.updateContents,
+      expirationDate: updateExpirationDateTime.toISOString(), // 서버에 전송할 데이터
+      totalCapacity: this.updateTotalCapacity,
+    };
+
+    const response = await axios.put(
+      `http://localhost:8080/findboard/update/${this.findBoard.id}`,
+      requestData
+    );
+    console.log("업데이트 완료:", response.data);
+    alert("업데이트 완료");
+    this.closeModal();
+    this.$emit('updated');
+
+    // 페이지 전환 후, 데이터를 다시 로드하여 권한 상태를 반영
+    window.location.reload();
+    
+  } catch (error) {
+    console.error("업데이트 실패:", error);
+    alert("업데이트 실패");
+  }
+},
     },
   };
   </script>
-  
+  <!-- 수정 시작전 -->

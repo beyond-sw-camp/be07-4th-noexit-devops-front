@@ -134,6 +134,7 @@ export default {
           let expirationDateTime = new Date(`${this.date}T${this.time}`);
           expirationDateTime.setHours(expirationDateTime.getHours() + 9);
           expirationDateTime = expirationDateTime.toISOString();
+          
           const requestData = {
             title: this.selectedStoreName, // 프론트에서는 가게 이름이지만 서버는 title이므로 수정 안하겟음.
             contents: this.contents,
