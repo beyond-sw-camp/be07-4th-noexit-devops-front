@@ -37,14 +37,17 @@ export default {
         try {
             const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
             const best = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
-            const wishlist = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`);
+
+            const token = localStorage.getItem('token');
+            if (token) {
+                const wishlist = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`);
+                this.wishList = wishlist.data.result;
+                if (this.wishList.length > 0) this.isWishList = true;
+            }
 
 
             this.gameList = response.data.result;
             this.bestList = best.data.result.slice(0, 5);   // 최고 5개만 추출
-            this.wishList = wishlist.data.result;
-            if (this.wishList.length > 0) this.isWishList = true;
-            console.log(this.gameList)
         } catch (e) {
             console.error("정보가 존재하지 않습니다", e);
         }
