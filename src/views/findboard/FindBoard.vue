@@ -302,10 +302,12 @@ export default {
       }
     },
     getTimeDifferenceInMinutes(expirationTime) {
+      
       const now = new Date();
       const expiration = new Date(expirationTime);
       const differenceInMs = expiration - now; // 차이를 밀리초 단위로 계산
       const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60); // 분 단위로 변환
+      
       if (differenceInMinutes > 30) {
         // 30분 이상 남았으면 날짜만 반환
         return expirationTime.substring(0, 10); // YYYY-MM-DD 형식 반환
@@ -331,10 +333,7 @@ export default {
           searchValue: this.searchValue,
         };
 
-        const response = await axios.get(
-          `http://localhost:8080/findboard/list`,
-          { params }
-        );
+        const response = await axios.get(`http://localhost:8080/findboard/list`,{ params });
 
         this.findBoardList = response.data.result.content.map((item) => {
           return {

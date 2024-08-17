@@ -1,6 +1,12 @@
 <template>
   <v-dialog v-model="localIsOpen" max-width="1100px">
-    <v-card class="black white--text" style="border: 2px solid white; font-family: 'GmarketSansMedium', sans-serif;">
+    <v-card
+      class="black white--text"
+      style="
+        border: 2px solid white;
+        font-family: 'GmarketSansMedium', sans-serif;
+      "
+    >
       <v-toolbar color="pink" dark flat>
         <v-btn icon @click="closeModal">
           <v-icon>mdi-arrow-left</v-icon>
@@ -21,9 +27,10 @@
             @click="openStoreSelectModal"
             class="mb-4"
           >
-            {{ selectedStoreName || '가게 선택하기' }}
+            {{ selectedStoreName || "가게 선택하기" }}
           </v-btn>
 
+          <!-- 라벨 때문에 글자 안 보여서 없애버림 -->
           <v-textarea
             v-model="contents"
             :rules="[(v) => !!v || '내용을 입력하세요.']"
@@ -67,9 +74,11 @@
         <v-btn
           color="pink"
           @click="registerFindBoard"
-          :disabled="!selectedStoreName || !contents || !totalCapacity || !time || !date"
-        >작성하기
-      </v-btn>
+          :disabled="
+            !selectedStoreName || !contents || !totalCapacity || !time || !date
+          "
+          >작성하기
+        </v-btn>
       </v-card-actions>
     </v-card>
 
@@ -98,7 +107,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   props: {
@@ -122,11 +131,11 @@ export default {
   watch: {
     isOpen(newVal) {
       this.localIsOpen = newVal;
-    }
+    },
   },
   methods: {
     closeModal() {
-      this.$emit('close');
+      this.$emit("close");
     },
     async registerFindBoard() {
       if (this.$refs.createForm.validate()) {
@@ -134,7 +143,7 @@ export default {
           let expirationDateTime = new Date(`${this.date}T${this.time}`);
           expirationDateTime.setHours(expirationDateTime.getHours() + 9);
           expirationDateTime = expirationDateTime.toISOString();
-          
+
           const requestData = {
             title: this.selectedStoreName, // 프론트에서는 가게 이름이지만 서버는 title이므로 수정 안하겟음.
             contents: this.contents,
@@ -142,7 +151,10 @@ export default {
             totalCapacity: this.totalCapacity,
           };
 
-          await axios.post(`http://localhost:8080/findboard/create`, requestData);
+          await axios.post(
+            `http://localhost:8080/findboard/create`,
+            requestData
+          );
 
           alert("작성 완료");
           this.closeModal();
@@ -157,7 +169,7 @@ export default {
     },
     async fetchStores() {
       try {
-        const response = await axios.get('http://localhost:8080/store/list');
+        const response = await axios.get("http://localhost:8080/store/list");
         this.stores = response.data.result;
       } catch (error) {
         console.error("Error fetching stores:", error);
@@ -191,7 +203,7 @@ export default {
 @import url("https://webfontworld.github.io/gmarket/GmarketSans.css");
 
 .v-card {
-  font-family: 'GmarketSansMedium', sans-serif;
+  font-family: "GmarketSansMedium", sans-serif;
   font-weight: 1000;
 }
 </style>
