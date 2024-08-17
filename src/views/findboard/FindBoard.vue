@@ -5,6 +5,8 @@
       class="d-flex justify-center"
       style="max-width: 2000px"
     >
+    <v-btn color="pink" @click="openCreateModal">작성하기</v-btn>
+    <CreateFindBoardModal :isOpen="isCreateModalOpen" @close="closeCreateModal" />
       <v-col>
         <v-form @submit.prevent="loadFindBoard">
           <v-row>
@@ -35,121 +37,6 @@
           </v-row>
         </v-form>
       </v-col>
-
-      <v-card
-        :style="{ color: 'white' }"
-        v-if="userRole == 'USER' && isLogin"
-        class="pa-4"
-        outlined
-        rounded="lg"
-        style="
-          width: 98%;
-          max-width: 2000px;
-          background-color: #1b1b1b;
-          color: #ffffff;
-        "
-      >
-        <div style="background-color: #1b1b1b; color: #ffffff">
-          <v-form 
-          ref="form" @submit.prevent="onSubmit"
-          style="background-color:  black;"
-          >
-            <v-text-field
-              v-model="title"
-              :rules="[(v) => !!v || '제목을 입력하세요.']"
-              hide-details="auto"
-              label="제목"
-              outlined
-              class="mb-4"
-              required
-            ></v-text-field>
-            <v-textarea
-              v-model="contents"
-              :rules="[(v) => !!v || '내용을 입력하세요.']"
-              label="내용"
-              outlined
-              rows="4"
-              class="mb-4"
-              required
-            ></v-textarea>
-            <v-card 
-            flat class="pa-4" style="background-color: black">
-              <v-row >
-                <v-col cols="4" >
-                  <label
-
-                  for="date"
-                  >날짜 선택<br /></label>
-                  <input
-                    type="date"
-                    id="date"
-                    v-model="date"
-                    class="mt-2"
-                    style="
-                      width: 100%;
-                      max-width: 300px;
-                      padding: 8px;
-                      border-radius: 4px;
-                      border: 1px solid #ccc;
-                    "
-                    required
-                  />
-                </v-col>
-                <v-col cols="4">
-                  <label for="time">마감 시한<br /></label>
-                  <input
-                    type="time"
-                    id="time"
-                    v-model="time"
-                    class="mt-2"
-                    style="
-                      width: 100%;
-                      max-width: 300px;
-                      padding: 8px;
-                      border-radius: 4px;
-                      border: 1px solid #ccc;
-                    "
-                    required
-                  />
-                </v-col>
-                <v-col cols="3">
-                  <v-select
-                    v-model="totalCapacity"
-                    :rules="[(v) => !!v || '희망 인원을 선택하세요.']"
-                    :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                    label="희망 인원"
-                    outlined
-                    shaped
-                    elevation="3"
-                    prepend-icon="mdi-account"
-                    style="
-                      border-radius: 8px;
-                      padding: 0 8px;
-                      height: 2px;
-                      padding: 25px;
-                    "
-                    required
-                  ></v-select>
-                </v-col>
-              </v-row>
-            </v-card>
-            <div class="d-flex justify-center">
-              <v-btn
-                width="150"
-                height="50"
-                color="pink"
-                type="submit"
-                :disabled="
-                  !title || !contents || !totalCapacity || !time || !date
-                "
-                variant="elevated"
-                >SUBMIT</v-btn
-              >
-            </div>
-          </v-form>
-        </div>
-      </v-card>
-
       <br />
       <!-- 여기부터 글 시작 -->
       <v-divider :thickness="3" color="gray"></v-divider>
@@ -356,6 +243,7 @@
             ></v-select>
           </v-form>
         </v-card-text>
+        
         <v-card-actions>
           <v-btn color="primary" text @click="closeUpdateModal">취소</v-btn>
           <v-btn color="pink" @click="updateFindBoard">수정하기</v-btn>
@@ -367,10 +255,16 @@
 
 <script>
 import axios from "axios";
+import CreateFindBoardModal from './CreateFindBoardModal.vue';
 
 export default {
+  components: {
+    CreateFindBoardModal,
+  },
   data() {
     return {
+      isCreateModalOpen: false,
+
       searchType: "optional",
       searchOptions: [
         { text: "선택", value: "optional" },
@@ -455,6 +349,14 @@ export default {
     this.checkAuthor();
   },
   methods: {
+
+    openCreateModal() {
+    this.isCreateModalOpen = true;
+  },
+  closeCreateModal() {
+    this.isCreateModalOpen = false;
+  },
+
     // 권한
     async checkAuthor() {
       try {
