@@ -1,34 +1,35 @@
-import RoomList from '@/views/chat/RoomList.vue';
-import ChatRoom from '@/views/chat/ChatRoom.vue';
-import CreateRoom from '@/views/chat/CreateRoom.vue';
-import ChatFinal from '@/views/ChatFinal.vue';
-import ChatIn from '@/views/ChatIn.vue';
+import RoomList from '@/components/RoomList.vue';
+import ChatRoom from '@/components/ChatRoom.vue';
+// import ChatFinal from '@/views/chat/ChatFinal.vue';
+// import ChatIn from '@/views/chat/ChatIn.vue';
 
 export const chatRouter = [
   {
-    path: '/chat/',
+    path: '/chat/cre',
     name: 'RoomList',
     component: RoomList
   },
+
   {
-    path: '/chat/create',
-    name: 'CreateRoom',
-    component: CreateRoom
-  },
-  {
-    path: '/chat/room/:id',
+    path: '/chat/room/:roomId',
     name: 'ChatRoom',
     component: ChatRoom,
+    props: true
   },
-  {
-    path: '/chat/check',
-    name: 'ChatFinal',
-    component: ChatFinal
-  },
-  {
-    path: '/chat/create',
-    name: 'ChatIn',
-    component: ChatIn
-  }
+  // {
+  //   path: '/chat/create',
+  //   name: 'CreateRoom',
+  //   component: CreateRoom
+  // },
+  // {
+  //   path: '/chat/check',
+  //   name: 'ChatFinal',
+  //   component: ChatFinal
+  // },
+  // {
+  //   path: '/chat/create',
+  //   name: 'ChatIn',
+  //   component: ChatIn
+  // }
 ];
 

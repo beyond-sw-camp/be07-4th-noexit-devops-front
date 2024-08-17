@@ -1,135 +1,107 @@
-<template>
-    <div class="chat-room-container">
-      <h2>Chat Room: {{ roomName }}</h2>
-      <div class="chat-box">
-        <div v-for="message in messages" :key="message.id" class="chat-message">
-          <strong>{{ message.sender }}:</strong> {{ message.content }}
-        </div>
-      </div>
-      <input v-model="newMessage" placeholder="Type your message..." @keyup.enter="sendMessage" />
-      <button @click="sendMessage">Send</button>
-    </div>
-  </template>
-  
-  <script>
-  import SockJS from 'sockjs-client';
-  import { Stomp } from '@stomp/stompjs';
-  import axios from 'axios';
-  import { mapState } from 'vuex';
-  
-  export default {
-    data() {
-      return {
-        roomName: '',
-        newMessage: '',
-        messages: [],
-        stompClient: null,
-      };
+<!-- <template>
+  <v-container>
+    <h2>{{ roomName }}</h2>
+    <v-row>
+      <v-col cols="12">
+        <v-list>
+          <v-list-item v-for="(message, index) in messages" :key="index">
+            <v-list-item-content>
+              <v-list-item-title><strong>{{ message.sender }}:</strong> {{ message.content }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-text-field v-model="message" label="Type a message" @keyup.enter="sendMessage"></v-text-field>
+        <v-btn @click="sendMessage">Send</v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+
+<script>
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      roomId: this.$route.params.roomId,
+      roomName: '',
+      message: '',
+      messages: [],
+      sender: 'User' + Math.floor(Math.random() * 1000),
+      client: null
+    };
+  },
+  created() {
+    this.fetchRoomInfo();
+    this.connectWebSocket();
+  },
+  methods: {
+    fetchRoomInfo() {
+      axios.get(`/api/chat/rooms/${this.roomId}`).then(response => {
+        this.roomName = response.data.name;
+        this.fetchMessages();
+      });
     },
-    computed: {
-      ...mapState(['user', 'token']),
-    },
-    async created() {
-      this.roomName = this.$route.params.id;
-  
-      // Load previous messages
-      try {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/room/${this.roomName}/messages`, {
-          headers: {
-            Authorization: `Bearer ${this.token}`
-          }
-        });
+    fetchMessages() {
+      axios.get(`/api/chat/rooms/${this.roomId}/messages`).then(response => {
         this.messages = response.data;
-      } catch (error) {
-        console.error('Failed to load messages:', error);
-      }
-  
-      // Connect to WebSocket
-      const socket = new SockJS(`${process.env.VUE_APP_API_BASIC_URL}/ws-chat`);
-      this.stompClient = Stomp.over(socket);
-      this.stompClient.connect(
-  { Authorization: `Bearer ${this.token}` },
-  frame => {
-    console.log(frame);  // 이 줄을 추가하여 frame 변수를 사용
-    this.stompClient.subscribe(`/topic/${this.roomName}`, message => {
-      this.messages.push(JSON.parse(message.body));
-    });
-  }
-);
+      });
     },
-    methods: {
-      sendMessage() {
-        if (this.newMessage.trim() !== '') {
-          const message = {
-            sender: this.user.username,
-            content: this.newMessage,
-            roomId: this.roomName,
-            type: 'CHAT'
-          };
-          this.stompClient.send(`/app/chat.sendMessage`, {}, JSON.stringify(message));
-          this.newMessage = '';
-        }
+    connectWebSocket() {
+      const socket = new SockJS('http://localhost:8080/ws-chat');
+      this.client = new Client({
+        webSocketFactory: () => socket,
+        reconnectDelay: 5000,
+        onConnect: () => {
+          this.subscribeToRoom();
+          this.joinRoom();
+        },
+      });
+      this.client.activate();
+    },
+    subscribeToRoom() {
+      this.client.subscribe(`/topic/room/${this.roomId}`, (message) => {
+        const receivedMessage = JSON.parse(message.body);
+        this.messages.push(receivedMessage);
+      });
+    },
+    joinRoom() {
+      const joinMessage = {
+        sender: this.sender,
+        content: '',
+        type: 'JOIN',
+        roomId: this.roomId
+      };
+      this.client.publish({
+        destination: '/app/chat.join',
+        body: JSON.stringify(joinMessage)
+      });
+    },
+    sendMessage() {
+      if (this.message.trim() !== '') {
+        const chatMessage = {
+          sender: this.sender,
+          content: this.message,
+          type: 'CHAT',
+          roomId: this.roomId
+        };
+        this.client.publish({
+          destination: '/app/chat.sendMessage',
+          body: JSON.stringify(chatMessage)
+        });
+        this.message = '';
       }
     }
-  };
-  </script>
-  
-  <style scoped>
-  .chat-room-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 40px;
-    background-color: #1c1c1c;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 32px;
-    font-weight: bold;
-    color: #ffffff;
-  }
-  
-  .chat-box {
-    max-height: 400px;
-    overflow-y: auto;
-    margin-bottom: 20px;
-    background-color: #333;
-    padding: 20px;
-    border-radius: 10px;
-  }
-  
-  .chat-message {
-    margin-bottom: 10px;
-    color: #ffffff;
-  }
-  
-  input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #333;
-    border-radius: 5px;
-    background-color: #2a2a2a;
-    color: #ffffff;
-    margin-bottom: 10px;
-  }
-  
-  button {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  </style>
-  
+};
+</script>
+
+<style scoped>
+/* 스타일은 자유롭게 추가 */
+</style> -->
