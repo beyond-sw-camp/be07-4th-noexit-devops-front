@@ -20,10 +20,10 @@
 
         <!-- 알림 기능 -->
         <v-btn icon>
-            <v-badge color="red" :content="unreadNotificationsCount" overlap v-if="unreadNotificationsCount > 0">
+            <v-badge color="red" :content="unreadNotificationsCount" overlap>
                 <v-icon>mdi-bell</v-icon>
             </v-badge>
-            <v-icon v-else>mdi-bell</v-icon>
+
 
             <v-menu activator="parent" offset-y>
                 <v-list-item>
@@ -75,6 +75,11 @@ export default {
             this.fetchNotifications();
             this.connectSSE();
         }
+    },
+    computed: {
+        unreadNotificationsCount() {
+            return this.notifications.filter(notification => notification.delYn === 'N').length;
+        },
     },
     methods: {
         connectSSE() {
