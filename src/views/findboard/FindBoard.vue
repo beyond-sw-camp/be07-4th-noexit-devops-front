@@ -5,8 +5,8 @@
       class="d-flex justify-center"
       style="max-width: 2000px"
     >
-    <v-btn color="pink" @click="openCreateModal">작성하기</v-btn>
-    <CreateFindBoardModal :isOpen="isCreateModalOpen" @close="closeCreateModal" />
+      <v-btn color="pink" @click="openCreateModal">작성하기</v-btn>
+      <CreateFindBoardModal :isOpen="isCreateModalOpen" @close="closeCreateModal" />
       <v-col>
         <v-form @submit.prevent="loadFindBoard">
           <v-row>
@@ -16,23 +16,19 @@
                 :items="searchOptions"
                 item-title="text"
                 item-value="value"
-              >
-              </v-select>
+              ></v-select>
             </v-col>
             <v-col>
               <v-text-field
                 v-model="searchValue"
                 label="Search"
                 :rules="[required]"
-              >
-              </v-text-field>
+              ></v-text-field>
             </v-col>
             <v-col cols="auto">
-              <v-col cols="auto"
-                ><v-btn height="55" type="submit" color="pink"
-                  >검색</v-btn
-                ></v-col
-              >
+              <v-col cols="auto">
+                <v-btn height="55" type="submit" color="pink">검색</v-btn>
+              </v-col>
             </v-col>
           </v-row>
         </v-form>
@@ -111,7 +107,7 @@
                       getTimeDifferenceInMinutes(f.expirationTime) <= 0
                     "
                     @click="participateInFindBoard(f.id)"
-                    >PARTICPATE</v-btn
+                    >PARTICIPATE</v-btn
                   >
                 </div>
               </div>
@@ -136,10 +132,6 @@
               </div>
 
               <div v-if="f.isAuthor">
-
-                
-
-                <!-- <v-icon @click="deleteFB(f.id)" :icon="`mdiSvg:${mdiDelete}`"></v-icon> -->
                 <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
                 <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
               </div>
@@ -188,118 +180,40 @@
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
 
-    <v-dialog v-model="isUpdateModalOpen" max-width="600px">
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">게시글 수정하기</span>
-        </v-card-title>
-        <v-card-text>
-          <v-form ref="updateForm" @submit.prevent="updateFindBoard">
-            <v-text-field
-              v-model="updateTitle"
-              :rules="[(v) => !!v || '제목을 입력하세요.']"
-              hide-details="auto"
-              label="제목"
-              outlined
-              class="mb-4"
-              required
-            ></v-text-field>
-            <v-textarea
-              v-model="updateContents"
-              :rules="[(v) => !!v || '내용을 입력하세요.']"
-              label="내용"
-              outlined
-              rows="4"
-              class="mb-4"
-              required
-            ></v-textarea>
-            <v-row>
-              <v-col cols="6">
-                <v-text-field
-                  v-model="updateDate"
-                  label="날짜 선택"
-                  type="date"
-                  outlined
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  v-model="updateTime"
-                  label="마감 시한"
-                  type="time"
-                  outlined
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-select
-              v-model="updateTotalCapacity"
-              :rules="[(v) => !!v || '희망 인원을 선택하세요.']"
-              :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-              label="희망 인원"
-              outlined
-              required
-            ></v-select>
-          </v-form>
-        </v-card-text>
-        
-        <v-card-actions>
-          <v-btn color="primary" text @click="closeUpdateModal">취소</v-btn>
-          <v-btn color="pink" @click="updateFindBoard">수정하기</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <!-- Update 모달 컴포넌트 사용 -->
+    <UpdateFindBoardModal
+      :isOpen="isUpdateModalOpen"
+      :findBoard="selectedFindBoard"
+      @close="closeUpdateModal"
+      @updated="loadFindBoard"
+    />
   </v-container>
 </template>
 
 <script>
 import axios from "axios";
 import CreateFindBoardModal from './CreateFindBoardModal.vue';
+import UpdateFindBoardModal from './UpdateFindBoardModal.vue'; // Update 모달 컴포넌트 추가
 
 export default {
   components: {
     CreateFindBoardModal,
+    UpdateFindBoardModal, // Update 모달 컴포넌트 등록
   },
   data() {
     return {
       isCreateModalOpen: false,
-
+      isUpdateModalOpen: false, // Update 모달 상태 추가
+      selectedFindBoard: null, // 선택된 게시글 저장
       searchType: "optional",
       searchOptions: [
         { text: "선택", value: "optional" },
         { text: "제목", value: "title" },
         { text: "내용", value: "contents" },
       ],
-
-      // 권한
-      isAuthor: false,
-      isLogin: false,
-      userRole: null,
-      //
-
       searchValue: "",
-
-      title: "",
-      contents: "",
-      date: "",
-      time: "",
-      totalCapacity: "",
       findBoardList: [],
       loading: true,
-      
-      searchBy: "",
-      searchTerm: "",
-
-      // Update Modal 관련 데이터
-      isUpdateModalOpen: false,
-      updateId: null,
-      updateTitle: "",
-      updateContents: "",
-      updateDate: "",
-      updateTime: "",
-      updateTotalCapacity: "",
-
       // 페이징 데이터
       pageSize: 6,
       currentPage: 1,
@@ -310,15 +224,6 @@ export default {
     };
   },
   mounted() {
-    const now = new Date();
-    // 현지 날짜를 YYYY-MM-DD 형식으로 변환
-    this.date = now.toLocaleDateString("en-CA"); // 'en-CA'는 'YYYY-MM-DD' 형식을 반환합니다.
-    // 현지 시간 설정
-    this.time = `${now.getHours().toString().padStart(2, "0")}:${now
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
-
     const userRole = localStorage.getItem("role");
     if (userRole === "USER") {
       this.isUser = true;
@@ -337,7 +242,6 @@ export default {
       return pages;
     },
   },
-
   created() {
     const token = localStorage.getItem("token");
     if (token) {
@@ -349,15 +253,19 @@ export default {
     this.checkAuthor();
   },
   methods: {
-
     openCreateModal() {
-    this.isCreateModalOpen = true;
-  },
-  closeCreateModal() {
-    this.isCreateModalOpen = false;
-  },
-
-    // 권한
+      this.isCreateModalOpen = true;
+    },
+    closeCreateModal() {
+      this.isCreateModalOpen = false;
+    },
+    openUpdateModal(findBoard) {
+      this.selectedFindBoard = findBoard;
+      this.isUpdateModalOpen = true;
+    },
+    closeUpdateModal() {
+      this.isUpdateModalOpen = false;
+    },
     async checkAuthor() {
       try {
         const myInfo = await axios.get(
@@ -378,9 +286,6 @@ export default {
         console.log(e);
       }
     },
-
-    // 권한
-
     getTimeDifferenceInMinutes(expirationTime) {
       const now = new Date();
       const expiration = new Date(expirationTime);
@@ -401,36 +306,6 @@ export default {
       this.findBoardList = [];
       await this.loadFindBoard();
     },
-    onSubmit() {
-      if (this.$refs.form.validate()) {
-        this.registerFindBoard();
-      } else {
-        alert("모든 필드를 올바르게 작성해 주세요.");
-      }
-    },
-    async registerFindBoard() {
-      try {
-        let expirationDateTime = new Date(
-          `${this.date}T${this.time}`
-        );
-        expirationDateTime.setHours(expirationDateTime.getHours()+9);
-        expirationDateTime = expirationDateTime.toISOString();
-        const requestData = {
-          title: this.title,
-          contents: this.contents,
-          expirationTime: expirationDateTime,
-          totalCapacity: this.totalCapacity,
-        };
-
-        await axios.post(`http://localhost:8080/findboard/create`, requestData);
-
-        alert("작성 완료");
-        window.location.reload();
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        alert("작성 실패");
-      }
-    },
     async loadFindBoard() {
       this.loading = true;
       try {
@@ -445,8 +320,7 @@ export default {
           `http://localhost:8080/findboard/list`,
           { params }
         );
-        console.log(response.data.result.content.writer);
-        // 데이터 변환 부분 추가
+
         this.findBoardList = response.data.result.content.map((item) => {
           return {
             ...item,
@@ -463,7 +337,6 @@ export default {
         this.loading = false;
       }
     },
-
     formatDateTime(isoString) {
       const date = new Date(isoString);
       const formattedDate = `${date.getFullYear()}년 ${
@@ -491,43 +364,6 @@ export default {
         console.error("삭제 실패:", error);
       }
     },
-    async updateFindBoard() {
-      try {
-        const updateExpirationDateTime = new Date(
-          `${this.updateDate}T${this.updateTime}:00`
-        );
-
-        const requestData = {
-          title: this.updateTitle,
-          contents: this.updateContents,
-          expirationDate: updateExpirationDateTime,
-          totalCapacity: this.updateTotalCapacity,
-        };
-
-        const response = await axios.put(
-          `http://localhost:8080/findboard/update/${this.updateId}`,
-          requestData
-        );
-        console.log("업데이트 완료:", response.data);
-        alert("업데이트 완료");
-        this.closeUpdateModal();
-        this.loadFindBoard();
-      } catch (error) {
-        console.error("업데이트 실패:", error);
-      }
-    },
-    closeUpdateModal() {
-      this.isUpdateModalOpen = false;
-    },
-    openUpdateModal(findBoard) {
-      this.updateId = findBoard.id;
-      this.updateTitle = findBoard.title;
-      this.updateContents = findBoard.contents;
-      this.updateDate = findBoard.createdTime.substr(0, 10);
-      this.updateTime = findBoard.createdTime.substr(11, 5);
-      this.updateTotalCapacity = findBoard.totalCapacity;
-      this.isUpdateModalOpen = true;
-    },
     async participateInFindBoard(id) {
       try {
         const response = await axios.put(
@@ -542,7 +378,7 @@ export default {
         }
       } catch (error) {
         if (error.response && error.response.status === 400) {
-          alert("자신의 글에는 참가 신청을 할수없습니다.");
+          alert("자신의 글에는 참가 신청을 할 수 없습니다.");
         } else if (error.response && error.response.status === 404) {
           alert("게시글이 존재하지 않거나 삭제된 게시글입니다.");
         } else {
@@ -584,6 +420,7 @@ export default {
   },
 };
 </script>
+
 
 <style>
 @import url("https://webfontworld.github.io/gmarket/GmarketSans.css");
