@@ -5,8 +5,8 @@
       class="d-flex justify-center"
       style="max-width: 2000px"
     >
-      <v-btn color="pink" @click="openCreateModal">작성하기</v-btn>
-      <CreateFindBoardModal :isOpen="isCreateModalOpen" @close="closeCreateModal" />
+
+
       <v-col>
         <v-form @submit.prevent="loadFindBoard">
           <v-row>
@@ -27,7 +27,20 @@
             </v-col>
             <v-col cols="auto">
               <v-col cols="auto">
-                <v-btn height="55" type="submit" color="pink">검색</v-btn>
+                
+                <v-row>
+                  <v-btn height="55" type="submit" color="pink" >검색</v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn 
+                  height="55" 
+                  color="pink" 
+                  style="margin-left: 13px;"
+                  @click="openCreateModal"
+                  v-if="userRole == 'USER' && isLogin"
+                  >작성하기</v-btn>
+                </v-row>
+
+                <CreateFindBoardModal :isOpen="isCreateModalOpen" @close="closeCreateModal" />
               </v-col>
             </v-col>
           </v-row>
