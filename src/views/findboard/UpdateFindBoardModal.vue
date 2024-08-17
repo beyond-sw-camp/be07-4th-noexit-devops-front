@@ -102,8 +102,10 @@
         if (this.findBoard) {
           this.updateTitle = this.findBoard.title;
           this.updateContents = this.findBoard.contents;
-          this.updateDate = this.findBoard.createdTime.substr(0, 10);
-          this.updateTime = this.findBoard.createdTime.substr(11, 5);
+          // 'expirationTime'을 사용하여 날짜와 시간 설정
+          const expirationDateTime = new Date(this.findBoard.expirationTime);
+          this.updateDate = expirationDateTime.toISOString().substr(0, 10);
+          this.updateTime = expirationDateTime.toISOString().substr(11, 5);
           this.updateTotalCapacity = this.findBoard.totalCapacity;
         }
       },
@@ -116,7 +118,7 @@
           const requestData = {
             title: this.updateTitle,
             contents: this.updateContents,
-            expirationDate: updateExpirationDateTime.toISOString(), // 변수명 expirationDate다. Time 아니다 주의.
+            expirationTime: updateExpirationDateTime.toISOString(), // 변수명 수정: expirationTime
             totalCapacity: this.updateTotalCapacity,
           };
   
