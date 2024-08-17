@@ -60,17 +60,12 @@ export default {
     methods: {
         async doLogin() {
             try {
-                if (this.role == '일반 사용자') {
-                    this.role = 'USER'
-                } else {
-                    this.role = "OWNER"
-                }
+                const roleValue = this.role === '일반 사용자' ? 'USER' : 'OWNER';
                 const loginData = {
                     email: this.email,
                     password: this.password,
-                    role: this.role
+                    role: roleValue
                 }
-                console.log(loginData);
                 const response = await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/doLogin`, loginData);
                 const token = response.data.result.token;
                 const refreshToken = response.data.result.refreshToken;
