@@ -251,17 +251,18 @@ export default {
                     this.phoneNumber = decodedToken.phone || '';
 
                     if (!this.memberId || !this.resName || !this.phoneNumber) {
-                        alert('로그인이 필요합니다.');
-                        this.$router.push('/login'); // 로그인 페이지로 리다이렉트 (불필요시 주석)
+                        alert('회원 정보를 가져오는 데 문제가 발생했습니다. 다시 시도해 주세요.');
+                        return false;
                     }
                 } else {
                     alert('로그인이 필요합니다.');
-                    this.$router.push('/login'); // 로그인 페이지로 리다이렉트 (불필요시 주석)
+                    return false;
                 }
+                return true;
             } catch (error) {
                 console.error('회원 정보를 가져오는 데 실패했습니다.', error);
-                // alert('회원 정보를 가져오는 데 실패했습니다.');
-                this.$router.push('/login'); // 로그인 페이지로 리다이렉트 (불필요시 주석)
+                alert('회원 정보를 가져오는 중 오류가 발생했습니다.');
+                return false;
             }
         },
         async fetchAvailableHours() {
@@ -337,9 +338,9 @@ export default {
                 };
 
                 await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/reservation/create`, reservationData, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
+                    // headers: {
+                    //     'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    // }
                 });
 
                 this.$router.push('/reservation/list');

@@ -5,6 +5,7 @@ import { reservationRouter } from './reservationRouter';
 import { boardRouter } from './boardRouter';
 import { findBoardRouter } from './findBoardRouter';
 import { gameRouter} from './gameRouter';
+import { chatRouter } from './chatRouter';
 
 const routes = [
     ...memberRouter,
@@ -13,6 +14,7 @@ const routes = [
     ...boardRouter,
     ...findBoardRouter,
     ...gameRouter,
+    ...chatRouter
 ]
 
 
