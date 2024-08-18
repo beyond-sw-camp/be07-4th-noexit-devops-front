@@ -127,49 +127,52 @@ export default {
             }
         },
         async approveReservation(reservation) {
-            try {
-                await axios.put(
-                    `${process.env.VUE_APP_API_BASIC_URL}/reservation/approval`,
-                    {
-                        gameId: reservation.gameId,
-                        resDate: reservation.resDate,
-                        resDateTime: reservation.resDateTime,
-                        approvalStatus: 'OK',
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem('token')}`,
-                        },
-                    }
-                );
-                alert('예약이 승인되었습니다.');
-                this.fetchOwnerReservations();
-            } catch (error) {
-                console.error('예약 승인 중 오류가 발생했습니다:', error);
+    try {
+        await axios.put(
+            `${process.env.VUE_APP_API_BASIC_URL}/reservation/approval`,
+            {
+                id: reservation.id, // reservationId 추가
+                gameId: reservation.gameId,
+                resDate: reservation.resDate,
+                resDateTime: reservation.resDateTime,
+                approvalStatus: 'OK',
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
             }
-        },
-        async rejectReservation(reservation) {
-            try {
-                await axios.put(
-                    `${process.env.VUE_APP_API_BASIC_URL}/reservation/approval`,
-                    {
-                        gameId: reservation.gameId,
-                        resDate: reservation.resDate,
-                        resDateTime: reservation.resDateTime,
-                        approvalStatus: 'NO',
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem('token')}`,
-                        },
-                    }
-                );
-                alert('예약이 거절되었습니다.');
-                this.fetchOwnerReservations();
-            } catch (error) {
-                console.error('예약 거절 중 오류가 발생했습니다:', error);
+        );
+        alert('예약이 승인되었습니다.');
+        this.fetchOwnerReservations(); // 상태를 갱신하여 UI를 업데이트합니다.
+    } catch (error) {
+        console.error('예약 승인 중 오류가 발생했습니다:', error.response ? error.response.data : error.message);
+        alert('예약 승인 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    }
+},
+async rejectReservation(reservation) {
+    try {
+        await axios.put(
+            `${process.env.VUE_APP_API_BASIC_URL}/reservation/approval`,
+            {
+                id: reservation.id, // reservationId 추가
+                gameId: reservation.gameId,
+                resDate: reservation.resDate,
+                resDateTime: reservation.resDateTime,
+                approvalStatus: 'NO',
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
             }
-        },
+        );
+        alert('예약이 거절되었습니다.');
+        this.fetchOwnerReservations();
+    } catch (error) {
+        console.error('예약 거절 중 오류가 발생했습니다:', error);
+    }
+},
         async cancelReservation(reservation) {
             try {
                 await axios.put(
