@@ -15,14 +15,15 @@
 
                                 <!-- 별 -->
                                 <div class="difficulty-container">
-    <v-row>
-        <v-col class="stars">
-            <v-icon v-for="n in 5" :key="n"
-                :color="n <= Math.round(averageRating) ? 'pink' : 'grey'">mdi-star</v-icon>
-            <span class="difficulty-level">{{ averageRating.toFixed(1) }}</span> <!-- 소수점 1자리 -->
-        </v-col>
-    </v-row>
-</div>
+                                    <v-row>
+                                        <v-col class="stars">
+                                            <v-icon v-for="n in 5" :key="n"
+                                                :color="n <= Math.round(averageRating) ? 'pink' : 'grey'">mdi-star</v-icon>
+                                            <span class="difficulty-level">{{ averageRating.toFixed(1) }}</span> <!-- 소수점 1자리 -->
+                                        </v-col>
+                                    </v-row>
+                                </div>
+
 
                                 <v-divider class="my-3"></v-divider>
 

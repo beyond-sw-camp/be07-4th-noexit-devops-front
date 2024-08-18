@@ -10,7 +10,7 @@
                                 <v-col cols="auto" class="d-flex align-center img-area">
                                     <v-avatar size="80" class="mr-3">
                                         <img :src="memberInfoList.find(item => item.key === 'profileImage')?.value"
-                                            alt="프로필 이미지" @click="selectImage" />
+                                            alt="프로필 이미지" @click="selectImage" class="profile-image" />
                                     </v-avatar>
                                     <input type="file" @change="onImageChange" accept="image/*"
                                         style="display: none;" />
@@ -121,5 +121,11 @@ export default {
 
 .v-field__input {
     padding-top: 10px;
+}
+
+.profile-image {
+    width: 130%;
+    height: 140%;
+    object-fit: cover;
 }
 </style>
