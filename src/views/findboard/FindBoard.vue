@@ -77,7 +77,6 @@
           :style="{
             color: 'white',
             backgroundColor: 'black',
-            boxShadow: '0px 8px 24px rgba(247, 4, 4, 0.8)', 
             border: '0px solid rgb(6, 6, 6)',
             marginTop: '15px',
             marginLeft: '0px',
@@ -407,15 +406,20 @@ export default {
     },
     async participateInFindBoard(findBoardId) {
   try {
-    // 참가 목록 가져오기
-    const response = await axios.get('http://localhost:8080/attendance/list');
+    // 현재 사용자 정보 가져오기 (이메일 포함)
+    const myInfoResponse = await axios.get(
+      `${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`
+    );
+    const userEmail = myInfoResponse.data.result.email;
 
-    const attendances = response.data.result;
+    // 특정 게시글의 참가자 목록 가져오기
+    const attendanceResponse = await axios.get(`http://localhost:8080/attendance/list/findBoard/${findBoardId}`);
 
-    // 참가 여부 확인
-    // 현재 사용자의 memberId를 확인하는 대신, 단순히 참가 여부를 확인
+    const attendances = attendanceResponse.data.result;
+
+    // 특정 게시글에 대한 참가 여부 확인 (이메일을 기반으로)
     const alreadyParticipated = attendances.some(attendance => 
-      attendance.findBoardId === findBoardId
+      attendance.email === userEmail
     );
 
     if (alreadyParticipated) {
@@ -428,7 +432,8 @@ export default {
 
     if (participateResponse.data.status_code === 200) {
       alert("참여 완료");
-      this.loadFindBoard(); // 업데이트된 데이터를 다시 로드
+      window.location.reload();
+      // this.loadFindBoard(); // 업데이트된 데이터를 다시 로드
     } else {
       alert("새로고침 후 다시 시도해주세요");
     }
@@ -436,7 +441,9 @@ export default {
     console.error("참가 요청 실패:", error);
     alert("자신의 게시글에는 참여할 수 없습니다.");
   }
-},
+}
+
+,
     setPage(page) {
       this.currentPage = page;
       this.loadFindBoard();
