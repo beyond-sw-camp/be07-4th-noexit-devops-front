@@ -32,24 +32,35 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import axios from 'axios';
+import {jwtDecode} from 'jwt-decode';
 
 export default {
-  
   data() {
     return {
       roomId: this.$route.params.roomId,
       roomName: '',
       message: '',
       messages: [],
-      sender: 'User' + Math.floor(Math.random() * 1000),
+      sender: '',
+
       client: null
     };
   },
   created() {
+    this.setSenderFromToken(); // Set sender from JWT token
     this.fetchRoomInfo();
     this.connectWebSocket();
   },
   methods: {
+    setSenderFromToken() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const decodedToken = jwt_decode(token);
+        this.sender = decodedToken.nickname || decodedToken.email || 'Anonymous'; 
+      } else {
+        this.sender = 'Anonymous';
+      }
+    },
     fetchRoomInfo() {
       axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/rooms/${this.roomId}`).then(response => {
         this.roomName = response.data.name;
@@ -66,21 +77,40 @@ export default {
       });
     },
     connectWebSocket() {
-      const socket = new SockJS(`${process.env.VUE_APP_API_BASIC_URL}/ws-chat`);
-      this.client = new Client({
+    const socket = new SockJS(`${process.env.VUE_APP_API_BASIC_URL}/ws-chat`);
+    const token = this.getAuthToken();
+
+    this.client = new Client({
         webSocketFactory: () => socket,
+        connectHeaders: {
+            'Authorization': `Bearer ${token}`  // WebSocket 연결 시 헤더에 JWT 토큰 포함
+        },
         reconnectDelay: 5000,
         onConnect: () => {
-          this.subscribeToRoom();
-          this.joinRoom();
+            console.log('Connected to WebSocket');
+            this.subscribeToRoom();
+            this.joinRoom();  // 방에 입장하는 메서드 호출
         },
         onStompError: (frame) => {
-          console.error('Broker reported error: ' + frame.headers['message']);
-          console.error('Additional details: ' + frame.body);
+            console.error('Broker reported error: ' + frame.headers['message']);
+            console.error('Additional details: ' + frame.body);
+            this.error = 'Connection error: ' + frame.body;
         },
-      });
-      this.client.activate();
-    },
+        onWebSocketClose: (event) => {
+            if (event.code === 403) {
+                console.error('Connection closed with 403 error. Token might be invalid or expired.');
+                this.error = 'Connection closed with 403 error. Token might be invalid or expired.';
+            }
+        },
+        onError: (error) => {
+            console.error('WebSocket connection error:', error);
+            this.error = 'WebSocket connection error: ' + error.message;
+        }
+    });
+
+    this.client.activate();
+},
+
     subscribeToRoom() {
       this.client.subscribe(`/topic/room/${this.roomId}`, (message) => {
         const receivedMessage = JSON.parse(message.body);

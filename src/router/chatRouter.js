@@ -9,7 +9,6 @@ export const chatRouter = [
     name: 'RoomList',
     component: RoomList
   },
-
   {
     path: '/chat/room/:roomId',
     name: 'ChatRoom',
