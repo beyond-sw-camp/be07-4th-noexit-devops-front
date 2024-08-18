@@ -43,9 +43,9 @@ export const reservationRouter = [
     name: 'MemberReservationList',
     component: MemberReservationList
   },
-  {
-    path: '/resview',
-    name: 'ResList',
-    component: ResList,
-  },
+  // {
+  //   path: '/resview',
+  //   name: 'ResList',
+  //   component: ResList,
+  // },
 ];
