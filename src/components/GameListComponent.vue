@@ -20,6 +20,10 @@
                             </v-col>
                         </v-row>
                     </div>
+                    <v-icon @click.stop="toggleWishlist(game.id)" :color="isInWishlist(game.id) ? 'red' : 'grey'"
+                        class="wishlist-icon">
+                        mdi-heart
+                    </v-icon>
                 </v-card>
             </v-col>
         </v-row>
@@ -28,7 +32,7 @@
 
 
 <script>
-
+import axios from 'axios'
 export default {
     props: {
         games: {
@@ -36,12 +40,18 @@ export default {
             required: true
         }
     },
-    created() {
-
+    data() {
+        return {
+            wishlist: [],
+        }
+    },
+    async created() {
+        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`);
+        this.wishlist = response.data.result.content;
+        console.log(this.wishlist)
     },
     methods: {
         moveToDetail(id) {
-            // console.log(id);
             this.$router.push("/game/detail/" + id)
         },
         getDifficultyLevel(difficulty) {
@@ -54,6 +64,23 @@ export default {
             };
             return levels[difficulty?.toLowerCase()] || 1;
         },
+        async toggleWishlist(id) {
+            try {
+                if (this.isInWishlist(id)) {
+                    await axios.patch(`${process.env.VUE_APP_API_BASIC_URL}/wishlist/delete/${id}`);
+                    this.wishlist = this.wishlist.filter(item => item !== id);
+                } else {
+                    await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/wishlist/add`);
+                    this.wishlist.push(id);
+                }
+                console.log(this.wishlist)
+            } catch (error) {
+                console.error("위시리스트 추가/제거 하는 도중에 오류가 발생했습니다..");
+            }
+        },
+        isInWishlist(id) {
+            return this.wishlist.includes(id);
+        }
     },
 };
 </script>
@@ -104,5 +131,13 @@ export default {
 
 .difficulty-level {
     margin-left: 8px;
+}
+
+.wishlist-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 24px;
 }
 </style>

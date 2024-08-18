@@ -1,129 +1,184 @@
-    <template>
-        <div id="chat">
-        <h2>WebSocket Chat Room</h2>
-        <div id="messages">
-            <div v-for="(message, index) in messages" :key="index">
-            <strong>{{ message.sender }}:</strong> {{ message.content }}
-            </div>
-        </div>
-        <div id="inputForm">
-            <input v-model="message" placeholder="Type a message..." @keyup.enter="sendMessage"/>
-            <button @click="sendMessage">Send</button>
-        </div>
-        </div>
-    </template>
-    
-    <script>
-    import { Client } from '@stomp/stompjs';
-    import SockJS from 'sockjs-client';
-    
-    export default {
-        data() {
-        return {
-            client: null,
-            message: '',
-            messages: [],
-            sender: 'User' + Math.floor(Math.random() * 1000),
-            roomId: '1'
-        };
-        },
-        created() {
-        this.connect();
-        },
-        methods: {
-        connect() {
-            const socket = new SockJS('http://localhost:8080/ws-chat');
-            this.client = new Client({
-            webSocketFactory: () => socket,
-            debug: function (str) {
-                console.log(str);
-            },
-            reconnectDelay: 5000,
-            onConnect: () => {
-                this.subscribe();
-                this.joinRoom();
-            },
-            onDisconnect: () => {
-                console.log('Disconnected');
-            }
-            });
-    
-            this.client.activate();
-        },
-        subscribe() {
-            this.client.subscribe('/topic/room/' + this.roomId, (message) => {
-            const receivedMessage = JSON.parse(message.body);
-            this.messages.push(receivedMessage);
-            });
-        },
-        joinRoom() {
-            const joinMessage = {
-            sender: this.sender,
-            content: '',
-            type: 'JOIN',
-            roomId: this.roomId
-            };
-            this.client.publish({
-            destination: '/app/chat.join',
-            body: JSON.stringify(joinMessage)
-            });
-        },
-        sendMessage() {
-            if (!this.client || !this.client.connected) {
-                console.error('STOMP connection is not established.');
-                this.showCustomAlert('서버에 연결되지 않았습니다. 잠시 후 다시 시도해 주세요.');
-                return;
-            }
+<template>
+  <v-container>
+    <h2>{{ roomName }}</h2>
+    <v-row>
+      <v-col cols="12">
+        <v-list>
+          <v-list-item v-for="(message, index) in messages" :key="index">
+            <v-list-item-content>
+              <v-list-item-title><strong>{{ message.sender }}:</strong> {{ message.content }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-text-field 
+          v-model="message" 
+          label="Type a message" 
+          @keyup.enter="sendMessage"
+          outlined
+          color="white"
+          background-color="#ffffff"
+        ></v-text-field>
+        <v-btn @click="sendMessage" color="white" outlined>Send</v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
 
-            if (this.message.trim() !== '') {
-                const chatMessage = {
-                    sender: this.sender,
-                    content: this.message,
-                    type: 'CHAT',
-                    roomId: this.roomId
-                };
-                this.client.publish({
-                    destination: '/app/chat.sendMessage',
-                    body: JSON.stringify(chatMessage)
-                });
-                this.message = '';
-            }
-        }
+<script>
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import axios from 'axios';
+import {jwtDecode} from 'jwt-decode';
 
-        }
+export default {
+  data() {
+    return {
+      roomId: this.$route.params.roomId,
+      roomName: '',
+      message: '',
+      messages: [],
+      sender: '',
+
+      client: null
     };
-    </script>
-    
-    <style scoped>
-    #chat {
-        width: 400px;
-        margin: 0 auto;
-        font-family: Arial, sans-serif;
-        background-color: #ccc;
+  },
+  created() {
+    this.setSenderFromToken(); // Set sender from JWT token
+    this.fetchRoomInfo();
+    this.connectWebSocket();
+  },
+  methods: {
+    setSenderFromToken() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const decodedToken = jwt_decode(token);
+        this.sender = decodedToken.nickname || decodedToken.email || 'Anonymous'; 
+      } else {
+        this.sender = 'Anonymous';
+      }
+    },
+    fetchRoomInfo() {
+      axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/rooms/${this.roomId}`).then(response => {
+        this.roomName = response.data.name;
+        this.fetchMessages();
+      }).catch(error => {
+        console.error("Failed to fetch room info:", error);
+      });
+    },
+    fetchMessages() {
+      axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/rooms/${this.roomId}/messages`).then(response => {
+        this.messages = response.data;
+      }).catch(error => {
+        console.error("Failed to fetch messages:", error);
+      });
+    },
+    connectWebSocket() {
+    const socket = new SockJS(`${process.env.VUE_APP_API_BASIC_URL}/ws-chat`);
+    const token = this.getAuthToken();
+
+    this.client = new Client({
+        webSocketFactory: () => socket,
+        connectHeaders: {
+            'Authorization': `Bearer ${token}`  // WebSocket 연결 시 헤더에 JWT 토큰 포함
+        },
+        reconnectDelay: 5000,
+        onConnect: () => {
+            console.log('Connected to WebSocket');
+            this.subscribeToRoom();
+            this.joinRoom();  // 방에 입장하는 메서드 호출
+        },
+        onStompError: (frame) => {
+            console.error('Broker reported error: ' + frame.headers['message']);
+            console.error('Additional details: ' + frame.body);
+            this.error = 'Connection error: ' + frame.body;
+        },
+        onWebSocketClose: (event) => {
+            if (event.code === 403) {
+                console.error('Connection closed with 403 error. Token might be invalid or expired.');
+                this.error = 'Connection closed with 403 error. Token might be invalid or expired.';
+            }
+        },
+        onError: (error) => {
+            console.error('WebSocket connection error:', error);
+            this.error = 'WebSocket connection error: ' + error.message;
+        }
+    });
+
+    this.client.activate();
+},
+
+    subscribeToRoom() {
+      this.client.subscribe(`/topic/room/${this.roomId}`, (message) => {
+        const receivedMessage = JSON.parse(message.body);
+        this.messages.push(receivedMessage);
+      });
+    },
+    joinRoom() {
+      const joinMessage = {
+        sender: this.sender,
+        content: '',
+        type: 'JOIN',
+        roomId: this.roomId
+      };
+      this.client.publish({
+        destination: '/app/chat.join',
+        body: JSON.stringify(joinMessage)
+      });
+    },
+    sendMessage() {
+      if (this.message.trim() !== '') {
+        const chatMessage = {
+          sender: this.sender,
+          content: this.message,
+          type: 'CHAT',
+          roomId: this.roomId
+        };
+        this.client.publish({
+          destination: '/app/chat.sendMessage',
+          body: JSON.stringify(chatMessage)
+        });
+        this.message = '';
+      }
     }
-    
-    #messages {
-        border: 1px solid #ccc;
-        height: 300px;
-        overflow-y: scroll;
-        padding: 10px;
-        margin-bottom: 10px;
-    }
-    
-    #inputForm {
-        background-color: #5d5d5d;
-        display: flex;
-        margin-top: 10px;
-    }
-    
-    #inputForm input {
-        flex: 1;
-        padding: 10px;
-        margin-right: 10px;
-    }
-    
-    #inputForm button {
-        padding: 10px 20px;
-    }
-    </style>
-    
+  }
+};
+</script>
+
+<style scoped>
+.v-container {
+  background-color: #ffffff;
+  color: #000000;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.v-text-field input {
+  background-color: #f9f9f9;
+  color: #000000;
+}
+
+.v-btn {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+}
+
+.v-list-item {
+  background-color: #f0f0f0;
+  color: #000000;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.v-list-item:hover {
+  background-color: #e0e0e0;
+}
+
+.v-list-item-title {
+  color: #000000;
+}
+</style>

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <v-container>
             <ChatRoom />
     </v-container>
@@ -27,4 +27,4 @@
     margin-top: 60px;
   }
 </style>
-  
+   -->

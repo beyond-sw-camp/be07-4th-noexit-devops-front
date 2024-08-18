@@ -1,23 +1,20 @@
-<template>
+<!-- <template>
     <div id="chat">
       <h2>WebSocket Chat Room</h2>
       
-      <!-- 방 생성 폼 -->
       <div id="createRoom">
         <h3>Create Room</h3>
         <button @click="createRoom">Create New Room</button>
         <p v-if="createdRoomId">Room Created! ID: {{ createdRoomId }}</p>
       </div>
-      
-      <!-- 방 입장 폼 -->
+
       <div id="joinRoom">
         <h3>Join Room</h3>
         <input v-model="roomIdToJoin" placeholder="Enter Room ID" />
         <input v-model="username" placeholder="Enter Your Name" />
         <button @click="joinRoom">Join Room</button>
       </div>
-      
-      <!-- 채팅 메시지 -->
+
       <div v-if="isInRoom">
         <div id="messages">
           <div v-for="(message, index) in messages" :key="index">
@@ -33,98 +30,98 @@
   </template>
   
   <script>
-  import axios from 'axios';
-  import { Client } from '@stomp/stompjs';
-  import SockJS from 'sockjs-client';
+  // import axios from 'axios';
+  // import { Client } from '@stomp/stompjs';
+  // import SockJS from 'sockjs-client';
   
-  export default {
-    data() {
-      return {
-        client: null,
-        message: '',
-        messages: [],
-        createdRoomId: '',
-        roomIdToJoin: '',
-        username: '',
-        isInRoom: false,
-        sender: 'User' + Math.floor(Math.random() * 1000),
-        roomId: ''
-      };
-    },
-    methods: {
-      connect() {
-        const socket = new SockJS('http://localhost:8080/ws-chat');
-        this.client = new Client({
-          webSocketFactory: () => socket,
-          debug: function (str) {
-            console.log(str);
-          },
-          reconnectDelay: 5000,
-          onConnect: () => {
-            this.subscribe();
-            this.joinRoom();
-          },
-          onDisconnect: () => {
-            console.log('Disconnected');
-          }
-        });
+  // export default {
+  //   data() {
+  //     return {
+  //       client: null,
+  //       message: '',
+  //       messages: [],
+  //       createdRoomId: '',
+  //       roomIdToJoin: '',
+  //       username: '',
+  //       isInRoom: false,
+  //       sender: 'User' + Math.floor(Math.random() * 1000),
+  //       roomId: ''
+  //     };
+  //   },
+  //   methods: {
+  //     connect() {
+  //       const socket = new SockJS('http://localhost:8080/ws-chat');
+  //       this.client = new Client({
+  //         webSocketFactory: () => socket,
+  //         debug: function (str) {
+  //           console.log(str);
+  //         },
+  //         reconnectDelay: 5000,
+  //         onConnect: () => {
+  //           this.subscribe();
+  //           this.joinRoom();
+  //         },
+  //         onDisconnect: () => {
+  //           console.log('Disconnected');
+  //         }
+  //       });
   
-        this.client.activate();
-      },
-      subscribe() {
-        this.client.subscribe('/topic/room/' + this.roomId, (message) => {
-          const receivedMessage = JSON.parse(message.body);
-          this.messages.push(receivedMessage);
-        });
-      },
-      createRoom() {
-        axios.post('http://localhost:8080/chat/createRoom') // 엔드포인트를 올바르게 수정
-        .then(response => {
-        this.createdRoomId = response.data;
-        })
-        .catch(error => {
-        console.error('Failed to create room:', error);
-        });
-    },
+  //       this.client.activate();
+  //     },
+  //     subscribe() {
+  //       this.client.subscribe('/topic/room/' + this.roomId, (message) => {
+  //         const receivedMessage = JSON.parse(message.body);
+  //         this.messages.push(receivedMessage);
+  //       });
+  //     },
+  //     createRoom() {
+  //       axios.post('http://localhost:8080/chat/createRoom') // 엔드포인트를 올바르게 수정
+  //       .then(response => {
+  //       this.createdRoomId = response.data;
+  //       })
+  //       .catch(error => {
+  //       console.error('Failed to create room:', error);
+  //       });
+  //   },
 
-      joinRoom() {
-  axios.post('http://localhost:8080/chat/joinRoom', {
-    roomId: this.roomIdToJoin || this.createdRoomId,
-    username: this.username || this.sender
-  }).then(() => {  // 'response'를 제거했습니다.
-    this.roomId = this.roomIdToJoin || this.createdRoomId;
-    this.isInRoom = true;
-    this.connect();  // 연결을 설정
-  }).catch(error => {
-    console.error('Failed to join room:', error);
-  });
-},
+  //     joinRoom() {
+  //     axios.post('http://localhost:8080/chat/joinRoom', {
+  //       roomId: this.roomIdToJoin || this.createdRoomId,
+  //       username: this.username || this.sender
+  //     }).then(() => {  // 'response'를 제거했습니다.
+  //       this.roomId = this.roomIdToJoin || this.createdRoomId;
+  //       this.isInRoom = true;
+  //       this.connect();  // 연결을 설정
+  //     }).catch(error => {
+  //       console.error('Failed to join room:', error);
+  //     });
+  //   },
 
-      sendMessage() {
-        if (this.client && this.client.connected) {
-          if (this.message.trim() !== '') {
-            const chatMessage = {
-              sender: this.username || this.sender,
-              content: this.message,
-              type: 'CHAT',
-              roomId: this.roomId
-            };
-            this.client.publish({
-              destination: '/chat.sendMessage',
-              body: JSON.stringify(chatMessage)
-            });
-            this.message = '';
-          }
-        } else {
-          console.error('STOMP connection is not established.');
-        }
-      }
-    }
-  };
-  </script>
-  
-  <style scoped>
-  #chat {
+    //   sendMessage() {
+    //     if (this.client && this.client.connected) {
+    //       if (this.message.trim() !== '') {
+    //         const chatMessage = {
+    //           sender: this.username || this.sender,
+    //           content: this.message,
+    //           type: 'CHAT',
+    //           roomId: this.roomId
+    //         };
+    //         this.client.publish({
+    //           destination: '/chat.sendMessage',
+    //           body: JSON.stringify(chatMessage)
+    //         });
+    //         this.message = '';
+    //       }
+    //     } else {
+    //       console.error('STOMP connection is not established.');
+    //     }
+    //   }
+    // }
+//  };
+</script>
+ 
+<style scoped> 
+/* #chat {
     width: 400px;
     margin: 0 auto;
     font-family: Arial, sans-serif;
@@ -154,8 +151,7 @@
     margin-right: 10px;
   }
   
-  #inputForm button {
+   #inputForm button {
     padding: 10px 20px;
   }
-  </style>
-  
+  </style> */

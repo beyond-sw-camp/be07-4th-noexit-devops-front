@@ -14,145 +14,57 @@
                 :items="searchOptions"
                 item-title="text"
                 item-value="value"
-              >
-              </v-select>
+              ></v-select>
             </v-col>
             <v-col>
               <v-text-field
                 v-model="searchValue"
                 label="Search"
                 :rules="[required]"
-              >
-              </v-text-field>
+              ></v-text-field>
             </v-col>
             <v-col cols="auto">
-              <v-col cols="auto"
-                ><v-btn height="55" type="submit" color="pink"
-                  >검색</v-btn
-                ></v-col
-              >
+              <v-col cols="auto">
+                <v-row>
+                  <v-btn height="55" type="submit" color="pink">검색</v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    height="55"
+                    color="pink"
+                    style="margin-left: 13px"
+                    @click="openCreateModal"
+                    v-if="userRole == 'USER' && isLogin"
+                    >작성하기</v-btn
+                  >
+                </v-row>
+
+                <CreateFindBoardModal
+                  :isOpen="isCreateModalOpen"
+                  @close="closeCreateModal"
+                />
+              </v-col>
             </v-col>
           </v-row>
         </v-form>
       </v-col>
 
-      <v-card
-        :style="{ color: 'white' }"
-        v-if="userRole == 'USER' && isLogin"
-        class="pa-4"
-        outlined
-        rounded="lg"
-        style="
-          width: 98%;
-          max-width: 2000px;
-          background-color: #1b1b1b;
-          color: #ffffff;
-        "
+      
+
+      <!-- 마감 임박 게시글 섹션 -->
+      <v-col cols="12">
+        <h1
+        :style="{
+          color: 'black',
+          fontSize: '3rem', /* 글자 크기 조정 */
+          fontWeight: 'bold', /* 글자 굵기 조정 */
+        }"
       >
-        <div style="background-color: #1b1b1b; color: #ffffff">
-          <v-form 
-          ref="form" @submit.prevent="onSubmit"
-          style="background-color:  black;"
-          >
-            <v-text-field
-              v-model="title"
-              :rules="[(v) => !!v || '제목을 입력하세요.']"
-              hide-details="auto"
-              label="제목"
-              outlined
-              class="mb-4"
-              required
-            ></v-text-field>
-            <v-textarea
-              v-model="contents"
-              :rules="[(v) => !!v || '내용을 입력하세요.']"
-              label="내용"
-              outlined
-              rows="4"
-              class="mb-4"
-              required
-            ></v-textarea>
-            <v-card 
-            flat class="pa-4" style="background-color: black">
-              <v-row >
-                <v-col cols="4" >
-                  <label
-
-                  for="date"
-                  >날짜 선택<br /></label>
-                  <input
-                    type="date"
-                    id="date"
-                    v-model="date"
-                    class="mt-2"
-                    style="
-                      width: 100%;
-                      max-width: 300px;
-                      padding: 8px;
-                      border-radius: 4px;
-                      border: 1px solid #ccc;
-                    "
-                    required
-                  />
-                </v-col>
-                <v-col cols="4">
-                  <label for="time">마감 시한<br /></label>
-                  <input
-                    type="time"
-                    id="time"
-                    v-model="time"
-                    class="mt-2"
-                    style="
-                      width: 100%;
-                      max-width: 300px;
-                      padding: 8px;
-                      border-radius: 4px;
-                      border: 1px solid #ccc;
-                    "
-                    required
-                  />
-                </v-col>
-                <v-col cols="3">
-                  <v-select
-                    v-model="totalCapacity"
-                    :rules="[(v) => !!v || '희망 인원을 선택하세요.']"
-                    :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                    label="희망 인원"
-                    outlined
-                    shaped
-                    elevation="3"
-                    prepend-icon="mdi-account"
-                    style="
-                      border-radius: 8px;
-                      padding: 0 8px;
-                      height: 2px;
-                      padding: 25px;
-                    "
-                    required
-                  ></v-select>
-                </v-col>
-              </v-row>
-            </v-card>
-            <div class="d-flex justify-center">
-              <v-btn
-                width="150"
-                height="50"
-                color="pink"
-                type="submit"
-                :disabled="
-                  !title || !contents || !totalCapacity || !time || !date
-                "
-                variant="elevated"
-                >SUBMIT</v-btn
-              >
-            </div>
-          </v-form>
-        </div>
-      </v-card>
-
+        마감 임박 With ME!
+      </h1>
+        <ImminentClosingBoards />
+      </v-col>
+      
       <br />
-      <!-- 여기부터 글 시작 -->
-      <v-divider :thickness="3" color="gray"></v-divider>
 
       <v-row justify="center">
         <v-col
@@ -162,16 +74,26 @@
           class="d-flex justify-center"
         >
           <v-card
-            :style="{ color: 'white' }"
-            :class="{
-              'expired-card':
-                getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',
-            }"
+          :style="{
+            color: 'white',
+            backgroundColor: 'black',
+            boxShadow: '0px 8px 24px rgba(247, 4, 4, 0.8)', 
+            border: '0px solid rgb(6, 6, 6)',
+            marginTop: '15px',
+            marginLeft: '0px',
+            marginRight: '0px',
+            padding: '10px',
+            height: '500px',
+            width: '98%',
+            maxWidth: '2000px'
+          }"
+            :class="{'expired-card':getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',}"
             variant="outlined"
             class="pa-4 d-flex align-center"
             outlined
-            style="width: 100%; max-width: 2000px"
+            style="width: 98%; max-width: 2000px"
             rounded="lg"
+            
           >
             <v-col cols="4">
               <v-img
@@ -212,7 +134,7 @@
                       font-size: 18px;
                     "
                   >
-                    글쓴이 : {{ f.writer }}
+                    작성자 : {{ f.writer }}
                   </div>
                   <br />
                   <v-btn
@@ -224,7 +146,7 @@
                       getTimeDifferenceInMinutes(f.expirationTime) <= 0
                     "
                     @click="participateInFindBoard(f.id)"
-                    >PARTICPATE</v-btn
+                    >PARTICIPATE</v-btn
                   >
                 </div>
               </div>
@@ -249,12 +171,15 @@
               </div>
 
               <div v-if="f.isAuthor">
-
-                
-
-                <!-- <v-icon @click="deleteFB(f.id)" :icon="`mdiSvg:${mdiDelete}`"></v-icon> -->
                 <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
-                <v-btn @click="openUpdateModal(f)">수정하기</v-btn>
+                <v-btn style="margin-left: 11px" @click="openUpdateModal(f)">수정하기</v-btn>
+                <UpdateFindBoardModal
+                  :isOpen="isUpdateModalOpen"
+                  :findBoard="selectedFindBoard"
+                  @close="closeUpdateModal"
+                  @updated="loadFindBoard"
+                />
+                <!-- Update모달 -->
               </div>
             </v-col>
           </v-card>
@@ -300,77 +225,24 @@
     <div v-if="loading" class="text-center my-4">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
-
-    <v-dialog v-model="isUpdateModalOpen" max-width="600px">
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">게시글 수정하기</span>
-        </v-card-title>
-        <v-card-text>
-          <v-form ref="updateForm" @submit.prevent="updateFindBoard">
-            <v-text-field
-              v-model="updateTitle"
-              :rules="[(v) => !!v || '제목을 입력하세요.']"
-              hide-details="auto"
-              label="제목"
-              outlined
-              class="mb-4"
-              required
-            ></v-text-field>
-            <v-textarea
-              v-model="updateContents"
-              :rules="[(v) => !!v || '내용을 입력하세요.']"
-              label="내용"
-              outlined
-              rows="4"
-              class="mb-4"
-              required
-            ></v-textarea>
-            <v-row>
-              <v-col cols="6">
-                <v-text-field
-                  v-model="updateDate"
-                  label="날짜 선택"
-                  type="date"
-                  outlined
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  v-model="updateTime"
-                  label="마감 시한"
-                  type="time"
-                  outlined
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-select
-              v-model="updateTotalCapacity"
-              :rules="[(v) => !!v || '희망 인원을 선택하세요.']"
-              :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-              label="희망 인원"
-              outlined
-              required
-            ></v-select>
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" text @click="closeUpdateModal">취소</v-btn>
-          <v-btn color="pink" @click="updateFindBoard">수정하기</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
 <script>
 import axios from "axios";
+import CreateFindBoardModal from "./CreateFindBoardModal.vue";
+import UpdateFindBoardModal from "./UpdateFindBoardModal.vue"; // Update 모달 컴포넌트 추가
+import ImminentClosingBoards from './ImminentClosingBoards.vue'; // 새로 추가된 컴포넌트
 
 export default {
+  components: {
+    CreateFindBoardModal,
+    UpdateFindBoardModal, // Update 모달 컴포넌트 등록
+    ImminentClosingBoards, // 새로 추가된 컴포넌트 등록
+  },
   data() {
     return {
+      searchValue: "",
       searchType: "optional",
       searchOptions: [
         { text: "선택", value: "optional" },
@@ -378,35 +250,13 @@ export default {
         { text: "내용", value: "contents" },
       ],
 
-      // 권한
-      isAuthor: false,
-      isLogin: false,
-      userRole: null,
-      //
-
-      searchValue: "",
-
-      title: "",
-      contents: "",
-      date: "",
-      time: "",
-      totalCapacity: "",
-      findBoardList: [],
-      loading: true,
-      
-      searchBy: "",
-      searchTerm: "",
-
-      // Update Modal 관련 데이터
+      isCreateModalOpen: false,
       isUpdateModalOpen: false,
-      updateId: null,
-      updateTitle: "",
-      updateContents: "",
-      updateDate: "",
-      updateTime: "",
-      updateTotalCapacity: "",
+      selectedFindBoard: null,
+      loading: true,
 
-      // 페이징 데이터
+      findBoardList: [],
+
       pageSize: 6,
       currentPage: 1,
       totalPages: 1,
@@ -416,15 +266,6 @@ export default {
     };
   },
   mounted() {
-    const now = new Date();
-    // 현지 날짜를 YYYY-MM-DD 형식으로 변환
-    this.date = now.toLocaleDateString("en-CA"); // 'en-CA'는 'YYYY-MM-DD' 형식을 반환합니다.
-    // 현지 시간 설정
-    this.time = `${now.getHours().toString().padStart(2, "0")}:${now
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
-
     const userRole = localStorage.getItem("role");
     if (userRole === "USER") {
       this.isUser = true;
@@ -443,7 +284,6 @@ export default {
       return pages;
     },
   },
-
   created() {
     const token = localStorage.getItem("token");
     if (token) {
@@ -455,7 +295,19 @@ export default {
     this.checkAuthor();
   },
   methods: {
-    // 권한
+    openCreateModal() {
+      this.isCreateModalOpen = true;
+    },
+    closeCreateModal() {
+      this.isCreateModalOpen = false;
+    },
+    openUpdateModal(findBoard) {
+      this.selectedFindBoard = findBoard;
+      this.isUpdateModalOpen = true;
+    },
+    closeUpdateModal() {
+      this.isUpdateModalOpen = false;
+    },
     async checkAuthor() {
       try {
         const myInfo = await axios.get(
@@ -476,14 +328,13 @@ export default {
         console.log(e);
       }
     },
-
-    // 권한
-
     getTimeDifferenceInMinutes(expirationTime) {
+      
       const now = new Date();
       const expiration = new Date(expirationTime);
       const differenceInMs = expiration - now; // 차이를 밀리초 단위로 계산
       const differenceInMinutes = Math.floor(differenceInMs / 1000 / 60); // 분 단위로 변환
+      
       if (differenceInMinutes > 30) {
         // 30분 이상 남았으면 날짜만 반환
         return expirationTime.substring(0, 10); // YYYY-MM-DD 형식 반환
@@ -499,36 +350,6 @@ export default {
       this.findBoardList = [];
       await this.loadFindBoard();
     },
-    onSubmit() {
-      if (this.$refs.form.validate()) {
-        this.registerFindBoard();
-      } else {
-        alert("모든 필드를 올바르게 작성해 주세요.");
-      }
-    },
-    async registerFindBoard() {
-      try {
-        let expirationDateTime = new Date(
-          `${this.date}T${this.time}`
-        );
-        expirationDateTime.setHours(expirationDateTime.getHours()+9);
-        expirationDateTime = expirationDateTime.toISOString();
-        const requestData = {
-          title: this.title,
-          contents: this.contents,
-          expirationTime: expirationDateTime,
-          totalCapacity: this.totalCapacity,
-        };
-
-        await axios.post(`http://localhost:8080/findboard/create`, requestData);
-
-        alert("작성 완료");
-        window.location.reload();
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        alert("작성 실패");
-      }
-    },
     async loadFindBoard() {
       this.loading = true;
       try {
@@ -539,12 +360,8 @@ export default {
           searchValue: this.searchValue,
         };
 
-        const response = await axios.get(
-          `http://localhost:8080/findboard/list`,
-          { params }
-        );
-        console.log(response.data.result.content.writer);
-        // 데이터 변환 부분 추가
+        const response = await axios.get(`http://localhost:8080/findboard/list`,{ params });
+
         this.findBoardList = response.data.result.content.map((item) => {
           return {
             ...item,
@@ -561,7 +378,6 @@ export default {
         this.loading = false;
       }
     },
-
     formatDateTime(isoString) {
       const date = new Date(isoString);
       const formattedDate = `${date.getFullYear()}년 ${
@@ -589,66 +405,38 @@ export default {
         console.error("삭제 실패:", error);
       }
     },
-    async updateFindBoard() {
-      try {
-        const updateExpirationDateTime = new Date(
-          `${this.updateDate}T${this.updateTime}:00`
-        );
+    async participateInFindBoard(findBoardId) {
+  try {
+    // 참가 목록 가져오기
+    const response = await axios.get('http://localhost:8080/attendance/list');
 
-        const requestData = {
-          title: this.updateTitle,
-          contents: this.updateContents,
-          expirationDate: updateExpirationDateTime,
-          totalCapacity: this.updateTotalCapacity,
-        };
+    const attendances = response.data.result;
 
-        const response = await axios.put(
-          `http://localhost:8080/findboard/update/${this.updateId}`,
-          requestData
-        );
-        console.log("업데이트 완료:", response.data);
-        alert("업데이트 완료");
-        this.closeUpdateModal();
-        this.loadFindBoard();
-      } catch (error) {
-        console.error("업데이트 실패:", error);
-      }
-    },
-    closeUpdateModal() {
-      this.isUpdateModalOpen = false;
-    },
-    openUpdateModal(findBoard) {
-      this.updateId = findBoard.id;
-      this.updateTitle = findBoard.title;
-      this.updateContents = findBoard.contents;
-      this.updateDate = findBoard.createdTime.substr(0, 10);
-      this.updateTime = findBoard.createdTime.substr(11, 5);
-      this.updateTotalCapacity = findBoard.totalCapacity;
-      this.isUpdateModalOpen = true;
-    },
-    async participateInFindBoard(id) {
-      try {
-        const response = await axios.put(
-          `http://localhost:8080/findboard/participate/${id}`
-        );
+    // 참가 여부 확인
+    // 현재 사용자의 memberId를 확인하는 대신, 단순히 참가 여부를 확인
+    const alreadyParticipated = attendances.some(attendance => 
+      attendance.findBoardId === findBoardId
+    );
 
-        if (response.data.status_code === 200) {
-          alert("참여 완료");
-          this.loadFindBoard(); // 업데이트된 데이터를 다시 로드
-        } else {
-          alert("새로고침 후 다시 시도해주세요");
-        }
-      } catch (error) {
-        if (error.response && error.response.status === 400) {
-          alert("자신의 글에는 참가 신청을 할수없습니다.");
-        } else if (error.response && error.response.status === 404) {
-          alert("게시글이 존재하지 않거나 삭제된 게시글입니다.");
-        } else {
-          console.error("참가 요청 실패:", error);
-          alert("참가 요청에 실패했습니다.");
-        }
-      }
-    },
+    if (alreadyParticipated) {
+      alert("이미 이 게시글에 참가했습니다.");
+      return;
+    }
+
+    // 참가 처리
+    const participateResponse = await axios.put(`http://localhost:8080/findboard/participate/${findBoardId}`);
+
+    if (participateResponse.data.status_code === 200) {
+      alert("참여 완료");
+      this.loadFindBoard(); // 업데이트된 데이터를 다시 로드
+    } else {
+      alert("새로고침 후 다시 시도해주세요");
+    }
+  } catch (error) {
+    console.error("참가 요청 실패:", error);
+    alert("자신의 게시글에는 참여할 수 없습니다.");
+  }
+},
     setPage(page) {
       this.currentPage = page;
       this.loadFindBoard();
@@ -702,14 +490,15 @@ body,
 }
 
 .v-card {
-  margin-bottom: 16px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+
 }
+
 /* 시간 마감 시 변경되는 색상 */
 .expired-card {
   background-color: #dbaaaa; /* 연한 빨간색 배경 */
   color: #d9979d; /* 진한 빨간색 텍스트 */
 }
+
 .pagination-controls {
   text-align: center;
   display: inline-flex;
@@ -736,7 +525,7 @@ body,
   color: rgb(254, 254, 254);
 }
 
-.pagination-arrow .disabled {
+.pagination-arrow.disabled {
   color: #ccc;
   cursor: not-allowed;
 }
@@ -745,6 +534,4 @@ body,
   font-size: 20px;
   vertical-align: middle;
 }
-
-
 </style>
