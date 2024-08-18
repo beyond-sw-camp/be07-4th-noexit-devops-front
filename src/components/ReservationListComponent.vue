@@ -34,16 +34,16 @@
                                         </v-btn>
                                     </v-list-item-action>
 
-
-                                    
-
                                     <!-- Actions for the user -->
                                     <v-list-item-action v-if="!isOwner">
-                                        <v-btn v-if="reservation.reservationStatus === 'WAITING'" color="error"
-                                            @click="cancelReservation(reservation)">
+                                        <v-btn
+                                            v-if="reservation.reservationStatus === 'WAITING'"
+                                            color="error"
+                                            @click="cancelReservation(reservation)"
+                                        >
                                             예약 취소
                                         </v-btn>
-                                        <v-btn v-if="reservation.reservationStatus === 'ACCEPT'" color="primary"
+                                        <v-btn v-if="reservation.reservationStatus === 'ACCEPT' && !reservation.reviewWritten" color="primary"
                                             @click="goToReviewCreate(reservation)">
                                             리뷰 작성
                                         </v-btn>
@@ -77,6 +77,9 @@ export default {
             } else {
                 this.fetchUserReservations();
             }
+            if (this.$route.query.afterReview) {
+            this.reviewCompleted(this.$route.params.reservationId);
+        }
         }
     },
     methods: {
@@ -192,8 +195,20 @@ export default {
             }
         },
         goToReviewCreate(reservation) {
-            this.$router.push({ name: 'ReviewCreate', params: { reservationId: reservation.id } });
+            this.$router.push({
+                name: 'ReviewCreate',
+                query: { reservationId: reservation.id }
+            });
         },
+        
+        async reviewCompleted(reservationId) {
+            const reservation = this.reservations.find(r => r.id === reservationId);
+            if (reservation) {
+                reservation.reviewWritten = true;
+                console.log("Review completed for reservation: ", reservation);
+            }
+        }
+
     },
 };
 </script>
