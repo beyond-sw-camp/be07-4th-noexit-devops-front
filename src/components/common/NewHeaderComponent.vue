@@ -4,11 +4,11 @@
             <v-btn text class="title-btn" :to="{ path: '/' }" :class="{ active: isActive('/') }">NoExit</v-btn>
             <v-divider class="mx-3" vertical></v-divider>
             <v-btn v-if="userRole === 'USER'" text class="link-btn" :to="{ path: '/board/list' }"
-                :class="{ active: isActive('/board/list') }" style="font-weight:300">Board</v-btn>
+                :class="{ active: isActive('/board/list') }">Board</v-btn>
             <v-btn v-if="userRole === 'USER'" text class="link-btn" :to="{ path: '/findboard' }"
-                :class="{ active: isActive('/findboard') }" style="font-weight:300">Escape-With-Me</v-btn>
-            <v-btn text class="link-btn" :to="{ path: '/' }" :class="{ active: isActive('/board/list') }"
-                style="font-weight:300">Ranking</v-btn>
+                :class="{ active: isActive('/findboard') }">Escape-With-Me</v-btn>
+            <v-btn text class="link-btn" :to="{ path: '/' }"
+                :class="{ active: isActive('/board/list') }">Ranking</v-btn>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon :to="isLogin ? '/mypage' : '/login'">
@@ -20,10 +20,10 @@
 
         <!-- 알림 기능 -->
         <v-btn icon>
-            <v-badge color="red" :content="unreadNotificationsCount" overlap>
+            <v-badge color="red" :content="unreadNotificationsCount" v-if="unreadNotificationsCount > 0" overlap>
                 <v-icon>mdi-bell</v-icon>
             </v-badge>
-
+            <v-icon v-else>mdi-bell</v-icon>
 
             <v-menu activator="parent" offset-y>
                 <v-list-item>
@@ -78,6 +78,7 @@ export default {
     },
     computed: {
         unreadNotificationsCount() {
+            console.log(this.notifications)
             return this.notifications.filter(notification => notification.delYn === 'N').length;
         },
     },
@@ -132,6 +133,7 @@ export default {
                     },
                 });
                 this.notifications = response.data.result;
+                console.log(this.notifications)
 
             } catch (error) {
                 console.error('알림 목록을 가져오는 중 오류 발생:', error);
@@ -212,8 +214,7 @@ body {
 
 .link-btn {
     font-size: 18px;
-    font-weight: 400;
-    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 100;
     position: relative;
     color: white;
 }
