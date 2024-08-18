@@ -48,25 +48,31 @@
         </v-form>
       </v-col>
 
-      
-
       <!-- 마감 임박 게시글 섹션 -->
       <v-col cols="12">
         <h1
-        :style="{
-          color: 'black',
-          fontSize: '3rem', /* 글자 크기 조정 */
-          fontWeight: 'bold', /* 글자 굵기 조정 */
-        }"
-      >
-        마감 임박 With ME!
-      </h1>
+          :style="{
+            color: 'black',
+            fontSize: '3rem', /* 글자 크기 조정 */
+            fontWeight: 'bold', /* 글자 굵기 조정 */
+          }"
+        >
+          마감 임박 With ME!
+        </h1>
         <ImminentClosingBoards />
       </v-col>
       
       <br />
 
-      <v-row justify="center">
+      <!-- 검색 결과가 없는 경우 -->
+      <v-row v-if="findBoardList.length === 0">
+        <v-col>
+          <p>검색 결과가 없습니다.</p>
+        </v-col>
+      </v-row>
+
+      <!-- 게시글 리스트 -->
+      <v-row justify="center" v-else>
         <v-col
           cols="6"
           v-for="f in findBoardList"
@@ -74,25 +80,24 @@
           class="d-flex justify-center"
         >
           <v-card
-          :style="{
-            color: 'white',
-            backgroundColor: 'black',
-            border: '0px solid rgb(6, 6, 6)',
-            marginTop: '15px',
-            marginLeft: '0px',
-            marginRight: '0px',
-            padding: '10px',
-            height: '500px',
-            width: '98%',
-            maxWidth: '2000px'
-          }"
-            :class="{'expired-card':getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',}"
+            :style="{
+              color: 'white',
+              backgroundColor: 'black',
+              border: '0px solid rgb(6, 6, 6)',
+              marginTop: '15px',
+              marginLeft: '0px',
+              marginRight: '0px',
+              padding: '10px',
+              height: '500px',
+              width: '98%',
+              maxWidth: '2000px'
+            }"
+            :class="{'expired-card': getTimeDifferenceInMinutes(f.expirationTime) === '마감됨'}"
             variant="outlined"
             class="pa-4 d-flex align-center"
             outlined
             style="width: 98%; max-width: 2000px"
             rounded="lg"
-            
           >
             <v-col cols="4">
               <v-img
@@ -120,9 +125,7 @@
 
                 <div class="ml-auto text-right">
                   <div>
-                    <strong
-                      >작성 시각: {{ formatDateTime(f.createdTime) }}</strong
-                    >
+                    <strong>작성 시각: {{ formatDateTime(f.createdTime) }}</strong>
                   </div>
                   <div
                     class="text-right"
@@ -141,9 +144,7 @@
                     height="50"
                     color="pink"
                     class="mt-2"
-                    :disabled="
-                      getTimeDifferenceInMinutes(f.expirationTime) <= 0
-                    "
+                    :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
                     @click="participateInFindBoard(f.id)"
                     >PARTICIPATE</v-btn
                   >
@@ -160,10 +161,7 @@
                 v-if="getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'"
                 style="text-align: right"
               >
-                <strong
-                  >마감 시각:
-                  {{ getTimeDifferenceInMinutes(f.expirationTime) }}</strong
-                >
+                <strong>마감 시각: {{ getTimeDifferenceInMinutes(f.expirationTime) }}</strong>
               </div>
               <div v-else style="text-align: right">
                 <em>FINISH</em>
@@ -178,7 +176,6 @@
                   @close="closeUpdateModal"
                   @updated="loadFindBoard"
                 />
-                <!-- Update모달 -->
               </div>
             </v-col>
           </v-card>
@@ -230,14 +227,14 @@
 <script>
 import axios from "axios";
 import CreateFindBoardModal from "./CreateFindBoardModal.vue";
-import UpdateFindBoardModal from "./UpdateFindBoardModal.vue"; // Update 모달 컴포넌트 추가
-import ImminentClosingBoards from './ImminentClosingBoards.vue'; // 새로 추가된 컴포넌트
+import UpdateFindBoardModal from "./UpdateFindBoardModal.vue"; 
+import ImminentClosingBoards from './ImminentClosingBoards.vue'; 
 
 export default {
   components: {
     CreateFindBoardModal,
-    UpdateFindBoardModal, // Update 모달 컴포넌트 등록
-    ImminentClosingBoards, // 새로 추가된 컴포넌트 등록
+    UpdateFindBoardModal,
+    ImminentClosingBoards,
   },
   data() {
     return {
@@ -248,14 +245,11 @@ export default {
         { text: "제목", value: "title" },
         { text: "내용", value: "contents" },
       ],
-
       isCreateModalOpen: false,
       isUpdateModalOpen: false,
       selectedFindBoard: null,
       loading: true,
-
       findBoardList: [],
-
       pageSize: 6,
       currentPage: 1,
       totalPages: 1,
@@ -345,38 +339,51 @@ export default {
         return "마감됨";
       }
     },
-    async searchFindBoard() {
-      this.findBoardList = [];
-      await this.loadFindBoard();
-    },
     async loadFindBoard() {
-      this.loading = true;
-      try {
-        let params = {
-          size: this.pageSize,
-          page: this.currentPage - 1,
-          searchType: this.searchType,
-          searchValue: this.searchValue,
-        };
+  this.loading = true;
+  try {
+    let params = {
+      size: this.pageSize,
+      page: this.currentPage - 1,
+    };
 
-        const response = await axios.get(`http://localhost:8080/findboard/list`,{ params });
-
-        this.findBoardList = response.data.result.content.map((item) => {
-          return {
-            ...item,
-            formattedExpirationTime: this.formatDateTime(item.expirationTime),
-          };
-        });
-
-        this.totalPages = Math.ceil(
-          response.data.result.totalElements / this.pageSize
-        );
-      } catch (error) {
-        console.error("Error loading findBoardList:", error);
-      } finally {
-        this.loading = false;
+    // 검색 조건이 있을 경우 추가
+    if (this.searchType !== 'optional' && this.searchValue.trim() !== '') {
+      if (this.searchType === 'title') {
+        params.title = this.searchValue;
+      } else if (this.searchType === 'contents') {
+        params.contents = this.searchValue;
       }
-    },
+      // 페이지 번호를 1로 리셋
+      this.currentPage = 1;
+    }
+
+    const response = await axios.get(`http://localhost:8080/findboard/list`, { params });
+
+    const resultList = response.data.result.content;
+
+    if (resultList.length === 0) {
+      alert("검색 결과가 없습니다.");
+      return; // 검색 결과가 없으면 리스트를 갱신하지 않음
+    }
+
+    this.findBoardList = resultList.map((item) => {
+      return {
+        ...item,
+        formattedExpirationTime: this.formatDateTime(item.expirationTime),
+      };
+    });
+
+    this.totalPages = Math.ceil(
+      response.data.result.totalElements / this.pageSize
+    );
+  } catch (error) {
+    console.error("Error loading findBoardList:", error);
+  } finally {
+    this.loading = false;
+  }
+}
+,
     formatDateTime(isoString) {
       const date = new Date(isoString);
       const formattedDate = `${date.getFullYear()}년 ${
@@ -405,45 +412,42 @@ export default {
       }
     },
     async participateInFindBoard(findBoardId) {
-  try {
-    // 현재 사용자 정보 가져오기 (이메일 포함)
-    const myInfoResponse = await axios.get(
-      `${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`
-    );
-    const userEmail = myInfoResponse.data.result.email;
+      try {
+        // 현재 사용자 정보 가져오기 (이메일 포함)
+        const myInfoResponse = await axios.get(
+          `${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`
+        );
+        const userEmail = myInfoResponse.data.result.email;
 
-    // 특정 게시글의 참가자 목록 가져오기
-    const attendanceResponse = await axios.get(`http://localhost:8080/attendance/list/findBoard/${findBoardId}`);
+        // 특정 게시글의 참가자 목록 가져오기
+        const attendanceResponse = await axios.get(`http://localhost:8080/attendance/list/findBoard/${findBoardId}`);
 
-    const attendances = attendanceResponse.data.result;
+        const attendances = attendanceResponse.data.result;
 
-    // 특정 게시글에 대한 참가 여부 확인 (이메일을 기반으로)
-    const alreadyParticipated = attendances.some(attendance => 
-      attendance.email === userEmail
-    );
+        // 특정 게시글에 대한 참가 여부 확인 (이메일을 기반으로)
+        const alreadyParticipated = attendances.some(attendance => 
+          attendance.email === userEmail
+        );
 
-    if (alreadyParticipated) {
-      alert("이미 이 게시글에 참가했습니다.");
-      return;
-    }
+        if (alreadyParticipated) {
+          alert("이미 이 게시글에 참가했습니다.");
+          return;
+        }
 
-    // 참가 처리
-    const participateResponse = await axios.put(`http://localhost:8080/findboard/participate/${findBoardId}`);
+        // 참가 처리
+        const participateResponse = await axios.put(`http://localhost:8080/findboard/participate/${findBoardId}`);
 
-    if (participateResponse.data.status_code === 200) {
-      alert("참여 완료");
-      window.location.reload();
-      // this.loadFindBoard(); // 업데이트된 데이터를 다시 로드
-    } else {
-      alert("새로고침 후 다시 시도해주세요");
-    }
-  } catch (error) {
-    console.error("참가 요청 실패:", error);
-    alert("자신의 게시글에는 참여할 수 없습니다.");
-  }
-}
-
-,
+        if (participateResponse.data.status_code === 200) {
+          alert("참여 완료");
+          window.location.reload();
+        } else {
+          alert("새로고침 후 다시 시도해주세요");
+        }
+      } catch (error) {
+        console.error("참가 요청 실패:", error);
+        alert("자신의 게시글에는 참여할 수 없습니다.");
+      }
+    },
     setPage(page) {
       this.currentPage = page;
       this.loadFindBoard();
@@ -474,6 +478,11 @@ export default {
         this.setPage(this.currentPageRangeStart);
       }
     },
+    resetSearch() {
+      this.searchType = 'optional';
+      this.searchValue = '';
+      this.loadFindBoard(); // 초기화 후 전체 리스트 로드
+    },
   },
 };
 </script>
@@ -497,13 +506,12 @@ body,
 }
 
 .v-card {
-
+  /* 카드 스타일은 여기에서 설정 */
 }
 
-/* 시간 마감 시 변경되는 색상 */
 .expired-card {
-  background-color: #dbaaaa; /* 연한 빨간색 배경 */
-  color: #d9979d; /* 진한 빨간색 텍스트 */
+  background-color: #dbaaaa;
+  color: #d9979d;
 }
 
 .pagination-controls {
