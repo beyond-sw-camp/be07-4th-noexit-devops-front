@@ -18,11 +18,12 @@
                                     <v-row>
                                         <v-col class="stars">
                                             <v-icon v-for="n in 5" :key="n"
-                                                :color="n <= difficultyLevel ? 'pink' : 'grey'">mdi-star</v-icon>
-                                            <span class="difficulty-level">{{ difficultyLevel }}</span>
+                                                :color="n <= Math.round(averageRating) ? 'pink' : 'grey'">mdi-star</v-icon>
+                                            <span class="difficulty-level">{{ averageRating.toFixed(1) }}</span> <!-- 소수점 1자리 -->
                                         </v-col>
                                     </v-row>
                                 </div>
+
 
                                 <v-divider class="my-3"></v-divider>
 
@@ -184,7 +185,8 @@ export default {
             availableHours: [], // 예약 가능한 시간
             reviewCount: 0, // 총 리뷰 개수
             isPriceModalOpen: false, // 모달 창의 상태 관리
-            calculatedPrices: [] // 가격 배열
+            calculatedPrices: [], // 가격 배열
+            averageRating: 0, // 평균 별점 변수 추가
         };
     },
     created() {
@@ -199,6 +201,7 @@ export default {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/detail/${gameId}`);
                 this.game = response.data.result;
                 this.difficultyLevel = this.getDifficultyLevel(this.game.difficult);
+                this.averageRating = this.game.averageRating || 0;
             } catch (e) {
                 console.error(e);
                 alert('게임 정보를 불러오는 데 실패했습니다.');
