@@ -5,11 +5,22 @@
         <v-form>
           <v-row>
             <v-col>
-              <v-select v-model="category" :items="categoryOptions" item-title="text" item-value="value">
+              <v-select
+                v-model="category"
+                :items="categoryOptions"
+                item-title="text"
+                item-value="value"
+                :style="{ backgroundColor: '#f8d7da' }"
+              >
               </v-select>
             </v-col>
             <v-col>
-              <v-text-field v-model="titleValue" required label="제목을 입력해주세요." style="width: 850px">
+              <v-text-field
+                v-model="titleValue" required
+                label="제목을 입력해주세요."
+                style="width: 850px"
+                :style="{ backgroundColor: '#f8d7da' }"
+              >
               </v-text-field>
             </v-col>
             <v-col cols="auto">
@@ -21,9 +32,19 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-file-input label="첨부 이미지" accept="image/*" multiple @change="fileUpdate">
+        <v-file-input 
+    label="첨부 이미지"
+    :style="{ backgroundColor: '#f8d7da' }"
+    accept="image/*" 
+    multiple 
+    @change="fileUpdate">
         </v-file-input>
-        <v-text-field v-model="contentValue" required label="내용을 입력해주세요." style="width: 1200px; height: 700px">
+        <v-text-field
+          v-model="contentValue" required
+          label="내용을 입력해주세요."
+          style="width: 1200px; height: 700px"
+          :style="{ backgroundColor: '#f8d7da' }"
+        >
         </v-text-field>
       </v-col>
     </v-row>

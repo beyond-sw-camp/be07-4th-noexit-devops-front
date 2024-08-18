@@ -10,11 +10,12 @@
                 :items="searchOptions"
                 item-title="text"
                 item-value="value"
+                :style="{ backgroundColor: '#f8d7da' }"
               >
               </v-select>
             </v-col>
             <v-col>
-              <v-text-field v-model="searchValue" label="Search">
+              <v-text-field v-model="searchValue" label="Search" :style="{ backgroundColor: '#f8d7da' }">
               </v-text-field>
             </v-col>
             <v-col cols="auto">
@@ -29,11 +30,11 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-card>
+        <v-card style="background-color: #1b1b1b; border: 1px solid white">
           <v-card-text>
-            <v-table>
-              <thead>
-                <tr>
+            <v-table style="background-color: #1b1b1b; color: white; border: 1px solid white">
+              <thead style="background-color: #E91E63; color: white; border: 1px solid white" >
+                <tr >
                   <th style="text-align: center;">썸네일</th>
                   <th style="text-align: center;">제목</th>
                   <th style="text-align: center;">작성자</th>
@@ -43,7 +44,7 @@
                   <th style="text-align: center;">댓글수</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody  style="background-color: #1b1b1b; color: white; border: 1px solid white" >
                 <tr v-for="b in boardList" :key="b.id">
                   <td>
                     <a :href="`/board/detail/${b.id}`" style="text-decoration:none;">
@@ -51,22 +52,18 @@
                       :src="b.thumbnail"
                       style="height: 70px; width: auto"
                     ></v-img>
-                      <v-img
-                        :src="b.thumbnail"
-                        style="height: 70px; width: auto"
-                      ></v-img>
                     </a>
                   </td>
                   <td style="width: 550px; text-align: center;">
-                    <a :href="`/board/detail/${b.id}`" style="text-decoration:none;">
+                    <a :href="`/board/detail/${b.id}`" style="text-decoration:none; color: white">
                       {{ b.title }}
                     </a>
                   </td>
-                  <td style="width: 100px; text-align: center;">{{ b.writer }}</td>
-                  <td style="width: 100px; text-align: center;">{{ b.createdDate }}</td>
-                  <td style="width: 100px; text-align: center;">{{ b.boardHits }}</td>
-                  <td style="width: 100px; text-align: center;">{{ b.likes }}</td>
-                  <td style="width: 100px; text-align: center;">{{ b.comments }}</td>
+                  <td style="width: 90px; text-align: center;">{{ b.writer }}</td>
+                  <td style="width: 180px; text-align: center;">{{ b.createdDate }}</td>
+                  <td style="width: 70px; text-align: center;">{{ b.boardHits }}</td>
+                  <td style="width: 70px; text-align: center;">{{ b.likes }}</td>
+                  <td style="width: 70px; text-align: center;">{{ b.comments }}</td>
                 </tr>
               </tbody>
             </v-table>
@@ -189,6 +186,14 @@ export default {
 </script>
 
 <style scoped>
+
+@import url("https://webfontworld.github.io/gmarket/GmarketSans.css");
+
+* {
+  font-family: "GmarketSansMedium", sans-serif;
+  font-weight: 1000;
+}
+
 .pagination-controls {
   display: flex;
   justify-content: center;

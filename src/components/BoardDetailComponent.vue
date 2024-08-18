@@ -1,3 +1,4 @@
+
 <template>
 
   <v-container style="color:#ffffff">
@@ -71,17 +72,14 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-table>
+        <v-table style="background-color: #1b1b1b;">
           <tbody>
-            <tr v-for="c in board.comments" :key="c.id">
-              <td style="width: 200px">{{ c.writer }}</td>
+            <tr style="background-color: #1b1b1b; color: #ffffff;" v-for="c in board.comments" :key="c.id">
+              <td style="width: 150px">{{ c.writer }}</td>
               <td style="width: 800px">
                 <!-- 수정 버튼 누르면 댓글 수정 -->
                 <template
-                  v-if="
-                    this.isCommentAuthor(c.writer) && editingCommentId === c.id
-                  "
-                >
+                  v-if="this.isCommentAuthor(c.writer) && editingCommentId === c.id">
                   <v-text-field
                     v-model="editedContents"
                     multiline
@@ -93,38 +91,23 @@
                   {{ c.contents }}
                 </template>
               </td>
-              <td style="width: 100px">{{ c.createdTime }}</td>
+              <td style="width: 200px">{{ c.createdTime }}</td>
+              <td style="width: 200px;">
+                <div>
+                  <v-icon small color="blue-lighten-2" @click ="likeComment(c.id)" style="margin-right: 5px;">mdi-thumb-up</v-icon>{{ c.likes }}
+                  <v-icon small color="red-lighten-2" @click ="dislikeComment(c.id)" style="margin-left: 10px; margin-right: 5px;">mdi-thumb-down</v-icon>{{ c.dislikes }}
+                </div>
+              </td>
               <!-- 댓글 작성자가 나일 경우 내 눈에 보이는 버튼들 -->
               <td
-                v-if="this.isCommentAuthor(c.writer)"
-                class="d-flex flex-row"
-                style="text-align: right"
-              >
-                <!-- 댓글 작성자가 나면서 이 댓글이 수정할 댓글일 때(수정 버튼 누름) -->
-                <template v-if="editingCommentId === c.id">
+                v-if="this.isCommentAuthor(c.writer)" style="width: 200px; text-align: right">
+                <div v-if="editingCommentId === c.id">
                   <v-btn color="pink" @click="saveComment(c.id)">저장</v-btn>
                   <v-btn color="grey" @click="cancelEditing">취소</v-btn>
-                </template>
-                <!-- 댓글 작성자가 나긴 한데 이 댓글이 수정할 댓글은 아님(수정 버튼 안 누름) -->
-                <template v-else>
-                  <v-btn color="pink" @click="startEditing(c)">수정</v-btn>
-                  <v-btn color="black" @click="deleteComment(c.id)">삭제</v-btn>
-                </template>
-              </td>
-              <td style="width: 100px">
-                <div>
-                  <v-btn small
-                    color="blue-lighten-2"
-                    icon="mdi-thumb-up"
-                    variant="text"
-                    @click = "likeComment(c.id)"
-                  ></v-btn>{{ c.likes }}
-                  <v-btn small
-                    color="red-lighten-2"
-                    icon="mdi-thumb-down"
-                    variant="text"
-                    @click = "likeComment(c.id)"
-                  ></v-btn>{{ c.dislikes }}
+                </div>
+                <div v-else>
+                  <v-icon small color="white" @click ="startEditing(c)" style="margin-right: 10px;">mdi-pencil</v-icon>
+                  <v-icon small color="white" @click ="deleteComment(c.id)" style="margin-right: 10px;">mdi-delete</v-icon>
                 </div>
               </td>
             </tr>
@@ -134,7 +117,7 @@
     </v-row>
     <v-row style="margin-bottom: 100px">
       <v-col>
-        <v-form @submit.prevent="createComment">
+        <v-form v-if="!this.isAuthor" @submit.prevent="createComment">
           <v-row>
             <v-col>
               <v-text-field v-model="commentContents"> </v-text-field>
@@ -278,14 +261,7 @@ export default {
     isCommentAuthor(commentWriter) {
       return this.myInfo.nickname === commentWriter;
     },
-    // updateComment(commentId) {
-    //   try {
-    //     this.$router.push(`/comment/update/${commentId}`);
-    //   } catch (e) {
-    //     console.log(e);
-    //     alert("게시글 수정 실패했습니다.");
-    //   }
-    // },
+ 
     async deleteComment(commentId) {
       const confirmed = confirm("정말로 삭제하시겠습니까?");
       if (confirmed) {
@@ -327,10 +303,14 @@ export default {
     },
      async likeComment(commentId) {
         try {
-          await axios.patch(
+          const response = await axios.patch(
             `${process.env.VUE_APP_API_BASIC_URL}/comment/like/${commentId}`
           );
-          alert("댓글을 좋아합니다.");
+          if(response.data.result) {
+            alert("댓글을 좋아합니다.");
+          }else{
+            alert("좋아요를 취소합니다.");
+          }
           window.location.reload();
         } catch (e) {
           console.log(e);
@@ -339,10 +319,14 @@ export default {
     },
      async dislikeComment(commentId) {
         try {
-          await axios.patch(
+          const response = await axios.patch(
             `${process.env.VUE_APP_API_BASIC_URL}/comment/dislike/${commentId}`
           );
-          alert("댓글을 싫어합니다.");
+          if(response.data.result) {
+            alert("댓글을 싫어합니다.");
+          }else{
+            alert("싫어요를 취소합니다.");
+          }
           window.location.reload();
         } catch (e) {
           console.log(e);
@@ -352,3 +336,12 @@ export default {
   },
 };
 </script>
+
+<style>
+@import url("https://webfontworld.github.io/gmarket/GmarketSans.css");
+
+* {
+  font-family: "GmarketSansMedium", sans-serif;
+  font-weight: 1000;
+}
+</style>

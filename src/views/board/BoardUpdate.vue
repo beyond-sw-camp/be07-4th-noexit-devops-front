@@ -6,23 +6,29 @@
           <v-row>
             <v-col>
               <v-select
-                v-model="category"
+                style="width: 100px"
+                v-model="editedBoardType"
                 :items="categoryOptions"
                 item-title="text"
                 item-value="value"
+                :style="{ backgroundColor: '#f8d7da' }"
               >
               </v-select>
             </v-col>
             <v-col>
               <v-text-field
                 v-model="editedTitle" required
-                style="width: 850px"
+                style="width: 700px"
+                :style="{ backgroundColor: '#f8d7da' }"
               >
               </v-text-field>
             </v-col>
             <v-col cols="auto">
-              <v-btn color="pink" @click="updateBoard"
+              <v-btn color="pink" @click="saveEditing"
                 >수정하기</v-btn
+              >
+              <v-btn color="grey" @click="cancelEditing"
+                >취소하기</v-btn
               >
             </v-col>
           </v-row>
@@ -32,6 +38,7 @@
     <v-row>
       <v-col>
         <v-file-input 
+        :style="{ backgroundColor: '#f8d7da' }"
     label="첨부 이미지" 
     accept="image/*" 
     multiple 
@@ -40,6 +47,7 @@
         <v-text-field
           v-model="editedContents"
           style="width: 1200px; height: 700px"
+          :style="{ backgroundColor: '#f8d7da' }"
         >
         </v-text-field>
       </v-col>
@@ -54,60 +62,51 @@ export default {
     props: ["id"],
   data() {
     return {
-      titleValue: "",
-      contentValue: "",
-      boardType: "",
+      board: {},
+      editedTitle: "",
+      editedContents: "",
+      editedBoardType: "",
       category: "카테고리",
       categoryOptions: [
         { text: "FREE", value: "FREE" },
         { text: "STRATEGY", value: "STRATEGY" },
       ],
-
-      files: [],
+      editedFiles: [], 
     };
   },
+  async created() {
+    this.fetchBoardInfo();
+  },
   methods: {
-    async updateBoard() {
-      try {
-        if (this.category == "FREE") {
-          this.boardType = "FREE";
-        } else if (this.category == "STRATEGY") {
-          this.boardType = "STRATEGY";
-        }
-
-        let newBoard = new FormData();
-        const data = {
-          title: this.titleValue,
-          contents: this.contentValue,
-          boardType: this.boardType,
-        };
-
-        newBoard.append(
-          "data",
-          new Blob([JSON.stringify(data)], { type: "application/json" })
+    async fetchBoardInfo() {
+      const boardInfo = await axios.get(
+          `${process.env.VUE_APP_API_BASIC_URL}/board/detail/${this.id}`
         );
-
-        this.files.forEach((file) => {
-          newBoard.append("file", file, file.name);
-        });
-
-
-        await axios.post(
-          `${process.env.VUE_APP_API_BASIC_URL}/board/create`,
-          newBoard,
+      this.board = boardInfo.data.result;
+      this.editedTitle = this.board.title
+      this.editedContents = this.board.contents;
+      this.editedBoardType = this.board.boardType;
+    },
+    async saveEditing() {
+      try {
+        await axios.patch(
+          `${process.env.VUE_APP_API_BASIC_URL}/board/update/${this.board.id}`,
           {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+            title: this.editedTitle,
+            contents: this.editedContents,
+            imagePath: "",
+            boardType: this.BoardType
           }
         );
-
-        alert("게시글이 성공적으로 작성되었습니다.");
-        this.$router.push("/board/list");
+        alert("게시글이 수정되었습니다.");
+        this.$router.push(`/board/detail/${this.board.id}`);
       } catch (e) {
-        console.log(e);
-        alert("게시글이 작성되지 않았습니다.");
+        console.error("게시글 수정 실패", e);
+        alert("게시글 수정에 실패했습니다.");
       }
+    },
+    cancelEditing() {
+      this.$router.push(`/board/detail/${this.board.id}`);
     },
     fileUpdate(event) {
         this.files = Array.from(event.target.files);
