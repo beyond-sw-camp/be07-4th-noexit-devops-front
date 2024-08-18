@@ -26,7 +26,11 @@
             <v-col cols="auto">
               <v-col cols="auto">
                 <v-row>
-                  <v-btn height="55" type="submit" color="pink">검색</v-btn>
+                  <v-btn height="55" type="submit" color="pink"
+                  
+                  @click="onSearchButtonClick"
+
+                  >검색</v-btn>
                   <v-spacer></v-spacer>
                   <v-btn
                     height="55"
@@ -339,51 +343,6 @@ export default {
         return "마감됨";
       }
     },
-    async loadFindBoard() {
-  this.loading = true;
-  try {
-    let params = {
-      size: this.pageSize,
-      page: this.currentPage - 1,
-    };
-
-    // 검색 조건이 있을 경우 추가
-    if (this.searchType !== 'optional' && this.searchValue.trim() !== '') {
-      if (this.searchType === 'title') {
-        params.title = this.searchValue;
-      } else if (this.searchType === 'contents') {
-        params.contents = this.searchValue;
-      }
-      // 페이지 번호를 1로 리셋
-      this.currentPage = 1;
-    }
-
-    const response = await axios.get(`http://localhost:8080/findboard/list`, { params });
-
-    const resultList = response.data.result.content;
-
-    if (resultList.length === 0) {
-      alert("검색 결과가 없습니다.");
-      return; // 검색 결과가 없으면 리스트를 갱신하지 않음
-    }
-
-    this.findBoardList = resultList.map((item) => {
-      return {
-        ...item,
-        formattedExpirationTime: this.formatDateTime(item.expirationTime),
-      };
-    });
-
-    this.totalPages = Math.ceil(
-      response.data.result.totalElements / this.pageSize
-    );
-  } catch (error) {
-    console.error("Error loading findBoardList:", error);
-  } finally {
-    this.loading = false;
-  }
-}
-,
     formatDateTime(isoString) {
       const date = new Date(isoString);
       const formattedDate = `${date.getFullYear()}년 ${
@@ -448,10 +407,6 @@ export default {
         alert("자신의 게시글에는 참여할 수 없습니다.");
       }
     },
-    setPage(page) {
-      this.currentPage = page;
-      this.loadFindBoard();
-    },
     prevPageRange() {
       if (this.currentPageRangeStart > 1) {
         this.currentPageRangeStart = Math.max(
@@ -478,11 +433,107 @@ export default {
         this.setPage(this.currentPageRangeStart);
       }
     },
+
+
+
+
+
+
+
+
     resetSearch() {
-      this.searchType = 'optional';
-      this.searchValue = '';
-      this.loadFindBoard(); // 초기화 후 전체 리스트 로드
-    },
+    this.searchType = 'optional';
+    this.searchValue = '';
+    this.searchTriggered = false; // 검색 초기화 시 플래그 초기화
+    this.loadFindBoard(); // 초기화 후 전체 리스트 로드
+  },
+  setPage(page) {
+    this.currentPage = page;
+    this.searchTriggered = false; // 페이지 이동 시 검색 상태 초기화
+    this.loadFindBoard();
+  },
+  onSearchButtonClick() {
+    this.searchTriggered = true;
+    this.loadFindBoard();
+  },
+  async loadFindBoard() {
+    this.loading = true;
+
+    // 페이지 이동 시 검색이 아닌 경우를 처리
+    if (!this.searchTriggered) {
+      try {
+        const params = {
+          size: this.pageSize,
+          page: this.currentPage - 1,
+        };
+
+        const response = await axios.get('http://localhost:8080/findboard/list', { params });
+        const resultList = response.data.result.content;
+
+        this.findBoardList = resultList.map((item) => ({
+          ...item,
+          formattedExpirationTime: this.formatDateTime(item.expirationTime),
+        }));
+
+        this.totalPages = Math.ceil(response.data.result.totalElements / this.pageSize);
+      } catch (error) {
+        console.error('Error loading findBoardList:', error);
+      } finally {
+        this.loading = false;
+      }
+      return;
+    }
+
+    try {
+      let params = {
+        size: this.pageSize,
+        page: this.currentPage - 1,
+      };
+
+      // 검색 조건이 있을 경우 추가
+      if (this.searchType !== 'optional' && this.searchValue.trim() !== '') {
+        if (this.searchType === 'title') {
+          params.title = this.searchValue;
+        } else if (this.searchType === 'contents') {
+          params.contents = this.searchValue;
+        }
+        this.currentPage = 1; // 검색 시 페이지를 1로 리셋
+      }
+
+      const response = await axios.get(`http://localhost:8080/findboard/list`, { params });
+
+      const resultList = response.data.result.content;
+
+      if (resultList.length === 0) {
+        alert('검색 결과가 없습니다.');
+        this.searchTriggered = false; // 검색 결과가 없으면 검색 상태 초기화
+        return;
+      }
+
+      this.findBoardList = resultList.map((item) => ({
+        ...item,
+        formattedExpirationTime: this.formatDateTime(item.expirationTime),
+      }));
+
+      this.totalPages = Math.ceil(
+        response.data.result.totalElements / this.pageSize
+      );
+    } catch (error) {
+      console.error('Error loading findBoardList:', error);
+    } finally {
+      this.loading = false;
+    }
+  },
+
+
+
+
+
+
+
+
+
+    
   },
 };
 </script>
