@@ -112,6 +112,11 @@ export default {
             this.sse.addEventListener('FULL_COUNT', (event) => {
                 this.notifications.push(JSON.parse(event.data))
             });
+            // 
+            this.sse.addEventListener('CHAT_ROOM_INVITE', (event) => {
+                this.notifications.push(JSON.parse(event.data))
+            });
+
             console.log(this.notifications)
             this.sse.onerror = () => {
                 console.log("SSE 연결이 끊어졌습니다. 재연결을 시도합니다.");
@@ -148,13 +153,20 @@ export default {
                         },
                     });
 
-                    // 라우터 수정필요
-                    if (notification.board_id) {
-                        this.$router.push(`/board/detail/${notification.board_id}`);
-                    } else if (notification.reservationId) {
-                        this.$router.push(`/board/detail/${notification.board_id}`);
-                    } else if (notification.findboard_id) {
-                        this.$router.push(`/board/detail/${notification.board_id}`);
+                    // 라우터 수정필요 -> notificationType으로 
+                    // if (notification.board_id) {//comment, comment_like, board_like -> board_id
+                    //     this.$router.push(`/board/detail/${notification.board_id}`);
+                    // } else if (notification.reservationId) {    // reservation_req, reservation_res -> res_id
+                    //     this.$router.push(`/board/detail/${notification.board_id}`);
+                    // } else if (notification.findboard_id) { // full_count, char_room_invite -> chat_id
+                    //     this.$router.push(`/board/detail/${notification.board_id}`);
+                    // }
+                    if (notification.type === 'COMMENT' || notification.type === 'BOARD_LIKE' || notification.type === 'COMMENT_LIKE') {
+                        this.$router.push(`/board/detail/${notification.notification_id}`);
+                    } else if (notification.type === 'RESERVATION_REQ' || notification.type === 'RESERVATION_RES') {
+                        this.$router.push('/reservation/myreservation');
+                    } else if (notification.type === 'FULL_COUNT' || notification.type === 'CHAT_ROOM_INVITE') {
+                        this.$router.push('/chat/list');
                     }
                 } catch (error) {
                     console.error('알림을 읽음으로 표시하는 중 오류 발생:', error);
@@ -166,9 +178,9 @@ export default {
             return this.$route.path === path;
         },
         doLogout() {
+            this.$router.push("/")
             localStorage.clear();
             this.isLogin = false;
-            this.$router.push("/")
         },
     },
     beforeUnmount() {
@@ -193,13 +205,13 @@ body {
 }
 
 .title-btn {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 800;
     color: #FF0066;
 }
 
 .link-btn {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 400;
     font-family: 'Nunito Sans', sans-serif;
     position: relative;
@@ -237,12 +249,11 @@ body {
 }
 
 .readNotification {
-    background-color: rgba(255, 0, 102, 0.3);
     color: #ffffff;
 }
 
 .readNotification .v-list-item-title {
-    background-color: rgba(255, 0, 102, 0.3);
+    color: #FF0066;
 }
 
 
