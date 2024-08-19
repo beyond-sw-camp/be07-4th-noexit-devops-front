@@ -3,29 +3,29 @@
         <v-toolbar-title class="d-flex align-center title-style">
             <v-btn text class="title-btn" :to="{ path: '/' }" :class="{ active: isActive('/') }">NoExit</v-btn>
             <v-divider class="mx-3" vertical></v-divider>
-            <v-btn v-if="userRole === 'USER'" text class="link-btn" :to="{ path: '/board/list' }"
-                :class="{ active: isActive('/board/list') }" style="font-weight:300">Board</v-btn>
-            <v-btn v-if="userRole === 'USER'" text class="link-btn" :to="{ path: '/findboard' }"
-                :class="{ active: isActive('/findboard') }" style="font-weight:300">Escape-With-Me</v-btn>
-            <v-btn text class="link-btn" :to="{ path: '/' }" :class="{ active: isActive('/board/list') }"
-                style="font-weight:300">Ranking</v-btn>
+            <v-btn text class="link-btn" :to="{ path: '/board/list' }"
+                :class="{ active: isActive('/board/list') }">Board</v-btn>
+            <v-btn text class="link-btn" :to="{ path: '/findboard' }"
+                :class="{ active: isActive('/findboard') }">Escape-With-Me</v-btn>
+            <v-btn text class="link-btn" :to="{ path: '/ranking' }"
+                :class="{ active: isActive('/ranking') }">Ranking</v-btn>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon :to="isLogin ? '/mypage' : '/login'">
             <v-icon>mdi-account</v-icon>
         </v-btn>
-        <v-btn>
+        <v-btn icon :to="{ path: '/chat/rooms' }" :class="{ active: isActive('/chat/rooms') }">
             <v-icon size="27px">mdi-message-reply-text-outline</v-icon>
         </v-btn>
 
         <!-- 알림 기능 -->
         <v-btn icon>
-            <v-badge color="red" :content="unreadNotificationsCount" overlap>
+            <v-badge color="red" :content="unreadNotificationsCount" v-if="unreadNotificationsCount > 0" overlap>
                 <v-icon>mdi-bell</v-icon>
             </v-badge>
+            <v-icon v-else>mdi-bell</v-icon>
 
-
-            <v-menu activator="parent" offset-y>
+            <v-menu activator="parent" offset-y v-if="unreadNotificationsCount > 0">
                 <v-list-item>
                     <v-list-item-content>
                         <v-list-item-title class="mdi-notification-title">
@@ -35,7 +35,8 @@
                 </v-list-item>
 
                 <v-divider style="background-color: #fff;"></v-divider>
-                <v-list max-width="600" max-height="400" style="overflow-y: auto; background-color:#1b1b1b">
+                <v-list max-width="600" max-height="400" v-if="unreadNotificationsCount > 0"
+                    style="overflow-y: auto; background-color:#1b1b1b">
 
                     <v-list-item v-for="notification in notifications" :key="notification.id"
                         :class="{ 'readNotification': notification.delYn === 'Y' }"
@@ -78,6 +79,7 @@ export default {
     },
     computed: {
         unreadNotificationsCount() {
+            console.log(this.notifications)
             return this.notifications.filter(notification => notification.delYn === 'N').length;
         },
     },
@@ -132,6 +134,7 @@ export default {
                     },
                 });
                 this.notifications = response.data.result;
+                console.log(this.notifications)
 
             } catch (error) {
                 console.error('알림 목록을 가져오는 중 오류 발생:', error);
@@ -164,9 +167,10 @@ export default {
                     if (notification.type === 'COMMENT' || notification.type === 'BOARD_LIKE' || notification.type === 'COMMENT_LIKE') {
                         this.$router.push(`/board/detail/${notification.notification_id}`);
                     } else if (notification.type === 'RESERVATION_REQ' || notification.type === 'RESERVATION_RES') {
-                        this.$router.push('/reservation/myreservation');
+                        this.$router.push(`/reservation/detail/${notification.notification_id}`);
                     } else if (notification.type === 'FULL_COUNT' || notification.type === 'CHAT_ROOM_INVITE') {
                         this.$router.push('/chat/list');
+                        this.$router.push(`/chat/room/${notification.notification_id}`);
                     }
                 } catch (error) {
                     console.error('알림을 읽음으로 표시하는 중 오류 발생:', error);
@@ -212,8 +216,7 @@ body {
 
 .link-btn {
     font-size: 18px;
-    font-weight: 400;
-    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 100;
     position: relative;
     color: white;
 }

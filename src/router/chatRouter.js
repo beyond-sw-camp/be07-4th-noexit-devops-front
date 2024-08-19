@@ -5,7 +5,7 @@ import ChatRoom from '@/components/ChatRoom.vue';
 
 export const chatRouter = [
   {
-    path: '/chat/cre',
+    path: '/chat/rooms',
     name: 'RoomList',
     component: RoomList
   },

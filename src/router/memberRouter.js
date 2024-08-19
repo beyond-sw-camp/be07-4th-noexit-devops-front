@@ -3,6 +3,7 @@ import LoginPage from '@/views/member/LoginPage.vue'
 import MyPage from '@/views/member/MyPage.vue'
 import WishList from '@/views/member/WishList.vue'
 import HomeComponent from '@/views/HomeComponent.vue'
+import MemberRanking from '@/views/member/MemberRanking.vue'
 
 export const memberRouter = [
     {
@@ -20,7 +21,7 @@ export const memberRouter = [
         name: 'MyPage',
         component: MyPage
     },
-    
+
     {
         path: '/wishList',
         name: 'WishList',
@@ -30,8 +31,14 @@ export const memberRouter = [
         path: '/',
         name: 'HomeComponent',
         component: HomeComponent
+    },
+    {
+        path: '/ranking',
+        name: 'MemberRanking',
+        component: MemberRanking
 
     }
+
 
 
 
