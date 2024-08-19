@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row class="d-flex justify-content-between mt-5">
+    <v-row class="d-flex justify-content-between mt-5" style="color:white">
       <v-col>
         <v-form>
           <v-row>
@@ -24,9 +24,7 @@
               </v-text-field>
             </v-col>
             <v-col cols="auto">
-              <v-btn color="pink" @click="createBoard"
-                >등록하기</v-btn
-              >
+              <v-btn color="pink" @click="createBoard">등록하기</v-btn>
             </v-col>
           </v-row>
         </v-form>
@@ -116,7 +114,7 @@ export default {
       }
     },
     fileUpdate(event) {
-        this.files = Array.from(event.target.files);
+      this.files = Array.from(event.target.files);
 
     },
   },

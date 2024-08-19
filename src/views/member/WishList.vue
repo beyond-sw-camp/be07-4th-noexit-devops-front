@@ -5,7 +5,7 @@
                 <v-col>
                     <h2 class="font-weight-bold">WishList({{ wishgamelist.length }})</h2>
                     <h2 class="font-weight-bold">WishList</h2>
-                    <v-divider></v-divider> 
+                    <v-divider :thickness="8"></v-divider>
                     <GameListComponent :games="wishgamelist" />
                     <GameListComponent />
                 </v-col>
@@ -27,11 +27,11 @@ export default {
             wishlist: [],
             gamelist: [],
             wishgamelist: [],
-             pageSize: 10,
-      currentPage: 1,
-      totalPages: 1,
-      pagesPerRange: 5,
-      isLoading: false
+            pageSize: 10,
+            currentPage: 1,
+            totalPages: 1,
+            pagesPerRange: 5,
+            isLoading: false
             // difficultyLevel: 1,
         };
     },
@@ -40,15 +40,15 @@ export default {
     },
     methods: {
         async fetchWishlist() {
-                            // 위시리스트 받아와서 gameId들 조회
-                // 그 번호 아이디인 놈들을 gameList에 넣음
-                // 위에서 :games = gameList로 하면 됨
+            // 위시리스트 받아와서 gameId들 조회
+            // 그 번호 아이디인 놈들을 gameList에 넣음
+            // 위에서 :games = gameList로 하면 됨
             try {
 
                 let params = {
-          size: this.pageSize,
-          page: this.currentPage - 1,
-        };
+                    size: this.pageSize,
+                    page: this.currentPage - 1,
+                };
                 const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`, { params });
                 const gameInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
 
@@ -56,12 +56,12 @@ export default {
                 this.gamelist = gameInfo.data.result;
                 console.log(this.wishlist);
                 console.log(this.gamelist);
-                
-        
+
+
 
                 for (let i = 0; i < this.gamelist.length; i++) {
-                    for(let j =0; j< this.wishlist.length; j++) {
-                        if(this.wishlist[j].gameId === this.gamelist[i].id) {
+                    for (let j = 0; j < this.wishlist.length; j++) {
+                        if (this.wishlist[j].gameId === this.gamelist[i].id) {
                             this.wishgamelist.push(this.gamelist[i]);
                         }
                     }
@@ -81,5 +81,3 @@ export default {
     // }
 };
 </script>
-
-    

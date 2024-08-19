@@ -14,7 +14,7 @@
                 </v-col>
             </v-row>
 
-
+            <!-- 
             <v-row>
                 <v-col cols="12">
                     <v-row align="center">
@@ -24,7 +24,7 @@
                         </v-col>
                     </v-row>
                 </v-col>
-            </v-row>
+            </v-row> -->
         </div>
 
         <v-row class="button-container" style=" background-color: #1b1b1b; color:#ffffff;">

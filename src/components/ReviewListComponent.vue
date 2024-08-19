@@ -1,60 +1,60 @@
 <template>
     <v-container style=" background-color: #1b1b1b; color:#ffffff;">
-        <v-row justify="center">
-            <v-col cols="12">
-                <div v-for="review in reviewList" :key="review.id" class="review-item mb-4">
-                    <v-row>
-                        <v-col cols="4" class="review-image-col">
-                            <v-img :src="review.imagePath" class="review-image" contain></v-img>
+        <v-row>
+            <h2 style="font-size:24px; margin-bottom:5px">Review({{ reviewList.length }})</h2>
+            <v-divider :thickness="6"></v-divider>
+            <v-row justify="end" class="more">
+                <v-btn>더보기</v-btn>
+            </v-row>
+            <v-row justify="center">
+                <v-col cols="12" v-for="review in reviewList" :key="review.id" class="review-item" justify="center">
+                    <v-row align="center">
+                        <!-- 정보 -->
+                        <v-col class="review-detail">
+                            <v-row no-gutters style="padding:0">
+                                <v-col cols="auto" v-for="n in 5" :key="n">
+                                    <v-icon color="pink" v-if="n <= review.rating">mdi-star</v-icon>
+                                    <v-icon color="grey" v-else>mdi-star-outline</v-icon>
+                                </v-col>
+                                <span style="padding-left:10px">{{ review.rating }}</span>
+                            </v-row>
+                            <!-- 회원일때는 내가 쓴거여서 불필요 -->
+                            <!-- <v-row>{{ review.memberNickname }}</v-row> -->
+                            <v-row justify="start" class="text-sm-left" style="padding:0 10px">
+                                <span text-align="center" style="color:#ffffff; font-size: 16px; padding-right: 10px;">
+                                    {{ review.gameName }}
+                                </span>
+                                <span style="font-weight:500">
+                                    {{ review.storeName }}
+                                </span>
+                            </v-row>
+                            <v-row style="font-weight:500">{{ review.content }}</v-row>
+                        </v-col>
+                        <!-- 이미지 -->
+
+                        <v-col>
+                            <v-row justify="center">
+                                <span style="font-weight:500; margin-bottom:10px">{{
+                                    formatRelativeTime(review.createdAt)
+                                }}</span>
+                            </v-row>
+                            <v-row>
+                                <v-img :src="review.imagePath" class="review-image" contain></v-img>
+                            </v-row>
                         </v-col>
 
-                        <v-col cols="8">
+                    </v-row>
 
-                            <v-row>
-                                <v-col cols="8">
-                                    <v-row no-gutters>
-                                        <v-col cols="auto" v-for="n in 5" :key="n">
-                                            <v-icon color="yellow" v-if="n <= review.rating">mdi-star</v-icon>
-                                            <v-icon color="grey" v-else>mdi-star-outline</v-icon>
-                                        </v-col>
-                                        <span>{{ review.rating }}</span>
-                                    </v-row>
-                                </v-col>
-                                <v-col cols="4" class="text-right">
-                                    <span>{{ formatRelativeTime(review.createdAt) }}</span>
-                                </v-col>
-                            </v-row>
-
-                            <v-row class="mt-2">
-                                <v-col cols="12">
-                                    <strong>{{ review.memberNickname }}</strong>
-                                </v-col>
-                            </v-row>
-
-                            <v-row class="mt-2">
-                                <v-col cols="12">
-                                    <div><strong>Game:</strong> {{ review.gameName }}</div>
-                                </v-col>
-                            </v-row>
-
-                            <v-row class="mt-2">
-                                <v-col cols="12">
-                                    <div>{{ review.content }}</div>
-                                </v-col>
-                            </v-row>
-
-                            <v-row class="mt-2">
-                                <v-col cols="12">
-                                    <v-btn v-if="canDeleteReview(review)" color="secondary"
-                                        @click="deleteReview(review.id)">
-                                        삭제
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
+                    <v-row class="mt-2">
+                        <v-col cols="12">
+                            <v-btn v-if="canDeleteReview(review)" color="secondary" @click="deleteReview(review.id)">
+                                삭제
+                            </v-btn>
                         </v-col>
                     </v-row>
-                </div>
-            </v-col>
+                    <v-divider :thickness="3"></v-divider>
+                </v-col>
+            </v-row>
         </v-row>
     </v-container>
 </template>
@@ -131,16 +131,25 @@ export default {
 </script>
 
 <style scoped>
-.review-item {
-    padding: 16px;
-    border-radius: 10px;
-    margin-bottom: 20px;
+* {
+    font-size: 14px;
 }
 
-.review-image-col {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.v-btn {
+    background-color: #1b1b1b;
+    color: #9d9d9d;
+    margin: 20px 20px;
+}
+
+.review-detail>.v-row {
+    padding-left: 10px;
+    color: #9d9d9d;
+}
+
+.review-item>.v-row {
+    border-radius: 10px;
+    margin: 0px 30px 0;
+
 }
 
 .review-image {

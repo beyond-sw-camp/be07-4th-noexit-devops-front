@@ -45,6 +45,7 @@ export default {
       isLoading: false,
         };
     },
+<<<<<<< HEAD
     created() {
         this.fetchMyInfo();
     this.loadList();
@@ -59,6 +60,26 @@ export default {
       } catch (e) {
         console.log(e);
       }
+=======
+    async created() {
+        try {
+            const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
+            const best = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
+
+            const token = localStorage.getItem('token');
+            if (token) {
+                const wishlist = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`);
+                this.wishList = wishlist.data.result;
+                if (this.wishList.length > 0) this.isWishList = true;
+            }
+
+
+            this.gameList = response.data.result;
+            this.bestList = best.data.result.slice(0, 5);   // 최고 5개만 추출
+        } catch (e) {
+            console.error("정보가 존재하지 않습니다", e);
+        }
+>>>>>>> e941dbff4431824060b66ea5221d881972f31487
     },
    
     async loadList() {
