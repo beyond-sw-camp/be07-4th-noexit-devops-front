@@ -54,9 +54,10 @@
 
       <!-- 마감 임박 게시글 섹션 -->
       <v-col cols="12">
+        
         <h1
           :style="{
-            color: 'black',
+            color: 'white',
             fontSize: '3rem', /* 글자 크기 조정 */
             fontWeight: 'bold', /* 글자 굵기 조정 */
           }"
@@ -114,6 +115,12 @@
               ></v-img>
             </v-col>
             <v-col>
+              
+              <v-row>
+                <div style="font-size: 30px">
+                  <strong>{{ f.selectedStoreName }}</strong>
+                </div>
+              </v-row>
               <div class="d-flex justify-space-between align-center">
                 <div>
                   <br />
@@ -433,14 +440,6 @@ export default {
         this.setPage(this.currentPageRangeStart);
       }
     },
-
-
-
-
-
-
-
-
     resetSearch() {
     this.searchType = 'optional';
     this.searchValue = '';
@@ -524,16 +523,6 @@ export default {
       this.loading = false;
     }
   },
-
-
-
-
-
-
-
-
-
-    
   },
 };
 </script>
