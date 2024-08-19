@@ -19,7 +19,9 @@
                             </v-row>
                             <v-row class="mt-4">
                                 <v-col cols="4">
-                                    <v-btn :to="{ path: '/member/create' }" block>회원가입</v-btn>
+                                    <v-btn v-if="role === '일반 사용자'" :to="{ path: '/member/create' }" block>
+                                        회원가입
+                                    </v-btn>
                                 </v-col>
                                 <v-divider vertical></v-divider>
                                 <v-col cols="4">
@@ -73,7 +75,13 @@ export default {
                 localStorage.setItem('token', token)
                 localStorage.setItem('refreshToken', refreshToken)
                 localStorage.setItem('role', role)
-                window.location.href = "/"
+
+                if (this.role == '일반 사용자') {
+                    window.location.href = "/"
+                } else {
+                    this.$router.push("/resview")
+
+                }
                 // this.$router.push("/")
             } catch (e) {
                 const error_message = e.response.data.error_message

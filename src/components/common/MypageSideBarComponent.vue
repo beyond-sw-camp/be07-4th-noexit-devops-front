@@ -36,8 +36,8 @@
                     </v-btn>
                 </v-col>
                 <v-col class="link-col">
-                    <v-btn text :to="{ path: '/reservation/list' }" block
-                        :class="{ active: isActive('/reservation/list') }" class="link-btn">예약 내역</v-btn>
+                    <v-btn text :to="{ path: '/reservation/myreservation' }" block
+                        :class="{ active: isActive('/reservation/myreservation') }" class="link-btn">예약 내역</v-btn>
                 </v-col>
                 <v-col class="link-col">
                     <v-btn text :to="{ path: '/review/myall' }" block :class="{ active: isActive('/review/myall') }"
