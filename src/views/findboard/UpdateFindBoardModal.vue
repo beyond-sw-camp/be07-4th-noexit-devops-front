@@ -1,20 +1,22 @@
 <template>
-  <v-dialog v-model="localIsOpen" max-width="600px">
-    <v-card>
-      <v-card-title>
+  <v-dialog v-model="localIsOpen" max-width="600px" persistent>
+    <v-card style="background-color: black; color: white;">
+      <v-card-title style="text-align: center;">
         <span class="text-h5">게시글 수정하기</span>
       </v-card-title>
       <v-card-text>
         <v-form ref="updateForm" @submit.prevent="updateFindBoard">
-          <v-text-field
-            v-model="updateTitle"
-            :rules="[(v) => !!v || '제목을 입력하세요.']"
-            hide-details="auto"
-            label="제목"
+          <!-- 제목 대신 가게 선택 버튼 추가 -->
+          <v-btn
+            color="#FF0066"
             outlined
+            block
+            @click="openStoreSelectModal"
             class="mb-4"
-            required
-          ></v-text-field>
+          >
+            {{ selectedStoreName || "가게 선택하기" }}
+          </v-btn>
+
           <v-textarea
             v-model="updateContents"
             :rules="[(v) => !!v || '내용을 입력하세요.']"
@@ -55,12 +57,47 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="primary" text @click="closeModal">취소</v-btn>
-        <v-btn color="pink" @click="updateFindBoard">수정하기</v-btn>
+        <v-btn color="#FF0066" text @click="closeModal">취소</v-btn>
+        <v-btn
+          color="white"
+          @click="updateFindBoard"
+          :disabled="
+            !selectedStoreName || !updateContents || !updateTotalCapacity || !updateTime || !updateDate
+          "
+        >
+          수정하기
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+
+    <v-dialog 
+    v-model="isStoreModalOpen" max-width="600px" persistent>
+    <v-card style="background-color: black; color: white;">
+      <v-card-title class="headline" style="text-align: center;">
+        가게 선택
+      </v-card-title>
+      <v-card-text style="max-height: 700px; overflow-y: auto;">
+        <v-list style="background-color: black; color: white;">
+          <v-list-item
+            v-for="store in stores"
+            :key="store.id"
+            @click="selectStore(store.storeName)"
+            style="background-color: black; color: white;"
+          >
+            <v-list-item-content>{{ store.storeName }}</v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="#FF0066" text @click="closeStoreSelectModal">닫기</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
+  
+
+  </v-dialog>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -79,11 +116,13 @@ export default {
   data() {
     return {
       localIsOpen: this.isOpen,
-      updateTitle: "",
       updateContents: "",
       updateDate: "",
       updateTime: "",
       updateTotalCapacity: "",
+      selectedStoreName: "", // 선택된 가게 이름 저장
+      stores: [], // 서버에서 불러온 가게 목록
+      isStoreModalOpen: false, // 가게 선택 모달의 열림 상태
     };
   },
   watch: {
@@ -100,7 +139,7 @@ export default {
     },
     populateFields() {
       if (this.findBoard) {
-        this.updateTitle = this.findBoard.title;
+        this.selectedStoreName = this.findBoard.title;
         this.updateContents = this.findBoard.contents;
 
         // 서버에서 받은 UTC 시간을 로컬 시간으로 변환
@@ -129,7 +168,7 @@ export default {
         );
 
         const requestData = {
-          title: this.updateTitle,
+          title: this.selectedStoreName,
           contents: this.updateContents,
           expirationDate: updateExpirationDateTime.toISOString(), // 서버에 전송할 데이터
           totalCapacity: this.updateTotalCapacity,
@@ -150,6 +189,26 @@ export default {
         console.error("업데이트 실패:", error);
         alert("업데이트 실패");
       }
+    },
+    async fetchStores() {
+      try {
+        const response = await axios.get("http://localhost:8080/store/list");
+        this.stores = response.data.result;
+      } catch (error) {
+        console.error("Error fetching stores:", error);
+        alert("가게 목록을 불러오는데 실패했습니다.");
+      }
+    },
+    openStoreSelectModal() {
+      this.isStoreModalOpen = true;
+      this.fetchStores();
+    },
+    closeStoreSelectModal() {
+      this.isStoreModalOpen = false;
+    },
+    selectStore(storeName) {
+      this.selectedStoreName = storeName;
+      this.closeStoreSelectModal();
     },
   },
 };

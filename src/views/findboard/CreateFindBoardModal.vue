@@ -1,8 +1,10 @@
 <template>
-  <v-dialog v-model="localIsOpen" max-width="1100px">
+  <v-dialog v-model="localIsOpen" max-width="1100px" persistent>
     <v-card
       class="black white--text"
       style="
+        background-color: black;
+        color: white;
         border: 2px solid white;
         font-family: 'GmarketSansMedium', sans-serif;
       "
@@ -30,7 +32,6 @@
             {{ selectedStoreName || "가게 선택하기" }}
           </v-btn>
 
-          <!-- 라벨 때문에 글자 안 보여서 없애버림 -->
           <v-textarea
             v-model="contents"
             :rules="[(v) => !!v || '내용을 입력하세요.']"
@@ -38,60 +39,75 @@
             outlined
             rows="4"
             class="mb-4"
+            style="background-color: black; color: white;"
             required
           ></v-textarea>
+          
           <v-row>
             <v-col cols="6">
-              <v-text-field
-                v-model="date"
-                label="날짜 선택"
-                type="date"
-                outlined
-                required
-              ></v-text-field>
+
+<v-text-field
+  v-model="date"
+  label="날짜 선택"
+  type="date"
+  outlined
+  prepend-inner-icon="mdi-calendar" 
+  class="custom-date-icon"
+  style="background-color: black; color: white;"
+  required
+></v-text-field>
             </v-col>
             <v-col cols="6">
               <v-text-field
-                v-model="time"
-                label="마감 시한"
-                type="time"
-                outlined
-                required
-              ></v-text-field>
+              v-model="time"
+              label="마감 시한"
+              type="time"
+              outlined
+              class="custom-time-icon" 
+              style="background-color: black; color: white;"
+              prepend-inner-icon="mdi-clock-outline"
+              required
+            ></v-text-field>
             </v-col>
           </v-row>
+
           <v-select
             v-model="totalCapacity"
             :rules="[(v) => !!v || '희망 인원을 선택하세요.']"
             :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
             label="희망 인원"
             outlined
+            style="background-color: black; color: white;"
             required
           ></v-select>
         </v-form>
       </v-card-text>
       <v-card-actions>
         <v-btn
-          color="pink"
+          color="white"
           @click="registerFindBoard"
           :disabled="
             !selectedStoreName || !contents || !totalCapacity || !time || !date
           "
-          >작성하기
+        >
+          작성하기
         </v-btn>
       </v-card-actions>
     </v-card>
 
     <!-- 가게 선택 모달 -->
-    <v-dialog v-model="isStoreModalOpen" max-width="600px">
-      <v-card>
-        <v-card-title class="headline">가게 선택</v-card-title>
-        <v-card-text>
-          <v-list>
+    <v-dialog v-model="isStoreModalOpen" max-width="600px" persistent>
+      <v-card style="background-color: black; color: white;">
+        <v-card-title class="headline" style="text-align: center;">
+          가게 선택
+        </v-card-title>
+        <v-card-text style="max-height: 400px; overflow-y: auto;">
+          <v-list style="background-color: black; color: white;">
             <v-list-item
               v-for="store in stores"
               :key="store.id"
               @click="selectStore(store.storeName)"
+              style="background-color: black; color: white;"
             >
               <v-list-item-content>{{ store.storeName }}</v-list-item-content>
             </v-list-item>
@@ -205,5 +221,9 @@ export default {
 .v-card {
   font-family: "GmarketSansMedium", sans-serif;
   font-weight: 1000;
+}
+.custom-time-icon .v-icon,
+.custom-date-icon .v-icon {
+  color: white !important;  /* 아이콘을 흰색으로 설정 */
 }
 </style>

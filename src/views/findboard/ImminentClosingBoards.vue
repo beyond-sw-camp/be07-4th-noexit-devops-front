@@ -97,7 +97,7 @@ export default {
 }
 
 .selected-pink {
-  background-color: rgb(239, 134, 134) !important; /* 선택된 카드의 배경색을 핑크색으로 변경 */
+  
 }
 
 .v-slide-group__prev .v-icon,
