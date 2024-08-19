@@ -1,6 +1,6 @@
 <template>
   <v-sheet 
-   class="mx-auto"
+   class="mx-auto custom-sheet"
    elevation="8" 
    max-width="2000"
    :style="{ boxShadow: '0px 8px 24px rgba(247, 4, 4, 1.3)' }"
@@ -20,18 +20,17 @@
       >
         <v-card
           :class="['ma-4', selectedClass, 'custom-card']"
-          color="black"
           outlined
           height="auto"
           width="400"
           elevation="24"
           @click="toggle"
+          :style="{ backgroundColor: '#1b1b1b', color: 'white' }"
         >
           <v-row no-gutters>
 
             <v-col cols="4">
               <v-avatar
-
                 style="width: 120px; height: 120px; margin-top: 45px;"
               >
                 <img 
@@ -86,15 +85,16 @@ export default {
 
 <style>
 .custom-sheet {
-  box-shadow: 0px 8px 24px rgba(247, 4, 4, 1.3) !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
 .custom-slide-group {
-  background-color: black;
+  background-color: #1b1b1b;
 }
 
 .custom-card {
-  background-color: black;
+  /* 배경색과 텍스트 색상을 기본으로 설정 */
+  background-color: #1b1b1b;
   color: white;
 }
 
@@ -103,7 +103,7 @@ export default {
 }
 
 .selected-pink {
-  
+  /* 선택된 항목의 스타일을 설정할 수 있습니다 */
 }
 
 .v-slide-group__prev .v-icon,

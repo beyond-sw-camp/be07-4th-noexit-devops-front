@@ -91,8 +91,9 @@
           <v-card
             :style="{
               color: 'white',
-              backgroundColor: 'black',
-              border: '0px solid rgb(6, 6, 6)',
+              backgroundColor: '#1b1b1b',
+              border: '1px solid rgba(255, 255, 255, 0.2)', /* 경계 추가 */
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)', /* 그림자 추가 */
               marginTop: '10px',
               padding: '10px',
               height: '350px',
@@ -156,32 +157,29 @@
           </v-col>
 
 
-            <v-col 
-            cols="7"
-            style="margin-top: 0px;">
-              <v-row>
-                <div style="font-size: 24px">
-                  <strong>{{ f.selectedStoreName }}</strong>
-                </div>
-              </v-row>
-              
-              <v-row>
-                <div>
-                  <br />
-                  <div style="font-size: 20px;">
-                    <strong>{{ f.title }}</strong>
-                  </div>
-                  <br />
-                  <div class="text-left" style="font-size: 16px">
-                    {{ f.contents }}
-                  </div>
-                  <br />
-                </div>
-              </v-row>
-            </v-col>
+          <v-col 
+          cols="7"
+          style="margin-top: 0px; text-align: center;">
+          <v-row class="d-flex justify-center">
+            <div style="font-size: 24px;">
+              <strong>{{ f.selectedStoreName }}</strong>
+            </div>
+          </v-row>
+          
+          <v-row class="d-flex justify-center">
+            <div>
+              <div style="font-size: 20px; margin-bottom: 10px;">
+                <strong>{{ f.title }}</strong>
+              </div>
+              <div class="text-center" style="font-size: 16px;">
+                {{ f.contents }}
+              </div>
+            </div>
+          </v-row>
+        </v-col>
 
 
-            <v-col cols=2 style="text-align: right" >
+            <v-col cols="2" style="text-align: right" >
 
               <v-row justify="end" >
            <!-- 상단으로 붙이기 위해 margin-top을 음수로 설정 -->
