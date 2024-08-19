@@ -190,6 +190,7 @@ export default {
             return this.$route.path === path;
         },
         doLogout() {
+
             localStorage.clear();
             this.isLogin = false;
             this.$router.push("/")
