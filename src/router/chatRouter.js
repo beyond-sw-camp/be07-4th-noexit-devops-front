@@ -10,7 +10,7 @@ export const chatRouter = [
     component: RoomList
   },
   {
-    path: '/chat/room/:roomId',
+    path: '/chat/rooms/:roomId',
     name: 'ChatRoom',
     component: ChatRoom,
     props: true

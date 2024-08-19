@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <!-- <h2>{{ roomName }}</h2>
+        <h2>{{ roomName }}</h2>
         <v-row>
             <v-col cols="12">
                 <v-list>
@@ -12,7 +12,7 @@
                     </v-list-item>
                 </v-list>
             </v-col>
-        </v-row> -->
+        </v-row>
         <v-row>
             <v-col cols="12">
                 <v-text-field v-model="message" label="Type a message" @keyup.enter="sendMessage" outlined color="white"
@@ -27,7 +27,7 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
+import VueJwtDecode from "vue-jwt-decode";
 
 export default {
     data() {
@@ -49,9 +49,16 @@ export default {
     methods: {
         setSenderFromToken() {
             const token = localStorage.getItem('token');
+            console.log(token)
             if (token) {
-                const decodedToken = jwtDecode(token);
-                this.sender = decodedToken.nickname || decodedToken.email || 'Anonymous';
+                const decodedToken = VueJwtDecode.decode(token);
+                console.log(decodedToken)
+                this.sender = decodedToken.sub;
+                console.log(this.sender)
+                // this.sender = decodedToken.nickname || decodedToken.email || 'Anonymous';
+
+                // console.log("nick : " + decodedToken.nickname)
+                // console.log("email : " + decodedToken.email)
             } else {
                 this.sender = 'Anonymous';
             }
@@ -67,6 +74,7 @@ export default {
         fetchMessages() {
             axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/rooms/${this.roomId}/messages`).then(response => {
                 this.messages = response.data;
+                console.log("messages: " + JSON.stringify(this.messages))
             }).catch(error => {
                 console.error("Failed to fetch messages:", error);
             });
@@ -126,6 +134,9 @@ export default {
             });
         },
         sendMessage() {
+
+            console.log("sendmessage: " + this.sender);
+
             if (this.message.trim() !== '') {
                 const chatMessage = {
                     sender: this.sender,
