@@ -51,7 +51,7 @@
                 "
               >
                 <tr>
-                  <th style="text-align: center">썸네일</th>
+                  <th style="text-align: center"></th>
                   <th style="text-align: center">제목</th>
                   <th style="text-align: center">작성자</th>
                   <th style="text-align: center">작성일</th>
@@ -157,6 +157,7 @@ export default {
       searchOptions: [
         { text: "선택", value: "optional" },
         { text: "제목", value: "title" },
+        { text: "내용", value: "contents" },
         { text: "카테고리", value: "boardType" },
       ],
       searchValue: "",
@@ -206,6 +207,9 @@ export default {
 
         if(this.searchType === 'title') {
             params.searchTitle = this.searchValue;
+            console.log(params.searchTitle);
+        } else if(this.searchType === 'contents') {
+            params.searchContents = this.searchValue;
             console.log(params.searchTitle);
         }else if(this.searchType === 'boardType') {
             params.searchBoardType = this.searchValue;
