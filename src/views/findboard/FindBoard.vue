@@ -107,7 +107,13 @@
             outlined
             rounded="lg"
           >
-            <v-col cols="4">
+            <v-col cols="3">
+              <div>             
+                 <span 
+                style="padding-left: 55px; margin-bottom: 20px;"
+                class="writer-text">{{ f.writer }}</span>
+              </div>
+
               <v-avatar size="150">
                 <img
                   :src="f.imagePath"
@@ -117,18 +123,31 @@
                   display="none"
                 />
               </v-avatar>
+              <v-card-actions
+              style="margin-top: 90px;"
+              >
+                <v-btn
+                  width="150"
+                  height="40"
+                  color="pink"
+                  :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
+                  @click="participateInFindBoard(f.id)"
+                  >PARTICIPATE</v-btn
+                >
+              </v-card-actions>
             </v-col>
 
-            <v-col>
+            <v-col style="margin-top: 65px; margin-left: 23px">
               <v-row>
                 <div style="font-size: 24px">
                   <strong>{{ f.selectedStoreName }}</strong>
                 </div>
               </v-row>
-              <div class="d-flex justify-space-between align-center">
+              
+              <v-row>
                 <div>
                   <br />
-                  <div style="font-size: 24px">
+                  <div style="font-size: 20px;">
                     <strong>{{ f.title }}</strong>
                   </div>
                   <br />
@@ -137,58 +156,11 @@
                   </div>
                   <br />
                 </div>
+              </v-row>
+            </v-col>
 
-                <div class="ml-auto text-right">
-                  <div>
-                    <strong
-                      >작성 시각: {{ formatDateTime(f.createdTime) }}</strong
-                    >
-                  </div>
-                  <div
-                    class="text-right"
-                    style="
-                      position: absolute;
-                      top: 10px;
-                      right: 20px;
-                      font-size: 16px;
-                    "
-                  >
-                    작성자 : {{ f.writer }}
-                  </div>
-                  <br />
-                  <v-btn
-                    width="150"
-                    height="40"
-                    color="pink"
-                    class="mt-2"
-                    :disabled="
-                      getTimeDifferenceInMinutes(f.expirationTime) <= 0
-                    "
-                    @click="participateInFindBoard(f.id)"
-                    >PARTICIPATE</v-btn
-                  >
-                </div>
-              </div>
-              <div class="text-right mt-2">
-                모집 인원 : {{ f.totalCapacity }}
-              </div>
-              <div class="text-right mt-2">
-                현재 인원 : {{ f.currentCount }}
-              </div>
-              <br />
-              <div
-                v-if="getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'"
-                style="text-align: right"
-              >
-                <strong
-                  >마감 시각:
-                  {{ getTimeDifferenceInMinutes(f.expirationTime) }}</strong
-                >
-              </div>
-              <div v-else style="text-align: right">
-                <em>FINISH</em>
-              </div>
 
+            <v-col>
               <div v-if="f.isAuthor">
                 <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
                 <v-btn style="margin-left: 8px" @click="openUpdateModal(f)"
@@ -200,6 +172,29 @@
                   @close="closeUpdateModal"
                   @updated="loadFindBoard"
                 />
+              </div>
+
+              <div class="text-right mt-2">
+                {{ f.currentCount }} / {{ f.totalCapacity }}
+              </div>
+              <br />
+              <div
+                v-if="getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'"
+                style="text-align: right"
+              >
+                <strong>{{ getTimeDifferenceInMinutes(f.expirationTime) }}</strong
+                >
+              </div>
+              <div v-else style="text-align: right">
+                <em>FINISH</em>
+              </div>
+
+              <div class="d-flex justify-space-between align-center">
+                <div class="ml-auto text-right">
+                  <div><strong>작성 시각: {{ formatDateTime(f.createdTime) }}</strong></div>
+                  <br />
+                  >
+                </div>
               </div>
             </v-col>
           </v-card>
@@ -260,7 +255,7 @@ import axios from "axios";
 import CreateFindBoardModal from "./CreateFindBoardModal.vue";
 import UpdateFindBoardModal from "./UpdateFindBoardModal.vue";
 import ImminentClosingBoards from "./ImminentClosingBoards.vue";
-
+import { mdiDelete, mdiPencil } from '@mdi/js';
 export default {
   components: {
     CreateFindBoardModal,
