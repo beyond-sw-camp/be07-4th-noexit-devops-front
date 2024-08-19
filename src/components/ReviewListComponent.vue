@@ -78,6 +78,7 @@ export default {
     created() {
         this.loadReviews();
     },
+    // 컴피티드 추가
     methods: {
         async loadReviews() {
             try {

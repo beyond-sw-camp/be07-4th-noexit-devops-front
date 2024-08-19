@@ -182,9 +182,10 @@ export default {
             return this.$route.path === path;
         },
         doLogout() {
-            this.$router.push("/")
+            
             localStorage.clear();
             this.isLogin = false;
+            this.$router.push("/")
         },
     },
     beforeUnmount() {
