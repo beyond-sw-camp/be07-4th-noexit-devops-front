@@ -10,7 +10,7 @@
                                 <v-col cols="auto" class="d-flex align-center img-area">
                                     <v-avatar size="80" class="mr-3">
                                         <img :src="memberInfoList.find(item => item.key === 'profileImage')?.value"
-                                            alt="프로필 이미지" @click="selectImage" class="profile-image" />
+                                            alt="프로필 이미지" @click="selectImage" class="profile-image" display="none" />
                                     </v-avatar>
                                     <input type="file" @change="onImageChange" accept="image/*"
                                         style="display: none;" />
@@ -23,8 +23,8 @@
                             </v-row>
 
                             <v-form v-for=" element in memberInfoList" :key="element.id" class="form-area">
-                                <v-text-field :label="element.key" v-model="element.value"
-                                    class="custom-text-field"></v-text-field>
+                                <v-text-field v-if="element.key !== 'profileImage'" :label="element.key"
+                                    v-model="element.value" class="custom-text-field"></v-text-field>
                             </v-form>
                         </v-card-text>
                     </v-col>

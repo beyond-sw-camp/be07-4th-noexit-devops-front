@@ -83,21 +83,40 @@ export default {
           `${process.env.VUE_APP_API_BASIC_URL}/board/detail/${this.id}`
         );
       this.board = boardInfo.data.result;
+      console.log(this.board);
       this.editedTitle = this.board.title
       this.editedContents = this.board.contents;
       this.editedBoardType = this.board.boardType;
+      this.editedFiles = this.board.images;
     },
+
     async saveEditing() {
       try {
-        await axios.patch(
-          `${process.env.VUE_APP_API_BASIC_URL}/board/update/${this.board.id}`,
-          {
+        let editedBoard = new FormData();
+          const data = {
             title: this.editedTitle,
             contents: this.editedContents,
-            imagePath: "",
-            boardType: this.BoardType
+            boardType: this.editedBoardType
+          };
+
+          const jsonBlob = new Blob([JSON.stringify(data)], { type: "application/json" });
+          editedBoard.append("data", jsonBlob);
+
+
+        this.editedFiles.forEach((file) => {
+          editedBoard.append("file", file, file.name);
+        });
+
+
+        await axios.patch(
+          `${process.env.VUE_APP_API_BASIC_URL}/board/update/${this.board.id}`, editedBoard, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           }
+          
         );
+
         alert("게시글이 수정되었습니다.");
         this.$router.push(`/board/detail/${this.board.id}`);
       } catch (e) {
@@ -112,6 +131,7 @@ export default {
         this.files = Array.from(event.target.files);
 
     },
+
   },
 };
 </script>

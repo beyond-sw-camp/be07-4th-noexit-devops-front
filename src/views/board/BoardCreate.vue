@@ -106,7 +106,8 @@ export default {
         );
 
         alert("게시글이 성공적으로 작성되었습니다.");
-        this.$router.push("/board/list");
+        // this.$router.push("/board/list");
+        window.location.href = '/board/list';
       } catch (e) {
         console.log(e);
         alert("게시글이 작성되지 않았습니다.");
