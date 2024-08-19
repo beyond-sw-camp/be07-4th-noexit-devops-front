@@ -65,20 +65,17 @@
                                                 getAgeLimitLabel(game.ageLimit) }}</div>
                                         </div>
                                     </div>
+                                    <!-- <div></div> -->
+                                    <br>
+                                    <!-- 난이도 바 -->
+                                    <v-progress-linear
+                                        :value="difficultyLevel"
+                                        :color="getDifficultyColor(difficultyLevel)"
+                                        height="20"
+                                        :buffer-value="bufferValue"
+                                        rounded
+                                    ></v-progress-linear>
 
-                                    <v-row class="my-3">
-                                        <v-col cols="12">
-                                            <v-progress-linear
-                                                :value="difficultyLevel"
-                                                color=""
-                                                height="20"
-                                                :buffer-value="100"
-                                                rounded
-                                            ></v-progress-linear>
-                                        </v-col>
-                                    </v-row>
-
- 
 
                                 </div>
                             </div>
@@ -98,23 +95,24 @@
 
         <!-- 가격 보여주는 modal -->
         <v-dialog v-model="isPriceModalOpen" max-width="350px">
-            <v-card style="position: relative; padding: 16px;">
+            <v-card class="price-modal-card">
                 <!-- 닫기 버튼 (X) -->
-                <v-btn icon @click="isPriceModalOpen = false"
-                    style="position: absolute; top: 8px; right: 8px; color: #e91e63; box-shadow: none;">
-                    <v-icon>mdi-close</v-icon>
+                <v-btn icon @click="isPriceModalOpen = false" class="close-btn">
+                    <v-icon small>mdi-close</v-icon> <!-- 아이콘 크기 줄이기 -->
                 </v-btn>
 
-                <v-card-title style="color: #000; text-align: left; font-weight: bold; font-size: 20px;">
+                <v-card-title class="card-title">
                     가격 상세
                 </v-card-title>
-                <v-card-text style="padding-top: 8px;">
+                <v-card-text class="card-text">
                     <v-simple-table dense>
                         <tbody>
                             <tr v-for="price in calculatedPrices" :key="price.people">
-                                <td style="font-size: 20px; padding-right: 100px; text-align: left; font-weight: 600;">
-                                    {{ price.people }}인</td>
-                                <td style="font-size: 20px; text-align: right;font-weight: 600;">{{ price.totalPrice }}원
+                                <td class="table-cell">
+                                    {{ price.people }}인
+                                </td>
+                                <td class="table-cell">
+                                    {{ price.totalPrice }}원
                                 </td>
                             </tr>
                         </tbody>
@@ -122,6 +120,7 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
+
 
         <!-- 예약 섹션 -->
         <v-row justify="center" class="mt-5">
@@ -137,10 +136,11 @@
                                         color="pink"></v-text-field>
                                 </v-col>
 
-                                <v-col cols="12" md="5">
+                                <v-col cols="12" md="6">
                                     <v-date-picker label="예약 날짜" v-model="resDate" required
-                                        :min="new Date().toISOString().substr(0, 10)" style="max-width: 350px;"
-                                        color="grey" :input-format="'HH:mm'"></v-date-picker>
+                                        :min="new Date().toISOString().substr(0, 10)" style="max-width: 500px;"
+                                        color="grey" :input-format="'HH:mm'">
+                                    </v-date-picker>
                                 </v-col>
                             </v-row>
 
@@ -195,7 +195,7 @@ export default {
         return {
             gameId: this.$route.params.id,
             game: {},
-            difficultyLevel: 1,
+            difficultyLevel: 1, // 난이도
             resName: "",
             phoneNumber: "",
             numberOfPlayers: 1,
@@ -215,6 +215,10 @@ export default {
         },
         hasHalfStar() {
             return this.averageRating - this.fullStars >= 0.5; // 반별이 필요한지 확인
+        },
+        bufferValue() {
+            // 난이도에 따라 buffer-value를 동적으로 설정합니다.
+            return this.difficultyLevel;
         }
     },
     created() {
@@ -287,9 +291,9 @@ export default {
         },
         getStarColor(starNumber) {
             if (starNumber <= this.fullStars || (starNumber === this.fullStars + 1 && this.hasHalfStar)) {
-                return 'pink'; // 채워진 별은 핑크색
+                return 'pink';
             }
-            return 'grey'; // 빈 별은 회색
+            return 'grey';
         },
         openPriceModal() {
             this.calculatePrices();
@@ -305,24 +309,25 @@ export default {
             }
         },
         getDifficultyLevel(difficulty) {
-        const levels = {
-            one: 20,
-            two: 40,
-            three: 60,
-            four: 80,
-            five: 100
-        };
-        const levelKey = difficulty?.toLowerCase();
-        console.log('Difficult Key:', levelKey); // 디버그 로그
-        return levels[levelKey] || 0; // 기본값을 0으로 설정
-    },
+            const levels = {
+                one: 20, // 1칸
+                two: 40, // 2칸
+                three: 60, // 3칸
+                four: 80, // 4칸
+                five: 100 // 5칸
+            };
+            const levelKey = difficulty?.toLowerCase();
+            console.log('Difficult Key:', levelKey); // 디버그 로그
+            return levels[levelKey] || 0; // 기본값을 0으로 설정
+        },
     getDifficultyColor(level) {
-        if (level <= 20) return 'yellow';
-        if (level <= 40) return 'orange';
-        if (level <= 60) return 'orangered';
-        if (level <= 80) return 'tomato';
+        if (level <= 20) return 'pink';
+        if (level <= 40) return 'pink';
+        if (level <= 60) return 'blue';
+        if (level <= 80) return 'pink';
         return 'red';
     },
+
         getAgeLimitLabel(ageLimit) {
             const labels = {
                 adult: "19세 제한",
@@ -456,27 +461,53 @@ h2.game-name {
 
 .time-button {
     width: 80px;
-    /* 크기를 키웁니다 */
     height: 80px;
     font-size: 15px;
-    /* 글씨 크기를 키웁니다 */
 }
 
-/* 카드의 그림자 및 외곽선 제거 */
-.v-card {
+.price-modal-card {
+    background-color: #333; 
+    border: 1px solid #444;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+    color: #fff;
+    padding: 16px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #e91e63;
     box-shadow: none;
-    border: none;
+    background-color: transparent;
+    padding: 0; 
 }
 
-/* 예약 날짜 입력란 크기 조절 */
-.v-date-picker {
-    max-width: 250px;
-    margin: auto;
-}
-
-/* 리뷰 요약 스타일 */
-.reviews-summary {
+.card-title {
+    color: #fff;
+    text-align: left;
+    font-weight: bold;
     font-size: 20px;
-    margin-top: 20px;
+    padding-bottom: 16px;
+}
+
+.card-text {
+    padding-top: 8px;
+    color: #ccc;
+}
+
+.table-cell {
+    font-size: 20px;
+    font-weight: 600;
+    padding: 8px 0;
+}
+
+.table-cell:first-of-type {
+    padding-right: 100px; 
+    text-align: left;
+}
+
+.table-cell:last-of-type {
+    text-align: right;
 }
 </style>
