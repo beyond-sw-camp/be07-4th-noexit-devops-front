@@ -95,7 +95,7 @@
               border: '0px solid rgb(6, 6, 6)',
               marginTop: '10px',
               padding: '10px',
-              height: '400px',
+              height: '350px',
               width: '100%',
             }"
             :class="{
@@ -107,37 +107,58 @@
             outlined
             rounded="lg"
           >
-            <v-col cols="3">
-              <div>             
-                 <span 
-                style="padding-left: 55px; margin-bottom: 20px;"
-                class="writer-text">{{ f.writer }}</span>
+          <v-col cols="3" class="d-flex flex-column align-center justify-center">
+            <!-- 작성자 이름 -->
+            <v-row class="d-flex align-start" style="margin: 0;">
+              <div style="margin-top: -40px;"> <!-- 상단으로 붙이기 위해 margin-top을 음수로 설정 -->
+                <span class="writer-text">
+                  닉네임 : {{ f.writer }}
+                </span>
               </div>
+            </v-row>
 
-              <v-avatar size="150">
-                <img
-                  :src="f.imagePath"
-                  alt="프로필 이미지"
-                  class="profile-image"
-                  style="width: 100%; height: 100%; object-fit: cover"
-                  display="none"
-                />
-              </v-avatar>
-              <v-card-actions
-              style="margin-top: 90px;"
+          
+            <!-- 아바타 -->
+            <v-avatar size="150">
+              <img
+                :src="f.imagePath"
+                alt="프로필 이미지"
+                class="profile-image"
+                style="width: 100%; height: 100%; object-fit: cover"
+              />
+            </v-avatar>
+          
+            <!-- 참여 버튼 -->
+            <v-card-actions class="mt-4 d-flex justify-center">
+              <v-btn
+                width="150"
+                height="40"
+                color="pink"
+                :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
+                @click="participateInFindBoard(f.id)"
               >
-                <v-btn
-                  width="150"
-                  height="40"
-                  color="pink"
-                  :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
-                  @click="participateInFindBoard(f.id)"
-                  >PARTICIPATE</v-btn
-                >
-              </v-card-actions>
-            </v-col>
+                PARTICIPATE
+              </v-btn>
+            </v-card-actions>
+          
+            <!-- 마감 시각 또는 FINISH 텍스트 -->
+            <v-row class="d-flex justify-center">
+              <div
+                v-if="getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'"
+                style="text-align: right"
+              >
+                <p>{{ getTimeDifferenceInMinutes(f.expirationTime) }}</p>
+              </div>
+              <div v-else style="text-align: right">
+                <em>FINISH</em>
+              </div>
+            </v-row>
+          </v-col>
 
-            <v-col style="margin-top: 65px; margin-left: 23px">
+
+            <v-col 
+            cols="7"
+            style="margin-top: 0px;">
               <v-row>
                 <div style="font-size: 24px">
                   <strong>{{ f.selectedStoreName }}</strong>
@@ -160,42 +181,53 @@
             </v-col>
 
 
-            <v-col>
-              <div v-if="f.isAuthor">
-                <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
-                <v-btn style="margin-left: 8px" @click="openUpdateModal(f)"
-                  >수정하기</v-btn
-                >
-                <UpdateFindBoardModal
-                  :isOpen="isUpdateModalOpen"
-                  :findBoard="selectedFindBoard"
-                  @close="closeUpdateModal"
-                  @updated="loadFindBoard"
-                />
-              </div>
+            <v-col cols=2 style="text-align: right" >
+
+              <v-row justify="end" >
+           <!-- 상단으로 붙이기 위해 margin-top을 음수로 설정 -->
+                  <div v-if="f.isAuthor"
+                  style="margin-top: -65px; "
+                  >
+                    <v-icon
+                      style="display: inline-block; vertical-align: top;"
+                      @click="openUpdateModal(f)" 
+                      :style="{ color: 'gray', cursor: 'pointer', fontSize: '24px' }"
+                    >
+                      mdi-pencil
+                    </v-icon>
+                    <v-icon 
+                    
+                    @click="deleteFB(f.id)" 
+                    :style="{ color: 'gray', cursor: 'pointer', fontSize: '24px' }"
+                     style="display: inline-block; vertical-align: top;"
+                  >
+                    mdi-delete
+                  </v-icon>
+                    <UpdateFindBoardModal
+                      :isOpen="isUpdateModalOpen"
+                      :findBoard="selectedFindBoard"
+                      @close="closeUpdateModal"
+                      @updated="loadFindBoard"
+                    />
+                    </div>
+              </v-row>
+
 
               <div class="text-right mt-2">
                 {{ f.currentCount }} / {{ f.totalCapacity }}
               </div>
-              <br />
-              <div
-                v-if="getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'"
-                style="text-align: right"
-              >
-                <strong>{{ getTimeDifferenceInMinutes(f.expirationTime) }}</strong
-                >
-              </div>
-              <div v-else style="text-align: right">
-                <em>FINISH</em>
-              </div>
-
               <div class="d-flex justify-space-between align-center">
+                
                 <div class="ml-auto text-right">
-                  <div><strong>작성 시각: {{ formatDateTime(f.createdTime) }}</strong></div>
-                  <br />
-                  >
+                  
+                  <div><p>:{{ formatDateTime(f.createdTime) }}</p></div>
+                
                 </div>
               </div>
+
+
+
+
             </v-col>
           </v-card>
         </v-col>
@@ -255,7 +287,6 @@ import axios from "axios";
 import CreateFindBoardModal from "./CreateFindBoardModal.vue";
 import UpdateFindBoardModal from "./UpdateFindBoardModal.vue";
 import ImminentClosingBoards from "./ImminentClosingBoards.vue";
-import { mdiDelete, mdiPencil } from '@mdi/js';
 export default {
   components: {
     CreateFindBoardModal,
