@@ -186,7 +186,7 @@
 <script>
 import axios from 'axios';
 import ReviewListComponent from '@/components/ReviewListComponent.vue';
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 
 export default {
     components: {
@@ -250,10 +250,10 @@ export default {
                     this.resName = decodedToken.name || '';
                     this.phoneNumber = decodedToken.phone || '';
 
-                    if (!this.memberId || !this.resName || !this.phoneNumber) {
-                        alert('회원 정보를 가져오는 데 문제가 발생했습니다. 다시 시도해 주세요.');
-                        return false;
-                    }
+                    // if (!this.memberId || !this.resName || !this.phoneNumber) {
+                    //     alert('회원 정보를 가져오는 데 문제가 발생했습니다. 다시 시도해 주세요.');
+                    //     return false;
+                    // }
                 } else {
                     alert('로그인이 필요합니다.');
                     return false;
@@ -272,7 +272,7 @@ export default {
                 this.availableHours = response.data;
             } catch (e) {
                 console.error(e);
-                alert('예약 가능한 시간대를 불러오는 데 실패했습니다.');
+                // alert('예약 가능한 시간대를 불러오는 데 실패했습니다.');
             }
         },
         selectTime(hour) {
@@ -339,6 +339,11 @@ export default {
 
         async reservationCreate() {
             await this.fetchUserInfo();
+
+            if (this.numberOfPlayers > this.game.maximunPerson) {
+                alert(`최대 인원수(${this.game.maximunPerson}명)보다 입력하신 인원수(${this.numberOfPlayers}명)가 많습니다. 다시 시도해주세요.`);
+                return;
+            }
 
             try {
                 const reservationData = {

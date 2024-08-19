@@ -125,7 +125,6 @@ export default {
     },
     created() {
         this.loadReviews();
-        
     },
     methods: {
         async loadReviews() {
