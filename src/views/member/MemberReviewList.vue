@@ -4,6 +4,7 @@
             <v-row>
                 <MypageSideBarComponent />
                 <v-col>
+                    
                     <!-- <ReviewList /> -->
                     <ReviewListComponent :isUserReviews="true" />
                 </v-col>
