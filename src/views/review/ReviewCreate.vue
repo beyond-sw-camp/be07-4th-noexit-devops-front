@@ -23,11 +23,6 @@
                                 accept="image/*"
                                 @change="fileUpdate"
                             ></v-file-input>
-                            <v-text-field
-                                label="예약 ID"
-                                v-model="reservationId"
-                                required
-                            ></v-text-field>
                             <v-btn type="submit" color="primary" block>등록</v-btn>
                         </v-form>
                     </v-card-text>
@@ -47,12 +42,13 @@ export default {
             content: "",
             rating: 0,
             reviewImage: null,
-            reservationId: "",
+            reservationId: "",  // 이 부분에 쿼리에서 받은 reservationId를 저장할 예정
             memberId: "",
         };
     },
     created() {
         this.getMemberId();
+        this.reservationId = this.$route.query.reservationId;  // 쿼리에서 reservationId 받아오기
     },
     methods: {
         async getMemberId() {
@@ -75,7 +71,7 @@ export default {
                 formData.append("content", this.content);
                 formData.append("rating", this.rating);
                 formData.append("reviewImage", this.reviewImage);
-                formData.append("reservationId", this.reservationId);
+                formData.append("reservationId", this.reservationId);  // reservationId 추가
                 formData.append("memberId", this.memberId);
 
                 await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/review/create`, formData, {
@@ -95,8 +91,9 @@ export default {
         }
     }
 }
+
 </script>
 
 <style scoped>
-/* 필요한 경우 스타일을 여기에 추가할 수 있습니다 */
+
 </style>

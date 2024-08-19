@@ -8,6 +8,7 @@ export const reviewRouter = [
     name: 'ReviewCreate',
     component: ReviewCreate,
   },
+
   {
     path: '/review/list',
     name: 'ReviewList',
