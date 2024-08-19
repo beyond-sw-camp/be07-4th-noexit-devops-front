@@ -28,15 +28,21 @@
           @click="toggle"
         >
           <v-row no-gutters>
+
             <v-col cols="4">
-              <v-img
-                :src="board.imagePath"
-                alt="게시글 이미지"
-                contain
-                height="200"
-                class="rounded-circle"
-              ></v-img>
+              <v-avatar
+
+                style="width: 120px; height: 120px; margin-top: 45px;"
+              >
+                <img 
+                 :src="board.imagePath"
+                  alt="프로필 이미지" 
+                  class="profile-image"
+                  style="width: 100%; height: 100%; object-fit: cover;" 
+                />
+              </v-avatar>
             </v-col>
+
             <v-col>
               <div class="pa-4 custom-text">
                 <h3>{{ board.title }}</h3>
