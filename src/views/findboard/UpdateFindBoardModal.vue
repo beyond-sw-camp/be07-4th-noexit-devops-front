@@ -14,8 +14,18 @@
             @click="openStoreSelectModal"
             class="mb-4"
           >
-            {{ selectedStoreName || "가게 선택하기" }}
+            {{ updateselectedStoreName || "가게 선택하기" }}
           </v-btn>
+
+          <v-text-field
+          v-model="updatetitle"
+          outlined
+          rows="4"
+          class="mb-4"
+          required
+          >
+
+          </v-text-field>
 
           <v-textarea
             v-model="updateContents"
@@ -120,9 +130,10 @@ export default {
       updateDate: "",
       updateTime: "",
       updateTotalCapacity: "",
-      selectedStoreName: "", // 선택된 가게 이름 저장
+      updateselectedStoreName: "", // 선택된 가게 이름 저장
       stores: [], // 서버에서 불러온 가게 목록
       isStoreModalOpen: false, // 가게 선택 모달의 열림 상태
+      updatetitle:"",
     };
   },
   watch: {
@@ -139,7 +150,8 @@ export default {
     },
     populateFields() {
       if (this.findBoard) {
-        this.selectedStoreName = this.findBoard.title;
+        this.updatetitle = this.findBoard.title;
+        this.updateselectedStoreName = this.findBoard.selectedStoreName;
         this.updateContents = this.findBoard.contents;
 
         // 서버에서 받은 UTC 시간을 로컬 시간으로 변환
@@ -168,10 +180,13 @@ export default {
         );
 
         const requestData = {
-          title: this.selectedStoreName,
+          
+          title: this.updatetitle,
+          selectedStoreName:this.updateselectedStoreName,
           contents: this.updateContents,
           expirationDate: updateExpirationDateTime.toISOString(), // 서버에 전송할 데이터
           totalCapacity: this.updateTotalCapacity,
+        
         };
 
         const response = await axios.put(

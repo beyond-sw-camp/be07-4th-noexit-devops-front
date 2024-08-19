@@ -115,6 +115,12 @@
               ></v-img>
             </v-col>
             <v-col>
+              
+              <v-row>
+                <div style="font-size: 30px">
+                  <strong>{{ f.selectedStoreName }}</strong>
+                </div>
+              </v-row>
               <div class="d-flex justify-space-between align-center">
                 <div>
                   <br />
@@ -434,14 +440,6 @@ export default {
         this.setPage(this.currentPageRangeStart);
       }
     },
-
-
-
-
-
-
-
-
     resetSearch() {
     this.searchType = 'optional';
     this.searchValue = '';
@@ -525,16 +523,6 @@ export default {
       this.loading = false;
     }
   },
-
-
-
-
-
-
-
-
-
-    
   },
 };
 </script>
