@@ -69,7 +69,7 @@
               >
                 <tr v-for="b in boardList" :key="b.id">
                   <td>
-                    <v-icon v-if="b.thumbnail" size="30" color="white">mdi-image-outline</v-icon>
+                    <v-icon v-if="b.img" size="30" color="white">mdi-image-outline</v-icon>
                     <!-- <v-icon v-else size="30" color="white">mdi-file-document-outline</v-icon> -->
                   </td>
                   <td style="width: 450px; text-align: center">
@@ -207,13 +207,10 @@ export default {
 
         if(this.searchType === 'title') {
             params.searchTitle = this.searchValue;
-            console.log(params.searchTitle);
         } else if(this.searchType === 'contents') {
             params.searchContents = this.searchValue;
-            console.log(params.searchTitle);
         }else if(this.searchType === 'boardType') {
             params.searchBoardType = this.searchValue;
-            console.log(params.searchBoardType);
         }
 
 
@@ -223,7 +220,6 @@ export default {
         );
 
         this.boardList = response.data.result.content;
-        console.log(this.boardList);
         this.isLoading = false;
         this.totalPages = Math.ceil(
           response.data.result.totalElements / this.pageSize

@@ -10,7 +10,6 @@
                 :items="categoryOptions"
                 item-title="text"
                 item-value="value"
-                :style="{ backgroundColor: '#f8d7da' }"
               >
               </v-select>
             </v-col>
@@ -19,7 +18,6 @@
                 v-model="titleValue" required
                 label="제목을 입력해주세요."
                 style="width: 850px"
-                :style="{ backgroundColor: '#f8d7da' }"
               >
               </v-text-field>
             </v-col>
@@ -32,13 +30,19 @@
     </v-row>
     <v-row>
       <v-col>
+
+
+
+<!-- 원래코드 -->
         <v-file-input 
     label="첨부 이미지"
     :style="{ backgroundColor: '#f8d7da' }"
     accept="image/*" 
-    multiple 
+    multiple
     @change="fileUpdate">
         </v-file-input>
+      
+
         <v-text-field
           v-model="contentValue" required
           label="내용을 입력해주세요."
@@ -67,7 +71,7 @@ export default {
       ],
 
       files: [],
-    };
+    }
   },
   methods: {
     async createBoard() {
