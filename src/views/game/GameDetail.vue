@@ -14,15 +14,20 @@
                                 <h2 class="game-name">{{ game.gameName }}</h2>
 
                                 <!-- 별 -->
-                                <div class="difficulty-container">
-                                    <v-row>
-                                        <v-col class="stars">
-                                            <v-icon v-for="n in 5" :key="n"
-                                                :color="n <= Math.round(averageRating) ? 'pink' : 'grey'">mdi-star</v-icon>
-                                            <span class="difficulty-level">{{ averageRating.toFixed(1) }}</span> <!-- 소수점 1자리 -->
-                                        </v-col>
-                                    </v-row>
-                                </div>
+                                <v-col class="stars">
+                                    <template v-for="n in 5" :key="n">
+                                        <v-icon v-if="n <= fullStars" color="pink">
+                                            mdi-star
+                                        </v-icon>
+                                        <v-icon v-else-if="n === fullStars + 1 && hasHalfStar" color="pink">
+                                            mdi-star-half-full
+                                        </v-icon>
+                                        <v-icon v-else color="grey">
+                                            mdi-star-outline
+                                        </v-icon>
+                                    </template>
+                                    <span class="star-level">{{ averageRating.toFixed(1) }}</span>
+                                </v-col>
 
 
                                 <v-divider class="my-3"></v-divider>
@@ -60,6 +65,21 @@
                                                 getAgeLimitLabel(game.ageLimit) }}</div>
                                         </div>
                                     </div>
+
+                                    <v-row class="my-3">
+                                        <v-col cols="12">
+                                            <v-progress-linear
+                                                :value="difficultyLevel"
+                                                color=""
+                                                height="20"
+                                                :buffer-value="100"
+                                                rounded
+                                            ></v-progress-linear>
+                                        </v-col>
+                                    </v-row>
+
+ 
+
                                 </div>
                             </div>
                         </v-col>
@@ -189,6 +209,14 @@ export default {
             averageRating: 0, // 평균 별점 변수 추가
         };
     },
+    computed: {
+        fullStars() {
+            return Math.floor(this.averageRating); // 정수 부분만큼 별을 채움
+        },
+        hasHalfStar() {
+            return this.averageRating - this.fullStars >= 0.5; // 반별이 필요한지 확인
+        }
+    },
     created() {
         this.fetchGameDetail();
         this.fetchAvailableHours();
@@ -201,6 +229,7 @@ export default {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/detail/${gameId}`);
                 this.game = response.data.result;
                 this.difficultyLevel = this.getDifficultyLevel(this.game.difficult);
+                console.log('Difficulty Level:', this.difficultyLevel);
                 this.averageRating = this.game.averageRating || 0;
             } catch (e) {
                 console.error(e);
@@ -231,7 +260,7 @@ export default {
                 return false;
             }
         },
-        async fetchAvailableHours() {
+        async fetchAvailableHours() { // 여기서 오류 발생(회원정보를 불러오는데 실패하였습니다 오류) -> 여기의 try catch 
             const gameId = this.$route.params.id;
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/${gameId}/available-hours`);
@@ -242,22 +271,25 @@ export default {
             }
         },
         selectTime(hour) {
-            this.resDateTime = hour;
+            this.resDateTime = hour;   // hour 에서 Axois Error
         },
         formatTime(time) {
             return time.slice(0, 5);
         },
         async fetchTotalReviews() {
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/review/count`, {
-                    params: {
-                        gameId: this.gameId
-                    }
-                });
-                this.reviewCount = response.data;
+                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/review/game/${this.gameId}`);
+                this.reviewCount = response.data.reviewCount;
+                this.averageRating = response.data.averageRating;
             } catch (error) {
                 console.error("리뷰 개수를 불러오는 데 실패했습니다.", error);
             }
+        },
+        getStarColor(starNumber) {
+            if (starNumber <= this.fullStars || (starNumber === this.fullStars + 1 && this.hasHalfStar)) {
+                return 'pink'; // 채워진 별은 핑크색
+            }
+            return 'grey'; // 빈 별은 회색
         },
         openPriceModal() {
             this.calculatePrices();
@@ -273,15 +305,24 @@ export default {
             }
         },
         getDifficultyLevel(difficulty) {
-            const levels = {
-                one: 1,
-                two: 2,
-                three: 3,
-                four: 4,
-                five: 5
-            };
-            return levels[difficulty?.toLowerCase()] || 1;
-        },
+        const levels = {
+            one: 20,
+            two: 40,
+            three: 60,
+            four: 80,
+            five: 100
+        };
+        const levelKey = difficulty?.toLowerCase();
+        console.log('Difficult Key:', levelKey); // 디버그 로그
+        return levels[levelKey] || 0; // 기본값을 0으로 설정
+    },
+    getDifficultyColor(level) {
+        if (level <= 20) return 'yellow';
+        if (level <= 40) return 'orange';
+        if (level <= 60) return 'orangered';
+        if (level <= 80) return 'tomato';
+        return 'red';
+    },
         getAgeLimitLabel(ageLimit) {
             const labels = {
                 adult: "19세 제한",
@@ -359,7 +400,7 @@ h2.game-name {
     align-items: center;
 }
 
-.difficulty-level {
+.star-level {
     margin-left: 10px;
     font-size: 16px;
 }

@@ -144,6 +144,7 @@ export default {
 };
 </script>
 
+
 <style scoped>
 .v-container {
     background-color: #ffffff;

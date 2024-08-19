@@ -25,24 +25,25 @@
                                     </v-list-item-content>
 
                                     <!-- Actions for the owner -->
-                                    <v-list-item-action v-if="isOwner && reservation.reservationStatus === 'WAITING'">
-                                        <v-btn color="success" @click="approveReservation(reservation)"
-                                            :disabled="reservation.reservationStatus !== 'WAITING'">
+                                    <v-list-item-action v-if="isOwner && reservation.delYN !== 'Y' && reservation.reservationStatus === 'WAITING'">
+                                        <v-btn color="success" @click="approveReservation(reservation)">
                                             승인
                                         </v-btn>
-                                        <v-btn color="error" @click="rejectReservation(reservation)"
-                                            :disabled="reservation.reservationStatus !== 'WAITING'">
+                                        <v-btn color="error" @click="rejectReservation(reservation)">
                                             거절
                                         </v-btn>
                                     </v-list-item-action>
 
                                     <!-- Actions for the user -->
                                     <v-list-item-action v-if="!isOwner">
-                                        <v-btn v-if="reservation.reservationStatus === 'WAITING'" color="error"
-                                            @click="cancelReservation(reservation)">
+                                        <v-btn
+                                            v-if="reservation.reservationStatus === 'WAITING'"
+                                            color="error"
+                                            @click="cancelReservation(reservation)"
+                                        >
                                             예약 취소
                                         </v-btn>
-                                        <v-btn v-if="reservation.reservationStatus === 'ACCEPT'" color="primary"
+                                        <v-btn v-if="reservation.reservationStatus === 'ACCEPT' && !reservation.reviewWritten" color="primary"
                                             @click="goToReviewCreate(reservation)">
                                             리뷰 작성
                                         </v-btn>
@@ -76,6 +77,9 @@ export default {
             } else {
                 this.fetchUserReservations();
             }
+            if (this.$route.query.afterReview) {
+            this.reviewCompleted(this.$route.params.reservationId);
+        }
         }
     },
     methods: {
@@ -131,6 +135,7 @@ export default {
                 await axios.put(
                     `${process.env.VUE_APP_API_BASIC_URL}/reservation/approval`,
                     {
+                        id: reservation.id, // reservationId 추가
                         gameId: reservation.gameId,
                         resDate: reservation.resDate,
                         resDateTime: reservation.resDateTime,
@@ -143,9 +148,10 @@ export default {
                     }
                 );
                 alert('예약이 승인되었습니다.');
-                this.fetchOwnerReservations();
+                this.fetchOwnerReservations(); // 상태를 갱신하여 UI를 업데이트합니다.
             } catch (error) {
-                console.error('예약 승인 중 오류가 발생했습니다:', error);
+                console.error('예약 승인 중 오류가 발생했습니다:', error.response ? error.response.data : error.message);
+                alert('예약 승인 중 오류가 발생했습니다. 다시 시도해 주세요.');
             }
         },
         async rejectReservation(reservation) {
@@ -153,6 +159,7 @@ export default {
                 await axios.put(
                     `${process.env.VUE_APP_API_BASIC_URL}/reservation/approval`,
                     {
+                        id: reservation.id, // reservationId 추가
                         gameId: reservation.gameId,
                         resDate: reservation.resDate,
                         resDateTime: reservation.resDateTime,
@@ -188,8 +195,20 @@ export default {
             }
         },
         goToReviewCreate(reservation) {
-            this.$router.push({ name: 'ReviewCreate', params: { reservationId: reservation.id } });
+            this.$router.push({
+                name: 'ReviewCreate',
+                query: { reservationId: reservation.id }
+            });
         },
+        
+        async reviewCompleted(reservationId) {
+            const reservation = this.reservations.find(r => r.id === reservationId);
+            if (reservation) {
+                reservation.reviewWritten = true;
+                console.log("Review completed for reservation: ", reservation);
+            }
+        }
+
     },
 };
 </script>
