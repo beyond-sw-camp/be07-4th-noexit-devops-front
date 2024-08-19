@@ -1,9 +1,9 @@
 <template>
-  <v-container class="pa-4 d-flex justify-center">
+  <v-container class="pa-3 d-flex justify-center">
     <v-row
       :style="{ color: 'white' }"
       class="d-flex justify-center"
-      style="max-width: 2000px"
+      style="max-width: 1500px"
     >
       <v-col>
         <v-form @submit.prevent="loadFindBoard">
@@ -14,6 +14,7 @@
                 :items="searchOptions"
                 item-title="text"
                 item-value="value"
+                dense
               ></v-select>
             </v-col>
             <v-col>
@@ -21,13 +22,14 @@
                 v-model="searchValue"
                 label="Search"
                 :rules="[required]"
+                dense
               ></v-text-field>
             </v-col>
             <v-col cols="auto">
               <v-col cols="auto">
                 <v-row>
                   <v-btn
-                    height="55"
+                    height="45"
                     type="submit"
                     color="pink"
                     @click="onSearchButtonClick"
@@ -35,9 +37,9 @@
                   >
                   <v-spacer></v-spacer>
                   <v-btn
-                    height="55"
+                    height="45"
                     color="pink"
-                    style="margin-left: 13px"
+                    style="margin-left: 8px"
                     @click="openCreateModal"
                     v-if="userRole == 'USER' && isLogin"
                     >작성하기</v-btn
@@ -59,8 +61,8 @@
         <h1
           :style="{
             color: 'white',
-            fontSize: '3rem' /* 글자 크기 조정 */,
-            fontWeight: 'bold' /* 글자 굵기 조정 */,
+            fontSize: '2.5rem',
+            fontWeight: 'bold',
           }"
         >
           마감 임박 With ME!
@@ -77,9 +79,11 @@
         </v-col>
       </v-row>
 
+      <!-- 게시글 리스트 -->
       <v-row justify="center" v-else>
         <v-col
-          cols="4"
+          cols="12"
+          md="6"
           v-for="f in findBoardList"
           :key="f.id"
           class="d-flex justify-center"
@@ -89,55 +93,51 @@
               color: 'white',
               backgroundColor: 'black',
               border: '0px solid rgb(6, 6, 6)',
-              marginTop: '15px',
-              marginLeft: '0px',
-              marginRight: '0px',
+              marginTop: '10px',
               padding: '10px',
-              height: '500px',
-              width: '98%',
-              maxWidth: '2000px',
+              height: '400px',
+              width: '100%',
             }"
             :class="{
               'expired-card':
                 getTimeDifferenceInMinutes(f.expirationTime) === '마감됨',
             }"
             variant="outlined"
-            class="pa-4 d-flex align-center"
+            class="pa-2 d-flex align-center"
             outlined
-            style="width: 98%; max-width: 2000px"
             rounded="lg"
           >
-            <!-- 카드 내용 -->
             <v-col cols="4">
-              <v-avatar size="210">
-                <img 
-                  :src="f.imagePath" 
-                  alt="프로필 이미지" 
+              <v-avatar size="150">
+                <img
+                  :src="f.imagePath"
+                  alt="프로필 이미지"
                   class="profile-image"
-                  style="width: 100%; height: 100%; object-fit: cover;"
+                  style="width: 100%; height: 100%; object-fit: cover"
+                  display="none"
                 />
               </v-avatar>
             </v-col>
-      
+
             <v-col>
               <v-row>
-                <div style="font-size: 30px">
+                <div style="font-size: 24px">
                   <strong>{{ f.selectedStoreName }}</strong>
                 </div>
               </v-row>
               <div class="d-flex justify-space-between align-center">
                 <div>
                   <br />
-                  <div style="font-size: 30px">
+                  <div style="font-size: 24px">
                     <strong>{{ f.title }}</strong>
                   </div>
                   <br />
-                  <div class="text-left" style="font-size: 18px">
+                  <div class="text-left" style="font-size: 16px">
                     {{ f.contents }}
                   </div>
                   <br />
                 </div>
-      
+
                 <div class="ml-auto text-right">
                   <div>
                     <strong
@@ -148,17 +148,17 @@
                     class="text-right"
                     style="
                       position: absolute;
-                      top: 15px;
-                      right: 26px;
-                      font-size: 18px;
+                      top: 10px;
+                      right: 20px;
+                      font-size: 16px;
                     "
                   >
                     작성자 : {{ f.writer }}
                   </div>
                   <br />
                   <v-btn
-                    width="180"
-                    height="50"
+                    width="150"
+                    height="40"
                     color="pink"
                     class="mt-2"
                     :disabled="
@@ -188,10 +188,10 @@
               <div v-else style="text-align: right">
                 <em>FINISH</em>
               </div>
-      
+
               <div v-if="f.isAuthor">
                 <v-btn @click="deleteFB(f.id)">삭제하기</v-btn>
-                <v-btn style="margin-left: 11px" @click="openUpdateModal(f)"
+                <v-btn style="margin-left: 8px" @click="openUpdateModal(f)"
                   >수정하기</v-btn
                 >
                 <UpdateFindBoardModal
@@ -204,6 +204,47 @@
             </v-col>
           </v-card>
         </v-col>
+
+        <v-col cols="12">
+          <div class="pagination-controls text-center">
+            <span
+              class="pagination-arrow"
+              @click="prevPageRange"
+              :class="{ disabled: currentPageRangeStart <= 1 }"
+            >
+              <v-icon small>{{
+                currentPageRangeStart <= 1
+                  ? "mdi-menu-left"
+                  : "mdi-chevron-left"
+              }}</v-icon>
+            </span>
+
+            <span
+              v-for="page in visiblePages"
+              :key="page"
+              @click="setPage(page)"
+              :class="{ 'active-page': currentPage === page }"
+              class="pagination-page"
+            >
+              {{ page }}
+            </span>
+
+            <span
+              class="pagination-arrow"
+              @click="nextPageRange"
+              :class="{ disabled: currentPageRangeEnd >= totalPages }"
+            >
+              <v-icon small>{{
+                currentPageRangeEnd >= totalPages
+                  ? "mdi-menu-right"
+                  : "mdi-chevron-right"
+              }}</v-icon>
+            </span>
+
+          </div>
+
+        </v-col>
+
       </v-row>
 
     </v-row>
