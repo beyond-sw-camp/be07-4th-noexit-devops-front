@@ -139,7 +139,8 @@
                                 <v-col cols="12" md="6">
                                     <v-date-picker label="예약 날짜" v-model="resDate" required
                                         :min="new Date().toISOString().substr(0, 10)" style="max-width: 500px;"
-                                        color="grey" :input-format="'HH:mm'">
+                                        color="grey" :input-format="'HH:mm'" class="custom-date-picker" >
+                                        
                                     </v-date-picker>
                                 </v-col>
                             </v-row>
@@ -509,5 +510,24 @@ h2.game-name {
 
 .table-cell:last-of-type {
     text-align: right;
+}
+
+.custom-date-picker .v-picker--date,
+.custom-date-picker .v-picker__body {
+    background-color: #333 !important; /* Custom grey background */
+    color: #fff; /* White text color */
+}
+
+.custom-date-picker .v-picker__body .v-btn {
+    background-color: #444 !important; /* Slightly darker grey for buttons */
+}
+
+.custom-date-picker .v-picker__body .v-btn:hover {
+    background-color: #555 !important; /* Hover state */
+}
+
+/* You can also customize the selected date and other elements as needed */
+.custom-date-picker .v-picker__body .v-picker__day.v-picker__day--selected {
+    background-color: #e91e63 !important; /* Pink color for selected day */
 }
 </style>
