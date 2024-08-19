@@ -1,12 +1,12 @@
-<!-- <template>
+<template>
   <v-container>
-    <v-row>
+    <!-- <v-row>
       <v-col cols="12">
         <v-text-field v-model="newRoomName" label="New Room Name"></v-text-field>
         <v-text-field v-model="newRoomPassword" label="Password" type="password"></v-text-field>
         <v-btn @click="createRoom">Create Room</v-btn>
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-row>
       <v-col cols="12">
         <v-list>
@@ -37,18 +37,16 @@ export default {
   },
   methods: {
     fetchRooms() {
-      axios.get('/api/chat/rooms').then(response => {
-        this.rooms = response.data;
-      });
+      axios.get('/chat/myrooms').then(response => { this.rooms = response.data; });
     },
-    createRoom() {
-      axios.post('/api/chat/createRoom', {
-        name: this.newRoomName,
-        password: this.newRoomPassword
-      }).then(() => {
-        this.fetchRooms();
-      });
-    },
+    // createRoom() {
+    //   axios.post('/chat/createRoom', {
+    //     name: this.newRoomName,
+    //     password: this.newRoomPassword
+    //   }).then(() => {
+    //     this.fetchRooms();
+    //   });
+    // },
     enterRoom(roomId) {
       this.$router.push(`/chat/room/${roomId}`);
     }
@@ -56,6 +54,4 @@ export default {
 };
 </script>
 
-<style scoped>
-/* 스타일은 자유롭게 추가 */
-</style> -->
+<style scoped></style>

@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <h2>{{ roomName }}</h2>
+        <!-- <h2>{{ roomName }}</h2>
         <v-row>
             <v-col cols="12">
                 <v-list>
@@ -12,7 +12,7 @@
                     </v-list-item>
                 </v-list>
             </v-col>
-        </v-row>
+        </v-row> -->
         <v-row>
             <v-col cols="12">
                 <v-text-field v-model="message" label="Type a message" @keyup.enter="sendMessage" outlined color="white"
@@ -73,7 +73,8 @@ export default {
         },
         connectWebSocket() {
             const socket = new SockJS(`${process.env.VUE_APP_API_BASIC_URL}/ws-chat`);
-            const token = this.getAuthToken();
+            // const token = this.getAuthToken();
+            const token = localStorage.getItem('token');
 
             this.client = new Client({
                 webSocketFactory: () => socket,

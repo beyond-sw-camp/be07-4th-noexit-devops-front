@@ -36,7 +36,7 @@
                             <v-row justify="center">
                                 <span style="font-weight:500; margin-bottom:10px">{{
                                     formatRelativeTime(review.createdAt)
-                                    }}</span>
+                                }}</span>
                             </v-row>
                             <v-row>
                                 <v-img :src="review.imagePath" class="review-image" contain></v-img>

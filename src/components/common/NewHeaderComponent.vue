@@ -14,7 +14,7 @@
         <v-btn icon :to="isLogin ? '/mypage' : '/login'">
             <v-icon>mdi-account</v-icon>
         </v-btn>
-        <v-btn>
+        <v-btn icon :to="{ path: '/chat/rooms' }" :class="{ active: isActive('/chat/rooms') }">
             <v-icon size="27px">mdi-message-reply-text-outline</v-icon>
         </v-btn>
 
@@ -170,6 +170,7 @@ export default {
                         this.$router.push(`/reservation/detail/${notification.notification_id}`);
                     } else if (notification.type === 'FULL_COUNT' || notification.type === 'CHAT_ROOM_INVITE') {
                         this.$router.push('/chat/list');
+                        this.$router.push(`/chat/room/${notification.notification_id}`);
                     }
                 } catch (error) {
                     console.error('알림을 읽음으로 표시하는 중 오류 발생:', error);
