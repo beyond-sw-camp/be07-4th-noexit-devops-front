@@ -8,8 +8,17 @@
         <v-divider></v-divider>
         <!-- <v-col v-if="isWishList"> -->
         <v-col v-if="wishList">
-          <h2 class="font-weight-bold">WishList({{ wishList.length }})</h2>
-          <GameListComponent :games="myWishList" />
+          <v-row align="center" justify="space-between" class="wishlist-container">
+            <!-- WishList Title and Button -->
+            <v-col cols="auto">
+              <h2 class="font-weight-bold">WishList</h2>
+            </v-col>
+            <v-col cols="auto">
+              <v-btn :to="{ path: '/wishlist' }" v-if="myWishList.length > 4">더보기</v-btn>
+            </v-col>
+          </v-row>
+          <!-- GameListComponent -->
+          <GameListComponent :games="slicedWishList" />
         </v-col>
       </v-row>
       <v-divider></v-divider>
@@ -35,6 +44,7 @@ export default {
       wishList: [],
       isWishList: false,
       myWishList: [],
+      slicedWishList: [],
       pageSize: 10,
       currentPage: 0,
       totalPages: 1,
@@ -42,71 +52,76 @@ export default {
       isLoading: false,
     };
   },
-
-  async created() {
-    try {
-      const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
-      const best = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
-
-      const token = localStorage.getItem('token');
-      if (token) {
-        const wishlist = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`);
-        this.wishList = wishlist.data.result;
-        if (this.wishList.length > 0) this.isWishList = true;
-      }
-
-
-      this.gameList = response.data.result;
-      this.bestList = best.data.result.slice(0, 5);   // 최고 5개만 추출
-    } catch (e) {
-      console.error("정보가 존재하지 않습니다", e);
-    }
+  created() {
+    this.fetchMyInfo();
+    this.loadList();
   },
-
-  async loadList() {
-
-    try {
-      if (this.isLoading || this.isLastPage) return;
-      this.isLoading = true;
-
-      const allWishList = []; // 모든 페이지의 wishList 데이터를 저장할 배열
-
-      while (!this.isLastPage) {
-        let params = {
-          size: this.pageSize,
-          page: this.currentPage,
-        };
-
-        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`, { params });
-        const gameInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
-
-        this.bestList = gameInfo.data.result.slice(0, 5); // 최고 5개만 추출
-        this.gameList = gameInfo.data.result;
-
-        const additionalData = response.data.result.content;
-        if (additionalData.length === 0) {
-
-          this.isLastPage = true;
-        } else {
-          allWishList.push(...additionalData);
-          this.currentPage++;
-        }
+  methods: {
+    async fetchMyInfo() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`
+        );
+        this.myInfo = response.data.result;
+      } catch (e) {
+        console.log(e);
       }
-      this.wishList = allWishList;
-      this.isLoading = false;
+    },
 
-      for (let i = 0; i < this.gameList.length; i++) {
-        for (let j = 0; j < this.wishList.length; j++) {
-          if (this.wishList[j].gameId === this.gameList[i].id && this.wishList[j].memberId === this.myInfo.id) {
-            this.myWishList.push(this.gameList[i]);
+    async loadList() {
+
+      try {
+        if (this.isLoading || this.isLastPage) return;
+        this.isLoading = true;
+
+        const allWishList = []; // 모든 페이지의 wishList 데이터를 저장할 배열
+
+        while (!this.isLastPage) {
+          let params = {
+            size: this.pageSize,
+            page: this.currentPage,
+          };
+
+          const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`, { params });
+          const gameInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
+
+          this.bestList = gameInfo.data.result.slice(0, 5); // 최고 5개만 추출
+          this.gameList = gameInfo.data.result;
+
+          const additionalData = response.data.result.content;
+          if (additionalData.length === 0) {
+
+            this.isLastPage = true;
+          } else {
+            allWishList.push(...additionalData);
+            this.currentPage++;
           }
         }
+        this.wishList = allWishList;
+        this.isLoading = false;
+
+        for (let i = 0; i < this.gameList.length; i++) {
+          for (let j = 0; j < this.wishList.length; j++) {
+            if (this.wishList[j].gameId === this.gameList[i].id && this.wishList[j].memberId === this.myInfo.id) {
+              this.myWishList.push(this.gameList[i]);
+            }
+          }
+        }
+        this.slicedWishList = this.myWishList.slice(0, 4);
+      } catch (e) {
+        console.error("정보가 존재하지 않습니다", e);
       }
 
-    } catch (e) {
-      console.error("정보가 존재하지 않습니다", e);
-    }
-
-  },
+    },
+  }
 }
 </script>
+
+
+<style>
+.v-btn {
+  background-color: #1b1b1b;
+  color: #919191;
+  font-size: 12px;
+}
+</style>

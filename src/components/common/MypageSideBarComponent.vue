@@ -45,6 +45,12 @@
                         내가 쓴
                         후기</v-btn>
                 </v-col>
+                <v-col class="link-col">
+                    <v-btn text :to="{ path: '/wishlist' }" block :class="{ active: isActive('/wishlist') }"
+                        class="link-btn">
+                        위시리스트
+                    </v-btn>
+                </v-col>
             </v-toolbar-title>
 
         </v-row>
@@ -52,7 +58,12 @@
 </template>
 <script>
 export default {
-    methods: {
+    props: {
+        wishList: {
+            type: Array,
+            required: true
+        }
+    }, methods: {
         isActive(path) {
             return this.$route.path === path;
         },
