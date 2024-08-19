@@ -110,31 +110,11 @@ async created() {
 
     async saveEditing() {
       try {
-        // const formData = new FormData();
-        // formData.append("data", JSON.stringify({
-        //   title: this.editedTitle,
-        //   contents: this.editedContents,
-        //   boardType: this.editedBoardType
-        // }));
-        // for (const file of this.editedFiles) {
-        //   if (file instanceof File) {
-        //     formData.append("files", file);
-        //   }
-        // }
-        // await axios.patch(
-        //   `${process.env.VUE_APP_API_BASIC_URL}/board/update/${this.board.id}`,
-        //   formData,
-        //   {
-        //     headers: { 'Content-Type': 'multipart/form-data' }
-        //   }
-        // );
-
-
         let editedBoard = new FormData();
         const data = {
           title: this.editedTitle,
           contents: this.editedContents,
-          removeImgs: this.deletedFiles;
+          removeImgs: this.deletedFiles,
           boardType: this.editedBoardType,
         };
 
@@ -143,17 +123,24 @@ async created() {
           new Blob([JSON.stringify(data)], { type: "application/json" })
         );
 
-        for (const file of this.editedFiles) {
-          if (file instanceof File) {
-            formData.append("files", file);
-          }
-        }
+                this.files.forEach((file) => {
+          editedBoard.append("file", file, file.name);
+        });
+
+
+        // for (const file of this.editedFiles) {
+        //   if (file instanceof File) {
+        //     editedBoard.append("files", file);
+        //   }
+        // }
 
         await axios.patch(
           `${process.env.VUE_APP_API_BASIC_URL}/board/update/${this.board.id}`,
           editedBoard,
           {
-            headers: { 'Content-Type': 'multipart/form-data' }
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           }
         );
 
