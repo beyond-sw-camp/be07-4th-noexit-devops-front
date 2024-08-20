@@ -47,21 +47,32 @@ export default {
             myWishList: [],
             pageSize: 10,
             currentPage: 0,
+            notLoggedIn: false,
         }
     },
     async created() {
-        this.fetchMyInfo();
-        this.fetchMyWishList();
-        // this.wishlist = response.data.result.content;
-        // console.log(this.wishlist)
+        this.checkUser();
+        // this.fetchMyInfo();
+        // this.fetchMyWishList();
     },
     methods: {
+        checkUser() {
+      
+      if(localStorage.getItem('token')===null) {
+        this.notLoggedIn = true;
+      }else {
+        this.notLoggedIn = false;
+        this.fetchMyInfo();
+      }
+
+    },
         async fetchMyInfo() {
       try {
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`
         );
         this.myInfo = response.data.result;
+        this.fetchMyWishList();
       } catch (e) {
         console.log(e);
       }

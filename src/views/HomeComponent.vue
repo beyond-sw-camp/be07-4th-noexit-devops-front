@@ -7,7 +7,7 @@
         <BestGameListComponent :games="bestList" class="best-game" />
         <v-divider></v-divider>
         <!-- <v-col v-if="isWishList"> -->
-        <v-col v-if="wishList">
+        <v-col v-if="wishList && !notLoggedIn" >
           <h2 class="font-weight-bold">WishList({{ wishList.length }})</h2>
           <GameListComponent :games="myWishList" />
         </v-col>
@@ -43,13 +43,26 @@ export default {
       totalPages: 1,
       isLastPage: false,
       isLoading: false,
+      notLoggedIn: true,
         };
     },
     created() {
-        this.fetchMyInfo();
+      console.log("토큰값");
+      console.log(localStorage.getItem('token'));
+      this.checkUser();
     this.loadList();
   },
   methods: {
+    checkUser() {
+      
+      if(localStorage.getItem('token')===null) {
+        this.notLoggedIn = true;
+      }else {
+        this.notLoggedIn = false;
+        this.fetchMyInfo();
+      }
+
+    },
     async fetchMyInfo() {
       try {
         const response = await axios.get(
@@ -57,6 +70,7 @@ export default {
         );
         this.myInfo = response.data.result;
       } catch (e) {
+        
         console.log(e);
       }
     },
@@ -64,6 +78,9 @@ export default {
     async loadList() {
 
       try {
+
+        if(!this.notLoggedIn) { // 로그인함
+
         if (this.isLoading || this.isLastPage) return;
         this.isLoading = true;
 
@@ -99,6 +116,12 @@ export default {
                     this.myWishList.push(this.gameList[i]);
                 }
             }
+        }
+        }else{ // 로그인 안 함
+          const gameInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
+
+          this.bestList = gameInfo.data.result.slice(0, 5); // 최고 5개만 추출
+          this.gameList = gameInfo.data.result;
         }
 
       } catch (e) {

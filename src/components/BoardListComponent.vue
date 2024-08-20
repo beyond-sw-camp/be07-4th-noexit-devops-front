@@ -105,41 +105,43 @@
               </tbody>
             </v-table>
 
-            <div class="pagination-controls text-center">
-              <span
-                class="pagination-arrow"
-                @click="prevPageRange"
-                :class="{ disabled: currentPageRangeStart <= 1 }"
-              >
-                <v-icon small>{{
-                  currentPageRangeStart <= 1
-                    ? "mdi-menu-left"
-                    : "mdi-chevron-left"
-                }}</v-icon>
-              </span>
+            <v-col cols="12">
+          <div class="pagination-controls text-center">
+            <span
+              class="pagination-arrow"
+              @click="prevPageRange"
+              :class="{ disabled: currentPageRangeStart <= 1 }"
+            >
+              <v-icon small>{{
+                currentPageRangeStart <= 1
+                  ? "mdi-menu-left"
+                  : "mdi-chevron-left"
+              }}</v-icon>
+            </span>
 
-              <span
-                v-for="page in visiblePages"
-                :key="page"
-                @click="setPage(page)"
-                :class="{ 'active-page': currentPage === page }"
-                class="pagination-page"
-              >
-                {{ page }}
-              </span>
+            <span
+              v-for="page in visiblePages"
+              :key="page"
+              @click="setPage(page)"
+              :class="{ 'active-page': currentPage === page }"
+              class="pagination-page"
+            >
+              {{ page }}
+            </span>
 
-              <span
-                class="pagination-arrow"
-                @click="nextPageRange"
-                :class="{ disabled: currentPageRangeEnd >= totalPages }"
-              >
-                <v-icon small>{{
-                  currentPageRangeEnd >= totalPages
-                    ? "mdi-menu-right"
-                    : "mdi-chevron-right"
-                }}</v-icon>
-              </span>
-            </div>
+            <span
+              class="pagination-arrow"
+              @click="nextPageRange"
+              :class="{ disabled: currentPageRangeEnd >= totalPages }"
+            >
+              <v-icon small>{{
+                currentPageRangeEnd >= totalPages
+                  ? "mdi-menu-right"
+                  : "mdi-chevron-right"
+              }}</v-icon>
+            </span>
+          </div>
+        </v-col>
           </v-card-text>
         </v-card>
       </v-col>
@@ -283,10 +285,10 @@ export default {
 }
 
 .pagination-controls {
-  text-align: center;
-  display: inline-flex;
-  align-items: center;
+  display: flex;
   justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
 
 .pagination-arrow {
@@ -309,7 +311,7 @@ export default {
   color: rgb(254, 254, 254);
 }
 
-.pagination-arrow .disabled {
+.pagination-arrow.disabled {
   color: #ccc;
   cursor: not-allowed;
 }
