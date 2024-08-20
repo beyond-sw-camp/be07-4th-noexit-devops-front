@@ -61,18 +61,7 @@ export default {
             console.log("User is not logged in. Skipping wishlist and user info load.");
         }
     },
-    
     methods: {
-        checkUser() {
-      
-      if(localStorage.getItem('token')===null) {
-        this.notLoggedIn = true;
-      }else {
-        this.notLoggedIn = false;
-        this.fetchMyInfo();
-      }
-
-    },
         async fetchMyInfo() {
             if (!this.token) return;
 
