@@ -55,9 +55,6 @@ export default {
         // this.wishlist = response.data.result.content;
         // console.log(this.wishlist)
     },
-    computed() {
-
-    },
     methods: {
         async fetchMyInfo() {
       try {
