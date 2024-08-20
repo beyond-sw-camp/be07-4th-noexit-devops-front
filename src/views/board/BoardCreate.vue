@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <!-- Form Section -->
+    <div>
     <v-row class="d-flex justify-content-between mt-5">
       <v-col>
         <v-form>
@@ -12,7 +12,6 @@
                 item-title="text"
                 item-value="value"
                 class="custom-select"
-             
               ></v-select>
             </v-col>
             <v-col>
@@ -23,30 +22,48 @@
               ></v-text-field>
             </v-col>
             <v-col cols="auto">
-              <v-btn color="pink" @click="createBoard">등록하기</v-btn>
+              <v-btn height="60" color="pink" @click="createBoard">등록하기</v-btn>
             </v-col>
           </v-row>
         </v-form>
       </v-col>
     </v-row>
+    </div>
 
-    <!-- File Upload & Textarea Section -->
-    <v-row>
+
+
+    <div>
+      <v-row>
+        <v-col>
+            <input ref="fileInput" type="file" accept="image/*" style="display: none" @change="fileUpdate"/>    
+            <v-row>
+                <v-col v-for="image in previewImages" :key="image.src" cols="auto" style="margin-right: 10px">
+                    <img :src="image.src" alt="Selected Image" style="width: 100px; height: 100px; object-fit: cover; display: block;" @click="deleteImg(image.src)" />
+                </v-col>
+                <template v-if="files.length < 5">
+                  <v-icon @click="triggerFileInput" color="white" size="150" style="cursor: pointer; margin-right: 10px;">mdi-image-outline</v-icon>
+                </template>
+            </v-row>
+
+          </v-col>
+      </v-row>
+    </div>
+
+
+
+
+<div>
+ <v-row>
       <v-col>
-        <v-file-input
-          label="첨부 이미지"
-          accept="image/*"
-          multiple
-          class="custom-file-input"
-          @change="fileUpdate"
-        ></v-file-input>
         <v-textarea
           v-model="contentValue"
           placeholder="내용을 입력해주세요."
           class="custom-textarea"
+          style="margin-top: 10px;"
         ></v-textarea>
       </v-col>
     </v-row>
+</div>
   </v-container>
 </template>
 
@@ -64,10 +81,15 @@ export default {
         { text: "FREE", value: "FREE" },
         { text: "STRATEGY", value: "STRATEGY" },
       ],
-      files: [],
+      files: [], 
+    previewImages: [] 
     };
   },
+  computed: {},
   methods: {
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
     async createBoard() {
       try {
         if (this.category == "FREE") {
@@ -103,27 +125,52 @@ export default {
         );
 
         alert("게시글이 성공적으로 작성되었습니다.");
-        window.location.href = '/board/list';
+        window.location.href = "/board/list";
       } catch (e) {
         console.log(e);
         alert("게시글이 작성되지 않았습니다.");
       }
     },
-    fileUpdate(event) {
-      this.files = Array.from(event.target.files);
-    },
+   fileUpdate(event) {
+    const file = event.target.files[0];
+    if (file) {
+      this.files.push(file);
+      this.createImagePreview(file); 
+    }
+  },
+
+  createImagePreview(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imageSrc = e.target.result;
+      this.previewImages.push({ file, src: imageSrc });
+    };
+    reader.readAsDataURL(file);
+  },
+
+  async deleteImg(imageSrc) {
+    try {
+      const indexToRemove = this.previewImages.findIndex(item => item.src === imageSrc);
+      if (indexToRemove !== -1) {
+        const fileToRemove = this.previewImages[indexToRemove].file;
+        this.previewImages.splice(indexToRemove, 1);
+        this.files = this.files.filter(file => file !== fileToRemove);
+      }
+    } catch (error) {
+      console.error("Failed to delete image:", error);
+    }
+  }
   },
 };
 </script>
 
 <style scoped>
 /* Custom Select Style */
-.custom-select .v-select__selection {
+.custom-select {
   background-color: #565656;
-  color: #FFFFFF;
+  color: #ffffff;
   border-radius: 5px;
-   height: 70px;
-
+  height: 70px;
 }
 
 /* Custom Text Field Style */

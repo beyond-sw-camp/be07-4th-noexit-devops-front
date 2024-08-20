@@ -1,33 +1,32 @@
 <template>
   <v-container>
-    <v-row class="d-flex justify-content-between mt-5">
+    <div>
+      <v-row class="d-flex justify-content-between mt-5">
       <v-col>
         <v-form>
-          <v-row>
-            <v-col>
+          <v-row align="center" class="mb-4">
+            <v-col cols="auto">
               <v-select
-                style="width: 100px"
-                v-model="editedBoardType"
-                :items="categoryOptions"
+              v-model="editedBoardType"
+              :items="categoryOptions"
                 item-title="text"
                 item-value="value"
-                :style="{ backgroundColor: '#f8d7da' }"
+                class="custom-select"
               >
               </v-select>
             </v-col>
             <v-col>
               <v-text-field
-                v-model="editedTitle" required
-                style="width: 700px;  height: 10px"
-                :style="{ backgroundColor: '#f8d7da', height: '10px' }"
+                v-model="editedTitle"
+                class="custom-text-field"
               >
               </v-text-field>
             </v-col>
             <v-col cols="auto">
-              <v-btn color="pink" @click="saveEditing"
+              <v-btn height="60" color="pink" @click="saveEditing"
                 >수정하기</v-btn
               >
-              <v-btn color="grey" @click="cancelEditing"
+              <v-btn height="60" color="grey" @click="cancelEditing"
                 >취소하기</v-btn
               >
             </v-col>
@@ -35,32 +34,44 @@
         </v-form>
       </v-col>
     </v-row>
-    <v-row>
+    </div>
+
+
+
+
+
+
+    <div>
+      <v-row>
+        <v-col>
+            <input ref="fileInput" type="file" accept="image/*" style="display: none" @change="fileUpdate"/>    
+            <v-row>
+                <v-col v-for="i in filteredFiles" :key="i.id" cols="auto" style="margin-right: 10px">
+                  <img :src="i.imageUrl" alt="Selected Image" style=" width: 100px; height: 100px; object-fit: cover; display: block;" @click="deleteImg(i.id)"/>
+                </v-col>
+                <template v-if="filteredFiles.length < 5">
+                  <v-icon @click="triggerFileInput" color="white" size="150" style="cursor: pointer; margin-right: 10px;">mdi-image-outline</v-icon>
+                </template>
+            </v-row>
+          </v-col>
+      </v-row>
+    </div>
+
+
+
+
+<div>
+ <v-row>
       <v-col>
-               <table>
-          <tbody>
-            <tr v-for="i in filteredFiles" :key="i.id">
-              <td style="color: white">{{ i.imageUrl }}</td>
-              <v-icon small color="white" @click="deleteImg(i.id)" style="margin-left: 12px;">mdi-delete</v-icon>
-            </tr>
-          </tbody>
-        </table>
-        <v-file-input 
-        :style="{ backgroundColor: '#565656', color: '#000' }"
-    label="첨부 이미지" 
-    accept="image/*" 
-    multiple
-    @change="fileUpdate"
-    >
-        </v-file-input>
         <v-textarea
           v-model="editedContents"
-          style="width: 1200px; height: 700px"
-          :style="{ backgroundColor: '#f8d7da' }"
-        >
-        </v-textarea>
+          placeholder=""
+          class="custom-textarea"
+          style="margin-top: 10px;"
+        ></v-textarea>
       </v-col>
     </v-row>
+</div>
   </v-container>
 </template>
 
@@ -91,10 +102,12 @@ async created() {
   computed: {
     filteredFiles() {
       return this.editedFiles.filter(file => !this.deletedFiles.includes(file.id));
-      
     }
   },
   methods: {
+      triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
     async fetchBoardInfo() {
       try {
         const response = await axios.get(
@@ -149,18 +162,16 @@ async created() {
     cancelEditing() {
       this.$router.push(`/board/detail/${this.board.id}`);
     },
-        fileUpdate(event) {
-      this.files = Array.from(event.target.files);
-
+fileUpdate() {
+      const file = event.target.files[0]; // Get the first selected file
+      this.filteredFiles.push(file);
     },
     async deleteImg(id) {
       try {
         await axios.patch(
           `${process.env.VUE_APP_API_BASIC_URL}/boardimg/delete/${id}`
         );
-        alert("사진이 삭제되었습니다");
         this.deletedFiles.push(id);
-        console.log(this.editedFiles);
       } catch (error) {
         console.error("Failed to delete image:", error);
       }
@@ -169,3 +180,37 @@ async created() {
   },
 };
 </script>
+<style scoped>
+/* Custom Select Style */
+.custom-select {
+  background-color: #565656;
+  color: #ffffff;
+  border-radius: 5px;
+  height: 70px;
+}
+
+/* Custom Text Field Style */
+.custom-text-field {
+  background-color: #565656;
+  color: #fff;
+  border-radius: 5px;
+  height: 70px; /* Adjust the height as needed */
+}
+
+/* Custom File Input Style */
+.custom-file-input {
+  background-color: #787878;
+  color: #fff;
+  border-radius: 5px;
+  margin-bottom: 20px; /* Adjust margin as needed */
+}
+
+/* Custom Textarea Style */
+.custom-textarea {
+  background-color: #787878;
+  color: #fff;
+  border-radius: 5px;
+  height: 700px; /* Adjust height as needed */
+  width: 100%;
+}
+</style>
