@@ -87,6 +87,10 @@ export default {
         this.fetchRoomInfo();
         this.connectWebSocket();
     },
+    mounted() {
+        // 컴포넌트가 완전히 마운트된 후에 스크롤
+        this.scrollToBottom();
+    },
     watch: {
         messages() {
             this.$nextTick(() => {
@@ -96,14 +100,19 @@ export default {
     },
     methods: {
         setSenderFromToken() {
-            const token = localStorage.getItem('token');
-            if (token) {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
                 const decodedToken = VueJwtDecode.decode(token);
-                this.sender = decodedToken.sub;
-            } else {
-                this.sender = 'Anonymous';
+                this.sender = decodedToken.sub || decodedToken.username || decodedToken.nickname;
+            } catch (error) {
+                console.error("Error decoding token:", error);
+                this.sender = 'Anonymous';  // 에러 발생 시 기본값으로 설정
             }
-        },
+        } else {
+            this.sender = 'Anonymous';
+        }
+    },
         fetchRoomInfo() {
             axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/rooms/${this.roomId}`).then(response => {
                 this.roomName = response.data.name;
@@ -192,8 +201,10 @@ export default {
             return `${ampm} ${formattedHours}:${minutes < 10 ? '0' + minutes : minutes}`;
         },
         scrollToBottom() {
-            const container = this.$refs.messageList.$el;
-            container.scrollTop = container.scrollHeight;
+            if (this.$refs.messageList) {
+                const container = this.$refs.messageList.$el;
+                container.scrollTop = container.scrollHeight;
+            }
         }
     }
 };
