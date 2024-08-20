@@ -55,6 +55,7 @@ export default {
         // this.fetchMyInfo();
         // this.fetchMyWishList();
     },
+    
     methods: {
         checkUser() {
       

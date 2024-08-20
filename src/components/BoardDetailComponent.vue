@@ -46,7 +46,8 @@
     </v-row>
     <v-row class="mt- d-flex justify-center align-center">
       <v-col>
-        <div style="font-size: 24px">{{ board.contents }}</div>
+        <div style="font-size: 16px">{{ board.contents }}</div>
+        <br>
         <div v-if="board.images && board.images.length">
           <div v-for="i in board.images" :key="i.id">
             <v-img :src="i.imageUrl" style="width: 500px"></v-img>
