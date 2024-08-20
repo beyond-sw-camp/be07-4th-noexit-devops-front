@@ -28,7 +28,7 @@
               <v-col cols="auto">
                 <v-row>
                   <v-btn
-                    height="45"
+                    height="60"
                     type="submit"
                     color="pink"
                     @click="onSearchButtonClick"
@@ -36,11 +36,13 @@
                   >
                   <v-spacer></v-spacer>
                   <v-btn
-                    height="45"
+                    height="60"
+
                     color="pink"
-                    style="margin-left: 8px"
+                    style="margin-left: 8px;"
                     @click="openCreateModal"
                     v-if="userRole == 'USER' && isLogin"
+                    
                     >작성하기</v-btn
                   >
                 </v-row>
@@ -64,7 +66,7 @@
             fontWeight: 'bold',
           }"
         >
-          마감 임박 With ME!
+          ESCAPE WITH ME😍
         </h1>
         <ImminentClosingBoards />
       </v-col>
@@ -95,7 +97,7 @@
               boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
               marginTop: '10px',
               padding: '10px',
-              height: '350px',
+              height: '320px',
               width: '100%',
             }"
             :class="{
@@ -114,12 +116,12 @@
               <!-- 작성자 이름 -->
 
               <!-- 아바타 -->
-              <v-avatar size="100">
+              <v-avatar size="120" style="overflow: hidden; border-radius: 50%;">
                 <img
                   :src="f.imagePath"
                   alt="프로필 이미지"
                   class="profile-image"
-                  style="width: 100%; height: 100%; object-fit: cover"
+                  style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
                 />
               </v-avatar>
 
@@ -139,19 +141,18 @@
 
             </v-col>
 
-            <v-col cols="7" style="margin-top: 0px; text-align: center">
-              <v-row class="d-flex justify-center">
-                <div style="font-size: 24px">
+            <v-col cols="7" style="margin-top: 0px; text-align: start">
+              <v-row class="d-flex justify-start" style="margin-bottom: 40px;">
+                <div style="font-size: 24px;">
                   <strong>{{ f.selectedStoreName }}</strong>
                 </div>
               </v-row>
-
-              <v-row class="d-flex justify-center">
+              <v-row class="d-flex justify-start">
                 <div>
                   <div style="font-size: 20px; margin-bottom: 10px">
-                    <strong>{{ f.title }}</strong>
+                    <strong>{{ f.title }} </strong>
                   </div>
-                  <div class="text-center" style="font-size: 16px">
+                  <div class="text-start" style="font-size: 16px">
                     {{ f.contents }}
                   </div>
                 </div>
@@ -221,7 +222,7 @@
               <!-- 참여 버튼 -->
               <v-card-actions>
                 <v-btn
-                  width="130"
+                  width="180"
                   height="40"
                   color="black"
                   :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
@@ -616,7 +617,7 @@ body,
 
 .v-avatar {
   background-color: #e2e2f7;
-  padding: 8px;
+  padding: 0px;
   border-radius: 50%;
 }
 
@@ -646,13 +647,13 @@ body,
   margin: 0 5px;
   padding: 5px 10px;
   border-radius: 20%;
-  background-color: #868383;
+  background-color: #1b1b1b;
   color: #f6f6f6;
   transition: background-color 0.3s, color 0.3s;
 }
 
 .pagination-page.active-page {
-  background-color: rgb(223, 139, 139);
+  background-color:#FF0066;
   color: rgb(254, 254, 254);
 }
 

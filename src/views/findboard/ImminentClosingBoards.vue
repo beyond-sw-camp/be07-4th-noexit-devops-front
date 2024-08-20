@@ -47,7 +47,7 @@
                 <h4>{{ board.title }}</h4>
                 <p>{{ board.contents }}</p>
                 <p style="text-align: right;">
-                  {{ board.totalCapacity }} / {{ board.currentCount }}
+                  {{ board.currentCount }} / {{ board.totalCapacity }}
                 </p>
                 
 
