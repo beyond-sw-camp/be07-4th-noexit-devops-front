@@ -1,6 +1,10 @@
 <template>
   <v-container>
     <v-row class="d-flex justify-content-between mt-5">
+
+
+
+
       <v-col>
         <v-form @submit.prevent="searchBoards">
           <v-row>
@@ -10,48 +14,62 @@
                 :items="searchOptions"
                 item-title="text"
                 item-value="value"
-                class="custom-select"
-                
-                :style="{ backgroundColor: '#565656', color: '#000', height:'70%',  borderRadius: '10px'  }"
+                dense
               >
               </v-select>
             </v-col>
             <v-col>
               <v-text-field
                 v-model="searchValue"
-                append-icon="mdi-magnify"
                 label="Search"
-                :style="{ backgroundColor: '#565656', color: '#000' ,border: 'none', boxShadow: 'none' ,    borderRadius: '10px',height:'70%'}"
-              >
-              </v-text-field>
+                :rules="[required]"
+                dense
+              ></v-text-field>
             </v-col>
             <v-col cols="auto">
-              <v-btn type="submit" color="white">검색</v-btn>
+                <v-col cols="auto">
+                  <v-row>
+              <v-btn 
+              height="45"
+              type="submit" 
+              color="pink"
+              >검색</v-btn>
+               <v-spacer></v-spacer>
+                                 <v-btn
+                    height="45"
+                    color="pink"
+                    style="margin-left: 8px"
+                    href="board/create"
+                    v-if="userRole == 'USER' && isLogin"
+                    >게시글 쓰기</v-btn
+                  >
+                  </v-row>
+                </v-col>
             </v-col>
           </v-row>
         </v-form>
       </v-col>
-      <v-col cols="auto">
-        <v-btn href="/board/create" color="pink">게시글 쓰기</v-btn>
-      </v-col>
     </v-row>
+       
+   
+
+
+
     <v-row>
       <v-col>
         <v-card style="background-color: #1b1b1b;">
+
+
+
+
+<!-- v-table 형식 (원래) -->
+
           <v-table
             style="
               background-color: #1b1b1b;
-              color: white;
-              <!-- border: 1px solid white; -->
-            "
-          >
+              color: white;">
             <thead
-              style="
-                background-color: #565656;
-                color: white;
-                border: 1px solid white;
-              "
-            >
+              style="color: white;">
               <tr>
                 <th style="text-align: center"></th>
                 <th style="text-align: center">카테고리</th>
@@ -65,7 +83,6 @@
             </thead>
             <tbody
               style="
-                background-color: #1b1b1b;
                 color: white;
                 border: 1px solid white;
               "
@@ -73,7 +90,6 @@
               <tr v-for="b in boardList" :key="b.id" @click="redirectToDetail(b.id)">
                 <td>
                   <v-icon v-if="b.img" size="30" color="white">mdi-image-outline</v-icon>
-                  <!-- <v-icon v-else size="30" color="white">mdi-file-document-outline</v-icon> -->
                 </td>
                 <td>
                   <v-chip
@@ -95,10 +111,14 @@
                 <td style="text-align: center">{{ b.boardHits }}</td>
                 <td style="text-align: center">{{ b.likes }}</td>
                 <td style="text-align: center">{{ b.comments }}</td>
-           
+                
               </tr>
+              <v-divider :thickness="6"></v-divider>
             </tbody>
-          </v-table>
+          </v-table> 
+
+
+          
           <v-col cols="12">
             <div class="pagination-controls text-center">
               <span
@@ -279,6 +299,29 @@ export default {
 /* * {
   font-family: "GmarketSansMedium", sans-serif;
 } */
+
+
+.v-list-item {
+    padding: 10px 30px;
+}
+
+.custom-list-item {
+    padding: 30px;
+    transition: transform 0.2s ease-in-out;
+}
+
+
+.v-list-item-title {
+    font-weight: bold;
+}
+
+.v-list-item-subtitle {
+    font-size: 14px;
+
+}
+
+
+
 
 .custom-select .v-select__selection {
   background-color: #f8d7da; /* Custom background color */
