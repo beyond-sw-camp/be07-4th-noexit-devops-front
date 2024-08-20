@@ -92,8 +92,8 @@
             :style="{
               color: 'white',
               backgroundColor: '#1b1b1b',
-              border: '1px solid rgba(255, 255, 255, 0.2)', 
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)', 
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
               marginTop: '10px',
               padding: '10px',
               height: '350px',
@@ -108,19 +108,14 @@
             outlined
             rounded="lg"
           >
-            <v-col cols="3" class="d-flex flex-column align-center justify-center">
+            <v-col
+              cols="3"
+              class="d-flex flex-column align-center justify-center"
+            >
               <!-- 작성자 이름 -->
-              <v-row class="d-flex align-start" style="margin: 0;">
-                <div style="margin-top: -40px;">
-                  <!-- 상단으로 붙이기 위해 margin-top을 음수로 설정 -->
-                  <span class="writer-text">
-                    닉네임 : {{ f.writer }}
-                  </span>
-                </div>
-              </v-row>
 
               <!-- 아바타 -->
-              <v-avatar size="150">
+              <v-avatar size="100">
                 <img
                   :src="f.imagePath"
                   alt="프로필 이미지"
@@ -129,70 +124,70 @@
                 />
               </v-avatar>
 
-              <!-- 참여 버튼 -->
-              <v-card-actions class="mt-4 d-flex justify-center">
-                <v-btn
-                  width="150"
-                  height="40"
-                  color="pink"
-                  :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
-                  @click="participateInFindBoard(f.id)"
-                >
-                  PARTICIPATE
-                </v-btn>
-              </v-card-actions>
-
-              <!-- 마감 시각 또는 FINISH 텍스트 -->
-              <v-row class="d-flex justify-center">
-                <div
-                  v-if="getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'"
-                  style="text-align: right"
-                >
-                  <p>{{ getTimeDifferenceInMinutes(f.expirationTime) }}</p>
-                </div>
-                <div v-else style="text-align: right">
-                  <em>FINISH</em>
+              <v-row
+                class="d-flex flex-column align-start"
+                style="margin-top: 16px"
+              >
+                <!-- margin-top으로 적절한 여백만 주고, 겹침 방지 -->
+                <div>
+                  <span class="writer-text">
+                    {{ f.writer }}
+                  </span>
                 </div>
               </v-row>
+
+
+
             </v-col>
 
-            <v-col cols="7" style="margin-top: 0px; text-align: center;">
+            <v-col cols="7" style="margin-top: 0px; text-align: center">
               <v-row class="d-flex justify-center">
-                <div style="font-size: 24px;">
+                <div style="font-size: 24px">
                   <strong>{{ f.selectedStoreName }}</strong>
                 </div>
               </v-row>
 
               <v-row class="d-flex justify-center">
                 <div>
-                  <div style="font-size: 20px; margin-bottom: 10px;">
+                  <div style="font-size: 20px; margin-bottom: 10px">
                     <strong>{{ f.title }}</strong>
                   </div>
-                  <div class="text-center" style="font-size: 16px;">
+                  <div class="text-center" style="font-size: 16px">
                     {{ f.contents }}
                   </div>
                 </div>
               </v-row>
             </v-col>
 
-            <v-col cols="2" class="d-flex flex-column justify-between">
+            <v-col 
+            cols="2" 
+            class="d-flex 
+            flex-column justify-between"
+            style="padding-top: 30px; margin-right: 30px;"
+
+            >
               <v-row justify="end">
-                <div
-                  v-if="f.isAuthor"
-                  style="margin-top: -65px;"
-                >
+                <div v-if="f.isAuthor" style="margin-top: -65px">
                   <!-- 상단으로 붙이기 위해 margin-top을 음수로 설정 -->
                   <v-icon
-                    style="display: inline-block; vertical-align: top;"
+                    style="display: inline-block; vertical-align: top"
                     @click="openUpdateModal(f)"
-                    :style="{ color: 'gray', cursor: 'pointer', fontSize: '24px' }"
+                    :style="{
+                      color: 'gray',
+                      cursor: 'pointer',
+                      fontSize: '24px',
+                    }"
                   >
                     mdi-pencil
                   </v-icon>
                   <v-icon
                     @click="deleteFB(f.id)"
-                    :style="{ color: 'gray', cursor: 'pointer', fontSize: '24px' }"
-                    style="display: inline-block; vertical-align: top;"
+                    :style="{
+                      color: 'gray',
+                      cursor: 'pointer',
+                      fontSize: '24px',
+                    }"
+                    style="display: inline-block; vertical-align: top"
                   >
                     mdi-delete
                   </v-icon>
@@ -204,17 +199,42 @@
                   />
                 </div>
               </v-row>
-
-              <div class="text-right mt-2">
-                {{ f.currentCount }} / {{ f.totalCapacity }}
-              </div>
-
+              <!-- 마감 시각 또는 FINISH 텍스트 -->
+              <v-row class="d-flex justify-center">
+                <div
+                  v-if="
+                    getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'
+                  "
+                  style="text-align: right"
+                >
+                  <p>{{ getTimeDifferenceInMinutes(f.expirationTime) }}</p>
+                </div>
+                <div v-else style="text-align: right">
+                  <em>FINISH</em>
+                </div>
+              </v-row>
               <!-- 날짜를 우측 하단에 배치 -->
-              <v-card-actions class="justify-end mt-auto">
+              <!-- <v-card-actions class="justify-end mt-auto">
                 <div class="text-right">
                   <p>{{ formatDateTime(f.createdTime) }}</p>
                 </div>
+              </v-card-actions> -->
+              <!-- 참여 버튼 -->
+              <v-card-actions class="mt-4 d-flex justify-center" color="pink">
+                <v-btn
+                  width="130"
+                  height="40"
+                  color="pink"
+                  :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
+                  @click="participateInFindBoard(f.id)"
+                >
+                  PARTICIPATE
+                </v-btn>
               </v-card-actions>
+
+              <div class="mt-4 d-flex justify-center">
+                {{ f.currentCount }} / {{ f.totalCapacity }}
+              </div>
             </v-col>
           </v-card>
         </v-col>
@@ -264,7 +284,6 @@
     </div>
   </v-container>
 </template>
-
 
 <script>
 import axios from "axios";
