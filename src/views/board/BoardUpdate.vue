@@ -81,6 +81,7 @@ export default {
       ],
       editedFiles: [],
       deletedFiles: [],
+      files: [],
     };
   },
 async created() {
@@ -154,10 +155,14 @@ async created() {
     cancelEditing() {
       this.$router.push(`/board/detail/${this.board.id}`);
     },
-    fileUpdate(event) {
-      const files = Array.from(event.target.files);
-      this.editedFiles.push(...files);
+        fileUpdate(event) {
+      this.files = Array.from(event.target.files);
+
     },
+    // fileUpdate(event) {
+    //   const files = Array.from(event.target.files);
+    //   this.editedFiles.push(...files);
+    // },
     async deleteImg(id) {
       try {
         await axios.patch(
