@@ -35,11 +35,10 @@
     <div>
       <v-row>
         <v-col>
-            <input ref="fileInput" type="file" accept="image/*" multiple style="display: none" @change="fileUpdate"/>    
+            <input ref="fileInput" type="file" accept="image/*" style="display: none" @change="fileUpdate"/>    
             <v-row>
-                <v-col v-for="imageSrc in imageSrcArr" :key="imageSrc" cols="auto" style="margin-right: 10px">
-                  <!-- 사진 누르면 삭제하기 추가해야됨 -->
-                  <img :src="imageSrc" alt="Selected Image" style=" width: 100px; height: 100px; object-fit: cover; display: block;"/>
+                <v-col v-for="image in previewImages" :key="image.src" cols="auto" style="margin-right: 10px">
+                    <img :src="image.src" alt="Selected Image" style="width: 100px; height: 100px; object-fit: cover; display: block;" @click="deleteImg(image.src)" />
                 </v-col>
                 <template v-if="files.length < 5">
                   <v-icon @click="triggerFileInput" color="white" size="150" style="cursor: pointer; margin-right: 10px;">mdi-image-outline</v-icon>
@@ -60,6 +59,7 @@
           v-model="contentValue"
           placeholder="내용을 입력해주세요."
           class="custom-textarea"
+          style="margin-top: 10px;"
         ></v-textarea>
       </v-col>
     </v-row>
@@ -81,9 +81,8 @@ export default {
         { text: "FREE", value: "FREE" },
         { text: "STRATEGY", value: "STRATEGY" },
       ],
-      files: [], // 파일 배열
-      imageSrc: null, // 파일명
-      imageSrcArr: [], // 파일이름 배열
+      files: [], 
+    previewImages: [] 
     };
   },
   computed: {},
@@ -132,20 +131,35 @@ export default {
         alert("게시글이 작성되지 않았습니다.");
       }
     },
-    // fileUpdate(event) {
-    //   this.files = Array.from(event.target.files);
-    // },
-    fileUpdate() {
-      const file = event.target.files[0]; // Get the first selected file
+   fileUpdate(event) {
+    const file = event.target.files[0];
+    if (file) {
       this.files.push(file);
-      if (file) {
-        // Generate a URL for the selected image
-        // this.imageSrc = URL.createObjectURL(file);
-        this.imageSrcArr.push(URL.createObjectURL(file));
-      } else {
-        this.imageSrc = null;
+      this.createImagePreview(file); 
+    }
+  },
+
+  createImagePreview(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imageSrc = e.target.result;
+      this.previewImages.push({ file, src: imageSrc });
+    };
+    reader.readAsDataURL(file);
+  },
+
+  async deleteImg(imageSrc) {
+    try {
+      const indexToRemove = this.previewImages.findIndex(item => item.src === imageSrc);
+      if (indexToRemove !== -1) {
+        const fileToRemove = this.previewImages[indexToRemove].file;
+        this.previewImages.splice(indexToRemove, 1);
+        this.files = this.files.filter(file => file !== fileToRemove);
       }
-    },
+    } catch (error) {
+      console.error("Failed to delete image:", error);
+    }
+  }
   },
 };
 </script>

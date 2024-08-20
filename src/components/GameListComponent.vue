@@ -106,10 +106,9 @@ export default {
 
                 if (this.isInWishlist(id)) {
                     this.myWishList = this.myWishList.filter(item => item.gameId !== id);
-                    alert("게임이 내 찜 목록에서 제거되었습니다.");
                 } else {
                     this.myWishList.push({ gameId: id, memberId: this.myInfo.id });
-                    alert("게임이 성공적으로 내 찜 목록에 저장되었습니다.");
+
                 }
             } catch (error) {
                 console.error("위시리스트 추가/제거 하는 도중에 오류가 발생했습니다.", error);
