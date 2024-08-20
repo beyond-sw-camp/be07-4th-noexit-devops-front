@@ -1,44 +1,77 @@
 <template>
   <v-container>
     <v-row class="d-flex justify-content-between mt-5">
+
+
+
+
       <v-col>
         <v-form @submit.prevent="searchBoards">
           <v-row>
             <v-col cols="auto">
-              <v-select v-model="searchType" :items="searchOptions" item-title="text" item-value="value"
-                :style="{ backgroundColor: '#f8d7da' }">
+              <v-select
+                v-model="searchType"
+                :items="searchOptions"
+                item-title="text"
+                item-value="value"
+                dense
+              >
               </v-select>
             </v-col>
             <v-col>
-              <v-text-field v-model="searchValue" label="Search" :style="{ backgroundColor: '#f8d7da' }">
-              </v-text-field>
+              <v-text-field
+                v-model="searchValue"
+                label="Search"
+                :rules="[required]"
+                dense
+              ></v-text-field>
             </v-col>
             <v-col cols="auto">
-              <v-btn type="submit">검색</v-btn>
+                <v-col cols="auto">
+                  <v-row>
+              <v-btn 
+              height="45"
+              type="submit" 
+              color="pink"
+              >검색</v-btn>
+               <v-spacer></v-spacer>
+                                 <v-btn
+                    height="45"
+                    color="pink"
+                    style="margin-left: 8px"
+                    href="board/create"
+                    v-if="userRole == 'USER' && isLogin"
+                    >게시글 쓰기</v-btn
+                  >
+                  </v-row>
+                </v-col>
             </v-col>
           </v-row>
         </v-form>
       </v-col>
-      <v-col cols="auto">
-        <v-btn href="/board/create" color="pink">게시글 쓰기</v-btn>
-      </v-col>
     </v-row>
+       
+   
+
+
+
     <v-row>
       <v-col>
-        <v-card style="background-color: #1b1b1b; border: 1px solid white">
+        <v-card style="background-color: #1b1b1b;">
 
-          <v-table style="
-                background-color: #1b1b1b;
-                color: white;
-                border: 1px solid white;
-              ">
-            <thead style="
-                  background-color: #e91e63;
-                  color: white;
-                  border: 1px solid white;
-                ">
+
+
+
+<!-- v-table 형식 (원래) -->
+
+          <v-table
+            style="
+              background-color: #1b1b1b;
+              color: white;">
+            <thead
+              style="color: white;">
               <tr>
-                <th style="text-align: center">썸네일</th>
+                <th style="text-align: center"></th>
                 <th style="text-align: center">카테고리</th>
                 <th style="text-align: center">제목</th>
                 <th style="text-align: center">작성자</th>
@@ -48,70 +81,91 @@
                 <th style="text-align: center">댓글수</th>
               </tr>
             </thead>
-            <tbody style="
-                  background-color: #1b1b1b;
-                  color: white;
-                  border: 1px solid white;
-                ">
-              <tr v-for="b in boardList" :key="b.id">
+            <tbody
+              style="
+                color: white;
+                border: 1px solid white;
+              "
+            >
+              <tr v-for="b in boardList" :key="b.id" @click="redirectToDetail(b.id)">
                 <td>
-                  <v-icon v-if="b.thumbnail" size="30" color="white">mdi-image-outline</v-icon>
-                  <!-- <v-icon v-else size="30" color="white">mdi-file-document-outline</v-icon> -->
+                  <v-icon v-if="b.img" size="30" color="white">mdi-image-outline</v-icon>
                 </td>
                 <td>
-                  <v-chip class="custom-chip" :color="getChipColor(b.boardType)" text-color="white"
-                    style="margin-right: 8px;">
+                  <v-chip
+                    class="custom-chip"
+                    :color="getChipColor(b.boardType)"
+                    text-color="white"
+                    style="margin-right: 8px;"
+                  >
                     {{ b.boardType }}
                   </v-chip>
                 </td>
                 <td style="width: 450px; text-align: center">
-
-                  <a :href="`/board/detail/${b.id}`" style="text-decoration: none; color: white">
+          
                     {{ b.title }}
-                  </a>
-                </td>
-                <td style="width: 90px; text-align: center">
-                  {{ b.writer }}
-                </td>
-                <td style="width: 180px; text-align: center">
-                  {{ b.createdDate }}
-                </td>
-                <td style="width: 70px; text-align: center">
-                  {{ b.boardHits }}
-                </td>
-                <td style="width: 70px; text-align: center">{{ b.likes }}</td>
-                <td style="width: 70px; text-align: center">
-                  {{ b.comments }}
-                </td>
+                 
+                  </td>
+                <td style="text-align: center">{{ b.writer }}</td>
+                <td style="text-align: center">{{ b.createdDate }}</td>
+                <td style="text-align: center">{{ b.boardHits }}</td>
+                <td style="text-align: center">{{ b.likes }}</td>
+                <td style="text-align: center">{{ b.comments }}</td>
+                
               </tr>
+              <v-divider :thickness="6"></v-divider>
             </tbody>
-          </v-table>
-          <div class="pagination-controls text-center">
-            <span class="pagination-arrow" @click="prevPageRange" :class="{ disabled: currentPageRangeStart <= 1 }">
-              <v-icon small>{{
-                currentPageRangeStart <= 1 ? "mdi-menu-left" : "mdi-chevron-left" }}</v-icon>
-            </span>
+          </v-table> 
 
-            <span v-for="page in visiblePages" :key="page" @click="setPage(page)"
-              :class="{ 'active-page': currentPage === page }" class="pagination-page">
-              {{ page }}
-            </span>
 
-            <span class="pagination-arrow" @click="nextPageRange"
-              :class="{ disabled: currentPageRangeEnd >= totalPages }">
-              <v-icon small>{{
-                currentPageRangeEnd >= totalPages
-                  ? "mdi-menu-right"
-                  : "mdi-chevron-right"
-              }}</v-icon>
-            </span>
-          </div>
+          
+          <v-col cols="12">
+            <div class="pagination-controls text-center">
+              <span
+                class="pagination-arrow"
+                @click="prevPageRange"
+                :class="{ disabled: currentPageRangeStart <= 1 }"
+              >
+                <v-icon small>
+                  {{
+                    currentPageRangeStart <= 1
+                      ? "mdi-menu-left"
+                      : "mdi-chevron-left"
+                  }}
+                </v-icon>
+              </span>
 
+              <span
+                v-for="page in visiblePages"
+                :key="page"
+                @click="setPage(page)"
+                :class="{ 'active-page': currentPage === page }"
+                class="pagination-page"
+              >
+                {{ page }}
+              </span>
+
+              <span
+                class="pagination-arrow"
+                @click="nextPageRange"
+                :class="{ disabled: currentPageRangeEnd >= totalPages }"
+              >
+                <v-icon small>
+                  {{
+                    currentPageRangeEnd >= totalPages
+                      ? "mdi-menu-right"
+                      : "mdi-chevron-right"
+                  }}
+                </v-icon>
+              </span>
+            </div>
+          </v-col>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -128,7 +182,7 @@ export default {
       ],
       searchValue: "",
       boardList: [],
-      pageSize: 10,
+      pageSize: 20,
       currentPage: 1,
       totalPages: 1,
       currentPageRangeStart: 1,
@@ -167,18 +221,14 @@ export default {
         let params = {
           size: this.pageSize,
           page: this.currentPage - 1,
-          // searchType: this.searchType,
-          // searchValue: this.searchValue,
         };
-        if (this.searchType === 'title') {
+        if (this.searchType === "title") {
           params.searchTitle = this.searchValue;
-          console.log(params.searchTitle);
-        } else if (this.searchType === 'boardType') {
+        }else if(this.searchType === "contents") {
+          params.searchContents = this.searchValue;
+        } else if (this.searchType === "boardType") {
           params.searchBoardType = this.searchValue;
-          console.log(params.searchBoardType);
-
         }
-
 
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASIC_URL}/board/list`,
@@ -199,9 +249,9 @@ export default {
     getChipColor(boardType) {
       switch (boardType) {
         case "FREE":
-          return "#E91E63";
+          return "#3";
         case "STRATEGY":
-          return "#DF8B8B";
+          return "#E91E63";
         default:
           return "grey";
       }
@@ -236,6 +286,9 @@ export default {
         this.setPage(this.currentPageRangeStart);
       }
     },
+    redirectToDetail(boardId) {
+      this.$router.push(`/board/detail/${boardId}`);
+    }
   },
 };
 </script>
@@ -243,16 +296,61 @@ export default {
 <style scoped>
 @import url("https://webfontworld.github.io/gmarket/GmarketSans.css");
 
-* {
+/* * {
   font-family: "GmarketSansMedium", sans-serif;
-  font-weight: 1000;
+} */
+
+
+.v-list-item {
+    padding: 10px 30px;
 }
 
+.custom-list-item {
+    padding: 30px;
+    transition: transform 0.2s ease-in-out;
+}
+
+
+.v-list-item-title {
+    font-weight: bold;
+}
+
+.v-list-item-subtitle {
+    font-size: 14px;
+
+}
+
+
+
+
+.custom-select .v-select__selection {
+  background-color: #f8d7da; /* Custom background color */
+  color: #000; /* Custom text color */
+}
+
+.custom-select .v-select__slot {
+  border: 1px solid #e91e63; /* Custom border color */
+}
+
+.custom-select .v-select__selections {
+  background-color: #f8d7da; /* Ensure selections background is consistent */
+}
+
+.custom-select .v-select__menu {
+  background-color: #f8d7da; /* Menu background color */
+}
+
+.custom-select .v-select__item {
+  color: #000; /* Item text color */
+}
+
+
+
 .pagination-controls {
-  text-align: center;
-  display: inline-flex;
-  align-items: center;
+  display: flex;
   justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
 
 .pagination-arrow {
@@ -275,7 +373,7 @@ export default {
   color: rgb(254, 254, 254);
 }
 
-.pagination-arrow .disabled {
+.pagination-arrow.disabled {
   color: #ccc;
   cursor: not-allowed;
 }

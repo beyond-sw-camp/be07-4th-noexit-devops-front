@@ -19,6 +19,7 @@
           </v-row>
           <GameListComponent :games="slicedWishList" />
           <v-divider></v-divider>
+
         </v-col>
       </v-row>
       
@@ -42,6 +43,78 @@ export default {
     },
     data() {
         return {
+// <<<<<<< HEAD
+//         myInfo: [],
+//       gameList: [],
+//       bestList: [],
+//       wishList: [],
+//       isWishList: false,
+//       myWishList: [],
+//       slicedWishList: [],
+//       pageSize: 10,
+//       currentPage: 0,
+//       totalPages: 1,
+//       isLastPage: false,
+//       isLoading: false,
+//     };
+//   },
+//   created() {
+//     this.fetchMyInfo();
+//     this.loadList();
+//   },
+//   methods: {
+//     checkUser() {
+      
+//       if(localStorage.getItem('token')===null) {
+//         this.notLoggedIn = true;
+//       }else {
+//         this.notLoggedIn = false;
+//         this.fetchMyInfo();
+//       }
+
+//     },
+//     async fetchMyInfo() {
+//       try {
+//         const response = await axios.get(
+//           `${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`
+//         );
+//         this.myInfo = response.data.result;
+//       } catch (e) {
+        
+//         console.log(e);
+//       }
+//     },
+
+//     async loadList() {
+
+//       try {
+
+
+//         if (this.isLoading || this.isLastPage) return;
+//         this.isLoading = true;
+
+//         const allWishList = []; // 모든 페이지의 wishList 데이터를 저장할 배열
+
+//         while (!this.isLastPage) {
+//           let params = {
+//             size: this.pageSize,
+//             page: this.currentPage,
+//           };
+
+//           const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`, { params });
+//           const gameInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
+
+//           this.bestList = gameInfo.data.result.slice(0, 5); // 최고 5개만 추출
+//           this.gameList = gameInfo.data.result;
+
+//           const additionalData = response.data.result.content;
+//           if (additionalData.length === 0) {
+//             this.isLastPage = true;
+//           } else {
+//             allWishList.push(...additionalData);
+//             this.currentPage++;
+//           }
+// =======
             myInfo: [],
             gameList: [],
             bestList: [],
@@ -64,6 +137,7 @@ export default {
             this.loadWishList();  // 위시리스트와 관련된 로직만 호출
         } else {
             console.log("User is not logged in. Skipping wishlist and user info load.");
+// >>>>>>> b389c5f9cbcd71fdd603b8fb63ba82421b8febf4
         }
         this.loadGameList(); // 로그인 여부와 상관없이 게임 리스트는 항상 로드
     },

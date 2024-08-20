@@ -18,8 +18,8 @@
             <v-col>
               <v-text-field
                 v-model="editedTitle" required
-                style="width: 700px"
-                :style="{ backgroundColor: '#f8d7da' }"
+                style="width: 700px;  height: 10px"
+                :style="{ backgroundColor: '#f8d7da', height: '10px' }"
               >
               </v-text-field>
             </v-col>
@@ -46,18 +46,19 @@
           </tbody>
         </table>
         <v-file-input 
-        :style="{ backgroundColor: '#f8d7da' }"
+        :style="{ backgroundColor: '#565656', color: '#000' }"
     label="첨부 이미지" 
     accept="image/*" 
     multiple
-    @change="fileUpdate">
+    @change="fileUpdate"
+    >
         </v-file-input>
-        <v-text-field
+        <v-textarea
           v-model="editedContents"
           style="width: 1200px; height: 700px"
           :style="{ backgroundColor: '#f8d7da' }"
         >
-        </v-text-field>
+        </v-textarea>
       </v-col>
     </v-row>
   </v-container>
@@ -128,13 +129,6 @@ async created() {
           editedBoard.append("file", file, file.name);
         });
 
-
-        // for (const file of this.editedFiles) {
-        //   if (file instanceof File) {
-        //     editedBoard.append("files", file);
-        //   }
-        // }
-
         await axios.patch(
           `${process.env.VUE_APP_API_BASIC_URL}/board/update/${this.board.id}`,
           editedBoard,
@@ -159,10 +153,6 @@ async created() {
       this.files = Array.from(event.target.files);
 
     },
-    // fileUpdate(event) {
-    //   const files = Array.from(event.target.files);
-    //   this.editedFiles.push(...files);
-    // },
     async deleteImg(id) {
       try {
         await axios.patch(
