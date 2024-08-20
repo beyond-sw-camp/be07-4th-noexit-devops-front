@@ -223,6 +223,7 @@ export default {
         }
     },
     created() {
+        this.fetchUserInfo();
         this.fetchGameDetail();
         this.fetchAvailableHours();
         this.fetchTotalReviews();
@@ -242,18 +243,19 @@ export default {
             }
         },
         async fetchUserInfo() {
+            const token = localStorage.getItem('token');
             try {
-                const token = localStorage.getItem('token');
                 if (token) {
                     const decodedToken = jwtDecode(token);
                     this.memberId = decodedToken.userId || decodedToken.sub;
-                    this.resName = decodedToken.name || '';
-                    this.phoneNumber = decodedToken.phone || '';
-
-                    // if (!this.memberId || !this.resName || !this.phoneNumber) {
-                    //     alert('회원 정보를 가져오는 데 문제가 발생했습니다. 다시 시도해 주세요.');
-                    //     return false;
-                    // }
+                    
+                    // resName과 phoneNumber이 비어 있는 경우에만 설정
+                    if (!this.resName) {
+                        this.resName = decodedToken.name || '';
+                    }
+                    if (!this.phoneNumber) {
+                        this.phoneNumber = decodedToken.phone || '';
+                    }
                 } else {
                     alert('로그인이 필요합니다.');
                     return false;
@@ -265,6 +267,7 @@ export default {
                 return false;
             }
         },
+
         async fetchAvailableHours() { // 여기서 오류 발생(회원정보를 불러오는데 실패하였습니다 오류) -> 여기의 try catch 
             const gameId = this.$route.params.id;
             try {
