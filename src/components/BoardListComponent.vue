@@ -86,7 +86,6 @@
               </tr>
             </tbody>
           </v-table>
-
           <div class="pagination-controls text-center">
             <span class="pagination-arrow" @click="prevPageRange" :class="{ disabled: currentPageRangeStart <= 1 }">
               <v-icon small>{{
@@ -171,13 +170,13 @@ export default {
           // searchType: this.searchType,
           // searchValue: this.searchValue,
         };
-
         if (this.searchType === 'title') {
           params.searchTitle = this.searchValue;
           console.log(params.searchTitle);
         } else if (this.searchType === 'boardType') {
           params.searchBoardType = this.searchValue;
           console.log(params.searchBoardType);
+
         }
 
 
@@ -187,7 +186,6 @@ export default {
         );
 
         this.boardList = response.data.result.content;
-        console.log(this.boardList);
         this.isLoading = false;
         this.totalPages = Math.ceil(
           response.data.result.totalElements / this.pageSize
