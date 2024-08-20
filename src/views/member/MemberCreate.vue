@@ -120,7 +120,8 @@ export default {
             try {
                 this.showOtpInput = true;
                 console.log(this.email)
-                await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/email/requestCode?email=${this.email}`);
+                const response = await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/email/requestCode?email=${this.email}`);
+                alert(response.data.status_message);
             } catch (error) {
                 console.error(error);
                 alert('이메일 인증 코드 전송에 실패했습니다.');
@@ -128,10 +129,8 @@ export default {
         },
         async verifyCode() {
             try {
-                console.log(this.otp)
-                console.log(typeof (this.otp))
-                await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/email/requestCode?email=${this.email}&code=${this.otp}`);
-                alert('이메일 인증에 성공했습니다!');
+                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/email/requestCode?email=${this.email}&code=${this.otp}`);
+                alert(response.data.status_message);
                 this.showOtpInput = false;
                 this.showRequestBtn = false;
             } catch (error) {
