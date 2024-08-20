@@ -25,7 +25,7 @@
 
                                                 <span style="color:#919191; font-weight:500; margin-left:10px">{{
                                                     reservation.storeName
-                                                    }}</span>
+                                                }}</span>
                                                 <btn prepend-icon="mdi-chevron-down" justify="end"
                                                     @click="viewReservation(reservation.id)">
                                                     <v-icon>mdi-chevron-down</v-icon>
@@ -67,16 +67,24 @@
                 </v-row>
             </v-col>
         </v-row>
-
+        <reservation-modal v-if="showModal" :reservationId="selectedReservationId" @close="showModal = false">
+        </reservation-modal>
     </v-container>
 </template>
 
 <script>
 import axios from 'axios';
+import ReservationModal from '@/components/ReservationModal.vue';
+
 export default {
+    components: {
+        ReservationModal
+    },
     data() {
         return {
             reservations: [],
+            showModal: false,
+            selectedReservationId: null,
         };
     },
     created() {
@@ -90,17 +98,24 @@ export default {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },
                 });
-                console.log(response.data.result);
                 this.reservations = response.data.result;
             } catch (e) {
                 console.error(e);
                 alert('예약 목록을 가져오는 데 실패하였습니다.');
             }
         },
+        // viewReservation(id) {
+        //     console.log('Reservation ID:', id);
+        //     if (id) {
+        //         this.$router.push(`/reservation/detail/${id}`);
+        //     } else {
+        //         alert('예약 ID를 찾을 수 없습니다.');
+        //     }
+        // },
         viewReservation(id) {
-            console.log('Reservation ID:', id);
             if (id) {
-                this.$router.push(`/reservation/detail/${id}`);
+                this.selectedReservationId = id;
+                this.showModal = true;
             } else {
                 alert('예약 ID를 찾을 수 없습니다.');
             }
