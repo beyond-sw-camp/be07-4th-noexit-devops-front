@@ -1,9 +1,8 @@
 <template>
-  <v-container class="pa-3 d-flex justify-center">
+  <v-container class="justify-center">
     <v-row
       :style="{ color: 'white' }"
       class="d-flex justify-center"
-      style="max-width: 1500px"
     >
       <v-col>
         <v-form @submit.prevent="loadFindBoard">
@@ -166,7 +165,7 @@
             style="padding-top: 30px; margin-right: 30px;"
 
             >
-              <v-row justify="end">
+              <v-row justify="end" style="margin-bottom: 20px;">
                 <div v-if="f.isAuthor" style="margin-top: -65px">
                   <!-- 상단으로 붙이기 위해 margin-top을 음수로 설정 -->
                   <v-icon
@@ -200,7 +199,7 @@
                 </div>
               </v-row>
               <!-- 마감 시각 또는 FINISH 텍스트 -->
-              <v-row class="d-flex justify-center">
+              <v-row class="d-flex justify-center" style="margin-bottom: 20px;">
                 <div
                   v-if="
                     getTimeDifferenceInMinutes(f.expirationTime) !== '마감됨'
@@ -220,15 +219,16 @@
                 </div>
               </v-card-actions> -->
               <!-- 참여 버튼 -->
-              <v-card-actions class="mt-4 d-flex justify-center" color="pink">
+              <v-card-actions>
                 <v-btn
                   width="130"
                   height="40"
-                  color="pink"
+                  color="black"
                   :disabled="getTimeDifferenceInMinutes(f.expirationTime) <= 0"
                   @click="participateInFindBoard(f.id)"
+                  style="background-color: #FF0066; color: white;"
                 >
-                  PARTICIPATE
+                  JOIN
                 </v-btn>
               </v-card-actions>
 
