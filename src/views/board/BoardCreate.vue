@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <!-- Form Section -->
+    <div>
     <v-row class="d-flex justify-content-between mt-5">
       <v-col>
         <v-form>
@@ -12,7 +12,6 @@
                 item-title="text"
                 item-value="value"
                 class="custom-select"
-                
               ></v-select>
             </v-col>
             <v-col>
@@ -23,23 +22,40 @@
               ></v-text-field>
             </v-col>
             <v-col cols="auto">
-              <v-btn color="pink" @click="createBoard">등록하기</v-btn>
+              <v-btn height="60" color="pink" @click="createBoard">등록하기</v-btn>
             </v-col>
           </v-row>
         </v-form>
       </v-col>
     </v-row>
+    </div>
 
-    <!-- File Upload & Textarea Section -->
-    <v-row>
+
+
+    <div>
+      <v-row>
+        <v-col>
+            <input ref="fileInput" type="file" accept="image/*" multiple style="display: none" @change="fileUpdate"/>    
+            <v-row>
+                <v-col v-for="imageSrc in imageSrcArr" :key="imageSrc" cols="auto" style="margin-right: 10px">
+                  <!-- 사진 누르면 삭제하기 추가해야됨 -->
+                  <img :src="imageSrc" alt="Selected Image" style=" width: 100px; height: 100px; object-fit: cover; display: block;"/>
+                </v-col>
+                <template v-if="files.length < 5">
+                  <v-icon @click="triggerFileInput" color="white" size="150" style="cursor: pointer; margin-right: 10px;">mdi-image-outline</v-icon>
+                </template>
+            </v-row>
+
+          </v-col>
+      </v-row>
+    </div>
+
+
+
+
+<div>
+ <v-row>
       <v-col>
-        <v-file-input
-          label="첨부 이미지"
-          accept="image/*"
-          multiple
-          class="custom-file-input"
-          @change="fileUpdate"
-        ></v-file-input>
         <v-textarea
           v-model="contentValue"
           placeholder="내용을 입력해주세요."
@@ -47,6 +63,7 @@
         ></v-textarea>
       </v-col>
     </v-row>
+</div>
   </v-container>
 </template>
 
@@ -64,10 +81,16 @@ export default {
         { text: "FREE", value: "FREE" },
         { text: "STRATEGY", value: "STRATEGY" },
       ],
-      files: [],
-    }
+      files: [], // 파일 배열
+      imageSrc: null, // 파일명
+      imageSrcArr: [], // 파일이름 배열
+    };
   },
+  computed: {},
   methods: {
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
     async createBoard() {
       try {
         if (this.category == "FREE") {
@@ -103,14 +126,25 @@ export default {
         );
 
         alert("게시글이 성공적으로 작성되었습니다.");
-        window.location.href = '/board/list';
+        window.location.href = "/board/list";
       } catch (e) {
         console.log(e);
         alert("게시글이 작성되지 않았습니다.");
       }
     },
-    fileUpdate(event) {
-      this.files = Array.from(event.target.files);
+    // fileUpdate(event) {
+    //   this.files = Array.from(event.target.files);
+    // },
+    fileUpdate() {
+      const file = event.target.files[0]; // Get the first selected file
+      this.files.push(file);
+      if (file) {
+        // Generate a URL for the selected image
+        // this.imageSrc = URL.createObjectURL(file);
+        this.imageSrcArr.push(URL.createObjectURL(file));
+      } else {
+        this.imageSrc = null;
+      }
     },
   },
 };
@@ -118,12 +152,11 @@ export default {
 
 <style scoped>
 /* Custom Select Style */
-.custom-select .v-select__selection {
+.custom-select {
   background-color: #565656;
-  color: #FFFFFF;
+  color: #ffffff;
   border-radius: 5px;
-   height: 70px;
-
+  height: 70px;
 }
 
 /* Custom Text Field Style */

@@ -39,8 +39,8 @@
                     height="45"
                     color="pink"
                     style="margin-left: 8px"
-                    href="board/create"
-                    v-if="userRole == 'USER' && isLogin"
+                    href="/board/create"
+                 
                     >게시글 쓰기</v-btn
                   >
                   </v-row>
@@ -71,7 +71,6 @@
             <thead
               style="color: white;">
               <tr>
-                <th style="text-align: center"></th>
                 <th style="text-align: center">카테고리</th>
                 <th style="text-align: center">제목</th>
                 <th style="text-align: center">작성자</th>
@@ -88,10 +87,7 @@
               "
             >
               <tr v-for="b in boardList" :key="b.id" @click="redirectToDetail(b.id)">
-                <td>
-                  <v-icon v-if="b.img" size="30" color="white">mdi-image-outline</v-icon>
-                </td>
-                <td>
+                <td style="text-align: center">
                   <v-chip
                     class="custom-chip"
                     :color="getChipColor(b.boardType)"
@@ -103,7 +99,7 @@
                 </td>
                 <td style="width: 450px; text-align: center">
           
-                    {{ b.title }}
+                    {{ b.title }}<v-icon v-if="b.img" size="20" color="white">mdi-image-outline</v-icon>
                  
                   </td>
                 <td style="text-align: center">{{ b.writer }}</td>
