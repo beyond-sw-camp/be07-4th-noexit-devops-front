@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row class="d-flex justify-content-between mt-5">
+    <v-row class="d-flex justify-content-between mt-0">
       <v-col>
         <v-form @submit.prevent="searchBoards">
           <v-row>
@@ -308,7 +308,6 @@ export default {
     font-size: 14px;
 
 }
-
 
 
 
