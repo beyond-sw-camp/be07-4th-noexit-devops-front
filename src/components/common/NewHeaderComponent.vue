@@ -16,8 +16,35 @@
         <v-btn icon :to="isLogin ? '/mypage' : '/login'">
             <v-icon>mdi-account</v-icon>
         </v-btn>
-        <v-btn icon :to="{ path: '/chat/rooms' }" :class="{ active: isActive('/chat/rooms') }">
+        <v-btn icon>
             <v-icon size="27px">mdi-message-reply-text-outline</v-icon>
+            <v-menu activator="parent" offset-y>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title class="mdi-notification-title">
+                            채팅
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+                <v-divider style="background-color: #fff;"></v-divider>
+                <v-list max-width="600" max-height="400" v-if="chatRooms.length > 0"
+                    style="overflow-y: auto; background-color:#1b1b1b">
+
+                    <v-list-item v-for="room in chatRooms" :key="room.id" @click="enterRoom(room.roomId)">
+                        <v-list-item-content>
+                            <!-- <v-list-item-title>{{ room.message }}</v-list-item-title>
+                            <v-list-item-text style="color: #919191; font-weight: 300; font-size:14px">{{
+                                formatDateTime(notification.createdTime)
+                                }}</v-list-item-text> -->
+                            <v-list-item-title>{{ room.name }}</v-list-item-title>
+
+
+                        </v-list-item-content>
+                    </v-list-item>
+
+                </v-list>
+            </v-menu>
         </v-btn>
 
         <!-- 알림 기능 -->
@@ -37,7 +64,7 @@
                 </v-list-item>
 
                 <v-divider style="background-color: #fff;"></v-divider>
-                <v-list max-width="600" max-height="400" v-if="unreadNotificationsCount > 0"
+                <v-list max-width="600" max-height="400" v-if="notifications.length > 0"
                     style="overflow-y: auto; background-color:#1b1b1b">
 
                     <v-list-item v-for="notification in notifications" :key="notification.id"
@@ -71,6 +98,7 @@ export default {
             isUser: true,
             userRole: 'USER',
             notifications: [],
+            chatRooms: [],
         };
     },
     mounted() {
@@ -81,6 +109,7 @@ export default {
 
         if (token) {
             this.fetchNotifications();
+            this.fetchChatList();
             this.connectSSE();
         }
     },
@@ -163,16 +192,34 @@ export default {
                         },
                     });
 
-                    if (notification.type === 'COMMENT' || notification.type === 'BOARD_LIKE' || notification.type === 'COMMENT_LIKE') {
-                        this.$router.push(`/board/detail/${notification.notification_id}`);
-                    } else if (notification.type === 'RESERVATION_REQ' || notification.type === 'RESERVATION_RES') {
-                        this.$router.push(`/reservation/detail/${notification.notification_id}`);
-                    } else if (notification.type === 'FULL_COUNT' || notification.type === 'CHAT_ROOM_INVITE') {
-                        this.$router.push(`/chat/rooms/${notification.notification_id}`);
+
+                    if (this.userRole == 'USER') {
+                        if (notification.type === 'COMMENT' || notification.type === 'BOARD_LIKE' || notification.type === 'COMMENT_LIKE') {
+                            this.$router.push(`/board/detail/${notification.notification_id}`);
+                        } else if (notification.type === 'RESERVATION_REQ' || notification.type === 'RESERVATION_RES') {
+                            this.$router.push(`/reservation/detail/${notification.notification_id}`);
+                        } else if (notification.type === 'FULL_COUNT' || notification.type === 'CHAT_ROOM_INVITE') {
+                            // this.$router.push(`/chat/rooms/${notification.notification_id}`);
+                            this.enterRoom(notification.notification_id)
+                        }
                     }
                 } catch (error) {
                     console.error('알림을 읽음으로 표시하는 중 오류 발생:', error);
                 }
+            }
+        },
+        async fetchChatList() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/myrooms`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+                this.chatRooms = response.data;
+                console.log("chatRooms: " + this.chatRooms)
+
+            } catch (error) {
+                console.error('채팅 목록을 가져오는 중 오류 발생:', error);
             }
         },
         formatDateTime(isoString) {
@@ -198,12 +245,16 @@ export default {
             this.isLogin = false;
             this.$router.push("/")
         },
+        enterRoom(roomId) {
+            this.$router.push(`/chat/rooms/${roomId}`);
+        },
     },
     beforeUnmount() {
         if (this.sse) {
             this.sse.close();
         }
     },
+
 };
 </script>
 
