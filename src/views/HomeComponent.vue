@@ -25,7 +25,9 @@
         <h2 class="font-weight-bold" style="margin-top:20px;">Games</h2>
         
         <!-- 검색 기능 UI -->
-        <v-row class="mb-4">
+        <v-row class="mb-0" 
+        style="margin-top:20px;"
+        >
           <v-col cols="auto">
             <v-select
               v-model="searchType"
