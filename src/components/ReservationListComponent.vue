@@ -67,8 +67,15 @@ export default {
             isAuthenticated: false,
             isOwner: false,
             reservations: [],
+            
         };
     },
+    computed: {
+        approvedReservations() {
+        // 예약 상태가 "승인"된 것만 필터링
+        return this.reservations.filter(reservation => reservation.reservationStatus === 'ACCEPT');
+        },
+    },    
     created() {
         this.checkAuthStatus();
         if (this.isAuthenticated) {
@@ -135,7 +142,7 @@ export default {
                 await axios.put(
                     `${process.env.VUE_APP_API_BASIC_URL}/reservation/approval`,
                     {
-                        id: reservation.id, // reservationId 추가
+                        id: reservation.id, 
                         gameId: reservation.gameId,
                         resDate: reservation.resDate,
                         resDateTime: reservation.resDateTime,
