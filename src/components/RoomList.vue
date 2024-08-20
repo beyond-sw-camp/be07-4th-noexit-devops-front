@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row>
+    <!-- <v-row>
       <v-col cols="12">
         <v-text-field 
           v-model="newRoomName" 
@@ -19,7 +19,7 @@
         ></v-text-field>
         <v-btn @click="createRoom" color="white" outlined>Create Room</v-btn>
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-row>
       <v-col cols="12">
         <v-list>
@@ -49,23 +49,24 @@ export default {
     this.fetchRooms();
   },
   methods: {
-  fetchRooms() {
-    axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/rooms`).then(response => {
-      this.rooms = response.data;
-    });
-  },
-  createRoom() {
-    axios.post(`${process.env.VUE_APP_API_BASIC_URL}/chat/createRoom`, {
-      name: this.newRoomName,
-      password: this.newRoomPassword
-    }).then(() => {
-      this.fetchRooms();
-    });
-  },
-  enterRoom(roomId) {
-    this.$router.push(`/chat/room/${roomId}`);
+    fetchRooms() {
+      axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/myrooms`).then(response => {
+        this.rooms = response.data;
+        console.log(this.rooms)
+      });
+    },
+    createRoom() {
+      axios.post(`${process.env.VUE_APP_API_BASIC_URL}/chat/createRoom`, {
+        name: this.newRoomName,
+        password: this.newRoomPassword
+      }).then(() => {
+        this.fetchRooms();
+      });
+    },
+    enterRoom(roomId) {
+      this.$router.push(`/chat/rooms/${roomId}`);
+    },
   }
-}
 
 };
 </script>

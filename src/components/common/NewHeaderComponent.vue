@@ -25,7 +25,7 @@
             </v-badge>
             <v-icon v-else>mdi-bell</v-icon>
 
-            <v-menu activator="parent" offset-y v-if="unreadNotificationsCount > 0">
+            <v-menu activator="parent" offset-y>
                 <v-list-item>
                     <v-list-item-content>
                         <v-list-item-title class="mdi-notification-title">
@@ -43,6 +43,10 @@
                         @click="unreadNotification(notification)">
                         <v-list-item-content>
                             <v-list-item-title>{{ notification.message }}</v-list-item-title>
+                            <v-list-item-text style="color: #919191; font-weight: 300; font-size:14px">{{
+                                formatDateTime(notification.createdTime)
+                                }}</v-list-item-text>
+
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -156,35 +160,40 @@ export default {
                         },
                     });
 
-                    // 라우터 수정필요 -> notificationType으로 
-                    // if (notification.board_id) {//comment, comment_like, board_like -> board_id
-                    //     this.$router.push(`/board/detail/${notification.board_id}`);
-                    // } else if (notification.reservationId) {    // reservation_req, reservation_res -> res_id
-                    //     this.$router.push(`/board/detail/${notification.board_id}`);
-                    // } else if (notification.findboard_id) { // full_count, char_room_invite -> chat_id
-                    //     this.$router.push(`/board/detail/${notification.board_id}`);
-                    // }
                     if (notification.type === 'COMMENT' || notification.type === 'BOARD_LIKE' || notification.type === 'COMMENT_LIKE') {
                         this.$router.push(`/board/detail/${notification.notification_id}`);
                     } else if (notification.type === 'RESERVATION_REQ' || notification.type === 'RESERVATION_RES') {
                         this.$router.push(`/reservation/detail/${notification.notification_id}`);
                     } else if (notification.type === 'FULL_COUNT' || notification.type === 'CHAT_ROOM_INVITE') {
-                        this.$router.push('/chat/list');
-                        this.$router.push(`/chat/room/${notification.notification_id}`);
+                        this.$router.push(`/chat/rooms/${notification.notification_id}`);
                     }
                 } catch (error) {
                     console.error('알림을 읽음으로 표시하는 중 오류 발생:', error);
                 }
             }
         },
+        formatDateTime(isoString) {
+            const date = new Date(isoString);
+            const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1
+                }월 ${date.getDate()}일`;
+            const formattedTime = `${date
+                .getHours()
+                .toString()
+                .padStart(2, "0")}시 ${date
+                    .getMinutes()
+                    .toString()
+                    .padStart(2, "0")}분`;
+            return `${formattedDate} ${formattedTime}`;
+        },
 
         isActive(path) {
             return this.$route.path === path;
         },
         doLogout() {
-            this.$router.push("/")
+
             localStorage.clear();
             this.isLogin = false;
+            this.$router.push("/")
         },
     },
     beforeUnmount() {
@@ -259,12 +268,12 @@ body {
     color: #FF0066;
 }
 
-
 .v-list-item-title {
     background-color: #1b1b1b;
     color: #ffffff;
     font-weight: 500;
 }
+
 
 .v-list-item-title.readNotification {
     color: #919191;
