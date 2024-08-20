@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <v-container>
+        <v-container style=" background-color: #1b1b1b; color:#ffffff;">
             <ReservationListComponent />
             <!-- <ReservationList /> -->
 

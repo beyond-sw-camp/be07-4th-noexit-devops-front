@@ -133,7 +133,6 @@ export default {
 }
 
 
-
 .rejected-reservation {
     opacity: 0.5;
 }
@@ -146,7 +145,5 @@ export default {
 .waiting-button {
     border: 1px solid #ff0066;
     color: #ffffff;
-
-
 }
 </style>

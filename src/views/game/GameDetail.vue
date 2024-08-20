@@ -68,13 +68,9 @@
                                     <!-- <div></div> -->
                                     <br>
                                     <!-- 난이도 바 -->
-                                    <v-progress-linear
-                                        :value="difficultyLevel"
-                                        :color="getDifficultyColor(difficultyLevel)"
-                                        height="20"
-                                        :buffer-value="bufferValue"
-                                        rounded
-                                    ></v-progress-linear>
+                                    <v-progress-linear :value="difficultyLevel"
+                                        :color="getDifficultyColor(difficultyLevel)" height="20"
+                                        :buffer-value="bufferValue" rounded></v-progress-linear>
 
 
                                 </div>
@@ -130,7 +126,8 @@
                         <v-form @submit.prevent="reservationCreate">
                             <v-row>
                                 <v-col cols="12" md="6">
-                                    <v-text-field label="예약자 이름" v-model="resName" required color="pink"></v-text-field>
+                                    <v-text-field label="예약자 이름" v-model="resName" :placeholder="resName || '사용자이름'"
+                                        required color="pink"></v-text-field>
                                     <v-text-field label="전화번호" v-model="phoneNumber" required color="pink" />
                                     <v-text-field label="인원 수" v-model="numberOfPlayers" type="number" required
                                         color="pink"></v-text-field>
@@ -139,8 +136,8 @@
                                 <v-col cols="12" md="6">
                                     <v-date-picker label="예약 날짜" v-model="resDate" required
                                         :min="new Date().toISOString().substr(0, 10)" style="max-width: 500px;"
-                                        color="grey" :input-format="'HH:mm'" class="custom-date-picker" >
-                                        
+                                        color="grey" :input-format="'HH:mm'" class="custom-date-picker">
+
                                     </v-date-picker>
                                 </v-col>
                             </v-row>
@@ -186,7 +183,7 @@
 <script>
 import axios from 'axios';
 import ReviewListComponent from '@/components/ReviewListComponent.vue';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 export default {
     components: {
@@ -321,13 +318,13 @@ export default {
             console.log('Difficult Key:', levelKey); // 디버그 로그
             return levels[levelKey] || 0; // 기본값을 0으로 설정
         },
-    getDifficultyColor(level) {
-        if (level <= 20) return 'pink';
-        if (level <= 40) return 'pink';
-        if (level <= 60) return 'blue';
-        if (level <= 80) return 'pink';
-        return 'red';
-    },
+        getDifficultyColor(level) {
+            if (level <= 20) return 'pink';
+            if (level <= 40) return 'pink';
+            if (level <= 60) return 'blue';
+            if (level <= 80) return 'pink';
+            return 'red';
+        },
 
         getAgeLimitLabel(ageLimit) {
             const labels = {
@@ -354,14 +351,14 @@ export default {
                     resDateTime: this.resDateTime,
                     gameId: this.gameId,
                 };
-
+                console.log(reservationData)
                 await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/reservation/create`, reservationData, {
                     // headers: {
                     //     'Authorization': `Bearer ${localStorage.getItem('token')}`
                     // }
                 });
 
-                this.$router.push('/reservation/list');
+                this.$router.push('/reservation/myreservation');
             } catch (e) {
                 console.error(e);
                 alert("예약 등록에 실패하였습니다.");
@@ -472,7 +469,7 @@ h2.game-name {
 }
 
 .price-modal-card {
-    background-color: #333; 
+    background-color: #333;
     border: 1px solid #444;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
     color: #fff;
@@ -486,7 +483,7 @@ h2.game-name {
     color: #e91e63;
     box-shadow: none;
     background-color: transparent;
-    padding: 0; 
+    padding: 0;
 }
 
 .card-title {
@@ -509,7 +506,7 @@ h2.game-name {
 }
 
 .table-cell:first-of-type {
-    padding-right: 100px; 
+    padding-right: 100px;
     text-align: left;
 }
 
@@ -519,20 +516,25 @@ h2.game-name {
 
 .custom-date-picker .v-picker--date,
 .custom-date-picker .v-picker__body {
-    background-color: #333 !important; /* Custom grey background */
-    color: #fff; /* White text color */
+    background-color: #333 !important;
+    /* Custom grey background */
+    color: #fff;
+    /* White text color */
 }
 
 .custom-date-picker .v-picker__body .v-btn {
-    background-color: #444 !important; /* Slightly darker grey for buttons */
+    background-color: #444 !important;
+    /* Slightly darker grey for buttons */
 }
 
 .custom-date-picker .v-picker__body .v-btn:hover {
-    background-color: #555 !important; /* Hover state */
+    background-color: #555 !important;
+    /* Hover state */
 }
 
 /* You can also customize the selected date and other elements as needed */
 .custom-date-picker .v-picker__body .v-picker__day.v-picker__day--selected {
-    background-color: #e91e63 !important; /* Pink color for selected day */
+    background-color: #e91e63 !important;
+    /* Pink color for selected day */
 }
 </style>

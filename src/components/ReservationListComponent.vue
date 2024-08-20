@@ -1,42 +1,73 @@
 <template>
     <v-container>
         <v-row justify="center">
-            <v-col cols="12" md="8">
+            <v-col cols="10">
                 <v-card style=" background-color: #1b1b1b; color:#ffffff;">
-                    <v-card-title>{{ isOwner ? '가게 예약 목록' : '내 예약 목록' }}</v-card-title>
+                    <h2 class="font-weight-bold">{{ isOwner ? '가게 예약 목록' : '내 예약 목록' }}</h2>
+                    <v-divider :thickness="6"></v-divider>
+
                     <v-card-text>
                         <v-alert v-if="reservations.length === 0" type="info">
                             예약 내역이 없습니다.
                         </v-alert>
                         <div v-else>
-                            <v-list>
+                            <v-list style=" background-color: #1b1b1b; color:#ffffff;">
                                 <v-list-item v-for="reservation in reservations" :key="reservation.id" :class="{
                                     'text-muted': reservation.reservationStatus === 'REJECT' || reservation.reservationStatus === 'CANCELLED',
                                 }">
-                                    <v-list-item-content>
-                                        <v-list-item-title>
-                                            {{ reservation.gameName }} - {{ isOwner ? reservation.resName :
-                                                reservation.storeName }}
-                                        </v-list-item-title>
-                                        <v-list-item-subtitle>
-                                            예약일: {{ reservation.resDate }} 시간: {{ reservation.resDateTime }} <br>
-                                            상태: {{ reservation.reservationStatus }}
-                                        </v-list-item-subtitle>
-                                    </v-list-item-content>
+                                    <div class="custom-list-item">
+                                        <v-row align="center">
+                                            <v-col cols="9" style="padding-left:30px">
+                                                <v-list-item-text style="font-size:16px ">
+                                                    {{ reservation.gameName }}
+                                                </v-list-item-text>
+                                                <div style="margin-top:10px; font-weight:500;">
+                                                    <v-list-item-subtitle>
+                                                        인원: {{ reservation.numberOfPlayers }}명
+                                                    </v-list-item-subtitle>
+                                                    <v-list-item-subtitle>
+                                                        {{ reservation.resDate }} {{ reservation.resDateTime }}
+                                                    </v-list-item-subtitle>
+                                                    <v-list-item-subtitle>
+                                                        {{ reservation.phoneNumber }}
+                                                    </v-list-item-subtitle>
+                                                </div>
+
+                                            </v-col>
+                                            <v-col cols="3">
+                                                <v-list-item-action
+                                                    v-if="isOwner && reservation.delYN !== 'Y' && reservation.reservationStatus === 'WAITING'">
+                                                    <v-btn style="background-color:#ff0066;"
+                                                        @click="approveReservation(reservation)">
+                                                        승인
+                                                    </v-btn>
+                                                    <v-btn @click="rejectReservation(reservation)">
+                                                        거절
+                                                    </v-btn>
+                                                </v-list-item-action>
+                                                <v-list-item-action
+                                                    v-if="isOwner && reservation.delYN !== 'Y' && reservation.reservationStatus === 'ACCEPT'">
+                                                    <v-btn style="background-color:#919191; border:none;">
+                                                        승인 완료
+                                                    </v-btn>
+
+                                                </v-list-item-action>
+                                                <v-list-item-action
+                                                    v-if="isOwner && reservation.delYN !== 'Y' && reservation.reservationStatus === 'REJECT'">
+                                                    <v-btn style="background-color:#565656; border:none">
+                                                        승인 거절
+                                                    </v-btn>
+
+                                                </v-list-item-action>
+                                            </v-col>
+                                        </v-row>
+                                    </div>
 
                                     <!-- Actions for the owner -->
-                                    <v-list-item-action
-                                        v-if="isOwner && reservation.delYN !== 'Y' && reservation.reservationStatus === 'WAITING'">
-                                        <v-btn color="success" @click="approveReservation(reservation)">
-                                            승인
-                                        </v-btn>
-                                        <v-btn color="error" @click="rejectReservation(reservation)">
-                                            거절
-                                        </v-btn>
-                                    </v-list-item-action>
+
 
                                     <!-- Actions for the user -->
-                                    <v-list-item-action v-if="!isOwner">
+                                    <!-- <v-list-item-action v-if="!isOwner">
                                         <v-btn v-if="reservation.reservationStatus === 'WAITING'" color="error"
                                             @click="cancelReservation(reservation)">
                                             예약 취소
@@ -46,7 +77,7 @@
                                             color="primary" @click="goToReviewCreate(reservation)">
                                             리뷰 작성
                                         </v-btn>
-                                    </v-list-item-action>
+                                    </v-list-item-action> -->
                                 </v-list-item>
                             </v-list>
                         </div>
@@ -66,15 +97,15 @@ export default {
             isAuthenticated: false,
             isOwner: false,
             reservations: [],
-            
+
         };
     },
     computed: {
         approvedReservations() {
-        // 예약 상태가 "승인"된 것만 필터링
-        return this.reservations.filter(reservation => reservation.reservationStatus === 'ACCEPT');
+            // 예약 상태가 "승인"된 것만 필터링
+            return this.reservations.filter(reservation => reservation.reservationStatus === 'ACCEPT');
         },
-    },    
+    },
     created() {
         this.checkAuthStatus();
         if (this.isAuthenticated) {
@@ -141,7 +172,7 @@ export default {
                 await axios.put(
                     `${process.env.VUE_APP_API_BASIC_URL}/reservation/approval`,
                     {
-                        id: reservation.id, 
+                        id: reservation.id,
                         gameId: reservation.gameId,
                         resDate: reservation.resDate,
                         resDateTime: reservation.resDateTime,
@@ -225,8 +256,16 @@ export default {
 }
 
 .v-list-item {
-    border-bottom: 1px solid #eee;
+    padding: 10px 30px;
 }
+
+.custom-list-item {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 30px;
+    transition: transform 0.2s ease-in-out;
+}
+
 
 .v-list-item-title {
     font-weight: bold;
@@ -234,7 +273,7 @@ export default {
 
 .v-list-item-subtitle {
     font-size: 14px;
-    color: #555;
+
 }
 
 .v-list-item-action {
@@ -244,6 +283,8 @@ export default {
 
 .v-btn {
     min-width: 80px;
+    border: 1px solid #ff0066;
+    color: #ffffff;
 }
 
 .text-muted {
