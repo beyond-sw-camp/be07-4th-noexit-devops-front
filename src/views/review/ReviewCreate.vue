@@ -1,28 +1,16 @@
 <template>
     <v-container>
         <v-row justify="center">
-            <v-col cols="12" md="8">
-                <v-card>
+            <v-col cols="8" md="8">
+                <v-card style="background-color:#1b1b1b; color:#ffffff">
                     <v-card-title class="text-center text-h5">
                         리뷰 작성
                     </v-card-title>
                     <v-card-text>
                         <v-form @submit.prevent="reviewCreate">
-                            <v-text-field
-                                label="리뷰 내용"
-                                v-model="content"
-                                required
-                            ></v-text-field>
-                            <v-rating
-                                label="평점"
-                                v-model="rating"
-                                required
-                            ></v-rating>
-                            <v-file-input
-                                label="리뷰 이미지"
-                                accept="image/*"
-                                @change="fileUpdate"
-                            ></v-file-input>
+                            <v-text-field label="리뷰 내용" v-model="content" required></v-text-field>
+                            <v-rating label="평점" v-model="rating" required></v-rating>
+                            <v-file-input label="리뷰 이미지" accept="image/*" @change="fileUpdate"></v-file-input>
                             <v-btn type="submit" color="primary" block>등록</v-btn>
                         </v-form>
                     </v-card-text>
@@ -94,6 +82,4 @@ export default {
 
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

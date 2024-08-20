@@ -5,9 +5,11 @@
                 <v-row justify="center">
                     <v-col cols="10" md="10">
                         <v-card>
-                            <v-card-title class="text-center text-h5">
+                            <h2 class="font-weight-bold">
                                 예약 목록 ({{ reservations.length }})
-                            </v-card-title>
+                            </h2>
+                            <v-divider :thickness="6"></v-divider>
+
                             <v-card-text>
                                 <v-list>
 
@@ -22,7 +24,7 @@
 
                                                 <span style="color:#919191; font-weight:500; margin-left:10px">{{
                                                     reservation.storeName
-                                                }}</span>
+                                                    }}</span>
                                                 <btn prepend-icon="mdi-chevron-down" justify="end"
                                                     @click="viewReservation(reservation.id)">
                                                     <v-icon>mdi-chevron-down</v-icon>
