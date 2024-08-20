@@ -5,7 +5,7 @@
                 <MypageSideBarComponent />
                 <v-col>
                     <ReservationList />
-                    <ResevationListComponent />
+                    <!-- <ResevationListComponent /> -->
                 </v-col>
             </v-row>
         </v-container>
@@ -15,11 +15,12 @@
 <script>
 import ReservationList from '@/views/reservation/ReservationList.vue';
 import MypageSideBarComponent from '@/components/common/MypageSideBarComponent.vue';
-import ResevationListComponent from '@/components/ReservationListComponent.vue'
+// import ResevationListComponent from '@/components/ReservationListComponent.vue'
 export default {
     components: {
         ReservationList,
-        MypageSideBarComponent, ResevationListComponent
+        MypageSideBarComponent,
+        //  ResevationListComponent
 
     },
     data() {

@@ -3,13 +3,14 @@
         <v-row>
             <v-col>
                 <v-row justify="center">
-                    <v-col cols="10" md="10">
+                    <v-col cols="12">
                         <v-card>
-                            <h2 class="font-weight-bold">
+                            <!-- <h2 class="font-weight-bold">
                                 예약 목록 ({{ reservations.length }})
                             </h2>
+                            <v-divider :thickness="6"></v-divider> -->
+                            <h2 class="font-weight-bold">예약 목록 ({{ reservations.length }})</h2>
                             <v-divider :thickness="6"></v-divider>
-
                             <v-card-text>
                                 <v-list>
 
@@ -132,10 +133,6 @@ export default {
 }
 
 
-.v-list-item-subtitle {
-    margin-top: 8px;
-    font-size: 14px;
-}
 
 .rejected-reservation {
     opacity: 0.5;

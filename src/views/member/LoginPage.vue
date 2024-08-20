@@ -19,7 +19,7 @@
                             </v-row>
                             <v-row class="mt-4">
                                 <v-col cols="4">
-                                    <v-btn v-if="role === '일반 사용자'" :to="{ path: '/member/create' }" block>
+                                    <v-btn :to="{ path: '/member/create' }" block>
                                         회원가입
                                     </v-btn>
                                 </v-col>
@@ -62,12 +62,19 @@ export default {
     methods: {
         async doLogin() {
             try {
-                const roleValue = this.role === '일반 사용자' ? 'USER' : 'OWNER';
+                // const roleValue = this.role === '일반 사용자' ? 'USER' : 'OWNER';
+                console.log(this.role)
+                let roleValue = 'USER';
+                if (this.role == '점주 사용자') {
+                    roleValue = 'OWNER'
+                }
                 const loginData = {
                     email: this.email,
                     password: this.password,
                     role: roleValue
                 }
+                console.log(loginData)
+
                 const response = await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/doLogin`, loginData);
                 const token = response.data.result.token;
                 const refreshToken = response.data.result.refreshToken;
@@ -80,7 +87,7 @@ export default {
                     window.location.href = "/"
                 } else {
                     this.$router.push("/resview")
-
+                    // window.location.href = "/"
                 }
                 // this.$router.push("/")
             } catch (e) {
@@ -127,9 +134,10 @@ export default {
     height: 40px;
 }
 
+
 input.v-field__input {
     font-size: 10px;
-    background-color: rgba(27, 27, 27, 100)
+    background-color: rgba(27, 27, 27, 100);
 }
 
 .v-btn {
