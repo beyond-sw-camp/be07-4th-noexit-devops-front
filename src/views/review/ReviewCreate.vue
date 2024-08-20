@@ -8,7 +8,13 @@
                     </v-card-title>
                     <v-card-text>
                         <v-form @submit.prevent="reviewCreate">
-                            <v-text-field label="리뷰 내용" v-model="content" required></v-text-field>
+                            <v-textarea
+                                placeholder="리뷰내용"
+                                v-model="content"
+                                required
+                                class="mb-3"
+                        ></v-textarea>
+                            <v-text-area label="리뷰 내용" v-model="content" required></v-text-area>
                             <v-rating label="평점" v-model="rating" required></v-rating>
                             <v-file-input label="리뷰 이미지" accept="image/*" @change="fileUpdate"></v-file-input>
                             <v-btn type="submit" color="primary" block>등록</v-btn>

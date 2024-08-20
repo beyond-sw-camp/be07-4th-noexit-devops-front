@@ -1,10 +1,6 @@
 <template>
   <v-container>
-    <v-row class="d-flex justify-content-between mt-5">
-
-
-
-
+    <v-row class="d-flex justify-content-between mt-0">
       <v-col>
         <v-form @submit.prevent="searchBoards">
           <v-row>
@@ -15,6 +11,7 @@
                 item-title="text"
                 item-value="value"
                 dense
+                style="background-color: #white; color: white;"
               >
               </v-select>
             </v-col>
@@ -24,24 +21,25 @@
                 label="Search"
                 :rules="[required]"
                 dense
+                style="background-color: #white; color: white;"
               ></v-text-field>
             </v-col>
             <v-col cols="auto">
                 <v-col cols="auto">
                   <v-row>
               <v-btn 
-              height="45"
+              height="60"
               type="submit" 
               color="pink"
               >검색</v-btn>
                <v-spacer></v-spacer>
                                  <v-btn
-                    height="45"
+                    height="60"
                     color="pink"
                     style="margin-left: 8px"
                     href="/board/create"
-                 
-                    >게시글 쓰기</v-btn
+
+                    >작성하기</v-btn
                   >
                   </v-row>
                 </v-col>
@@ -51,14 +49,9 @@
       </v-col>
     </v-row>
        
-   
-
-
-
     <v-row>
       <v-col>
         <v-card style="background-color: #1b1b1b;">
-
 
 
 
@@ -112,9 +105,6 @@
               <v-divider :thickness="6"></v-divider>
             </tbody>
           </v-table> 
-
-
-          
           <v-col cols="12">
             <div class="pagination-controls text-center">
               <span
@@ -318,7 +308,6 @@ export default {
 
 
 
-
 .custom-select .v-select__selection {
   background-color: #f8d7da; /* Custom background color */
   color: #000; /* Custom text color */
@@ -359,13 +348,13 @@ export default {
   margin: 0 5px;
   padding: 5px 10px;
   border-radius: 20%;
-  background-color: #868383;
+  background-color: #1b1b1b;
   color: #f6f6f6;
   transition: background-color 0.3s, color 0.3s;
 }
 
 .pagination-page.active-page {
-  background-color: rgb(223, 139, 139);
+  background-color: #FF0066;
   color: rgb(254, 254, 254);
 }
 
