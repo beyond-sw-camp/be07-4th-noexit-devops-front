@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <v-row justify="center">
-            <v-col cols="12" sm="4" md="6">
+            <v-col cols="12">
                 <v-card class="loginpage" style=" background-color: #1b1b1b; color:#ffffff;">
                     <v-card-title>로그인</v-card-title>
                     <v-card-text>

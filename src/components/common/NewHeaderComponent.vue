@@ -10,7 +10,7 @@
             <v-btn text class="link-btn" :to="{ path: '/ranking' }" :class="{ active: isActive('/ranking') }"
                 v-if="this.userRole == 'USER'">Ranking</v-btn>
             <v-btn text class="link-btn" :to="{ path: '/resview' }" :class="{ active: isActive('/resview') }"
-                v-if="this.userRole != 'USER'">Reservation</v-btn>
+                v-if="this.userRole == 'OWNER'">Reservation</v-btn>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon :to="isLogin ? '/mypage' : '/login'">
@@ -74,7 +74,7 @@
                             <v-list-item-title>{{ notification.message }}</v-list-item-title>
                             <v-list-item-text style="color: #919191; font-weight: 300; font-size:14px">{{
                                 formatDateTime(notification.createdTime)
-                                }}</v-list-item-text>
+                            }}</v-list-item-text>
 
                         </v-list-item-content>
                     </v-list-item>

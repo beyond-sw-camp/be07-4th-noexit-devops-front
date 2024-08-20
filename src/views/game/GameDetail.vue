@@ -245,7 +245,7 @@ export default {
                 if (token) {
                     const decodedToken = jwtDecode(token);
                     this.memberId = decodedToken.userId || decodedToken.sub;
-                    
+
                     // resName과 phoneNumber이 비어 있는 경우에만 설정
                     if (!this.resName) {
                         this.resName = decodedToken.name || '';
@@ -387,17 +387,17 @@ export default {
     object-fit: cover;
 }
 
-h6.store-name {
+h4.store-name {
     font-size: 24px;
     margin-bottom: 10px;
-    color: #333;
+    color: #919191
 }
 
 h2.game-name {
     font-size: 36px;
     font-weight: bold;
     margin-bottom: 20px;
-    color: #2c3e50;
+    color: #ffffff;
 }
 
 .difficulty-container {
