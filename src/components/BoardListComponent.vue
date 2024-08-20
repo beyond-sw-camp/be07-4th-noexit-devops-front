@@ -37,7 +37,7 @@
                     height="60"
                     color="pink"
                     style="margin-left: 8px"
-                    href="board/create"
+                    href="/board/create"
                     >작성하기</v-btn
                   >
                   </v-row>
