@@ -23,7 +23,10 @@
       </v-row>
       <v-divider></v-divider>
       <h2 class="font-weight-bold">Games</h2>
-      <GameListComponent :games="gameList" style="background-color: #1b1b1b; color: #ffffff" />
+      <GameListComponent
+        :games="gameList"
+        style="background-color: #1b1b1b; color: #ffffff"
+      />
     </v-template>
   </v-app>
 </template>
@@ -33,12 +36,12 @@ import BestGameListComponent from '@/components/BestGameListComponent.vue';
 import GameListComponent from '@/components/GameListComponent.vue';
 import axios from 'axios';
 export default {
-  components: {
-    GameListComponent, BestGameListComponent
-  },
-  data() {
-    return {
-      myInfo: [],
+    components: {
+        GameListComponent, BestGameListComponent
+    },
+    data() {
+        return {
+        myInfo: [],
       gameList: [],
       bestList: [],
       wishList: [],
@@ -90,7 +93,6 @@ export default {
 
           const additionalData = response.data.result.content;
           if (additionalData.length === 0) {
-
             this.isLastPage = true;
           } else {
             allWishList.push(...additionalData);
@@ -111,7 +113,6 @@ export default {
       } catch (e) {
         console.error("정보가 존재하지 않습니다", e);
       }
-
     },
   }
 }
@@ -125,3 +126,4 @@ export default {
   font-size: 12px;
 }
 </style>
+

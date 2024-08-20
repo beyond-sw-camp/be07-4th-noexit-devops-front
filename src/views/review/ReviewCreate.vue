@@ -68,7 +68,7 @@ export default {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 });
-                this.$router.push('/review/list');
+                this.$router.push('/review/myall');
             } catch (e) {
                 console.error(e);
                 alert("리뷰 등록에 실패하였습니다.");

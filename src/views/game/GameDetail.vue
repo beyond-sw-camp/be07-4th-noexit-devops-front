@@ -139,7 +139,8 @@
                                 <v-col cols="12" md="6">
                                     <v-date-picker label="예약 날짜" v-model="resDate" required
                                         :min="new Date().toISOString().substr(0, 10)" style="max-width: 500px;"
-                                        color="grey" :input-format="'HH:mm'">
+                                        color="grey" :input-format="'HH:mm'" class="custom-date-picker" >
+                                        
                                     </v-date-picker>
                                 </v-col>
                             </v-row>
@@ -185,7 +186,7 @@
 <script>
 import axios from 'axios';
 import ReviewListComponent from '@/components/ReviewListComponent.vue';
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 
 export default {
     components: {
@@ -249,10 +250,10 @@ export default {
                     this.resName = decodedToken.name || '';
                     this.phoneNumber = decodedToken.phone || '';
 
-                    if (!this.memberId || !this.resName || !this.phoneNumber) {
-                        alert('회원 정보를 가져오는 데 문제가 발생했습니다. 다시 시도해 주세요.');
-                        return false;
-                    }
+                    // if (!this.memberId || !this.resName || !this.phoneNumber) {
+                    //     alert('회원 정보를 가져오는 데 문제가 발생했습니다. 다시 시도해 주세요.');
+                    //     return false;
+                    // }
                 } else {
                     alert('로그인이 필요합니다.');
                     return false;
@@ -271,7 +272,7 @@ export default {
                 this.availableHours = response.data;
             } catch (e) {
                 console.error(e);
-                alert('예약 가능한 시간대를 불러오는 데 실패했습니다.');
+                // alert('예약 가능한 시간대를 불러오는 데 실패했습니다.');
             }
         },
         selectTime(hour) {
@@ -338,6 +339,11 @@ export default {
 
         async reservationCreate() {
             await this.fetchUserInfo();
+
+            if (this.numberOfPlayers > this.game.maximunPerson) {
+                alert(`최대 인원수(${this.game.maximunPerson}명)보다 입력하신 인원수(${this.numberOfPlayers}명)가 많습니다. 다시 시도해주세요.`);
+                return;
+            }
 
             try {
                 const reservationData = {
@@ -509,5 +515,24 @@ h2.game-name {
 
 .table-cell:last-of-type {
     text-align: right;
+}
+
+.custom-date-picker .v-picker--date,
+.custom-date-picker .v-picker__body {
+    background-color: #333 !important; /* Custom grey background */
+    color: #fff; /* White text color */
+}
+
+.custom-date-picker .v-picker__body .v-btn {
+    background-color: #444 !important; /* Slightly darker grey for buttons */
+}
+
+.custom-date-picker .v-picker__body .v-btn:hover {
+    background-color: #555 !important; /* Hover state */
+}
+
+/* You can also customize the selected date and other elements as needed */
+.custom-date-picker .v-picker__body .v-picker__day.v-picker__day--selected {
+    background-color: #e91e63 !important; /* Pink color for selected day */
 }
 </style>

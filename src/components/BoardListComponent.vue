@@ -124,6 +124,7 @@ export default {
       searchOptions: [
         { text: "선택", value: "optional" },
         { text: "제목", value: "title" },
+        { text: "내용", value: "contents" },
         { text: "카테고리", value: "boardType" },
       ],
       searchValue: "",

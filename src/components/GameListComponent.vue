@@ -42,15 +42,33 @@ export default {
     },
     data() {
         return {
+            myInfo: [],
             wishlist: [],
+            myWishList: [],
+            pageSize: 10,
+            currentPage: 0,
         }
     },
     async created() {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`);
-        this.wishlist = response.data.result.content;
-        console.log(this.wishlist)
+        this.fetchMyInfo();
+        this.fetchMyWishList();
+        // this.wishlist = response.data.result.content;
+        // console.log(this.wishlist)
+    },
+    computed() {
+
     },
     methods: {
+        async fetchMyInfo() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`
+        );
+        this.myInfo = response.data.result;
+      } catch (e) {
+        console.log(e);
+      }
+    },
         moveToDetail(id) {
             this.$router.push("/game/detail/" + id)
         },
@@ -68,19 +86,55 @@ export default {
             try {
                 if (this.isInWishlist(id)) {
                     await axios.patch(`${process.env.VUE_APP_API_BASIC_URL}/wishlist/delete/${id}`);
-                    this.wishlist = this.wishlist.filter(item => item !== id);
+                    this.myWishList = this.myWishList.filter(item => item !== id);
+                    alert("게임이 내 찜 목록에서 제거되었습니다.");
                 } else {
-                    await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/wishlist/add`);
-                    this.wishlist.push(id);
+                    await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/wishlist/add/${id}`);
+                    alert("게임이 성공적으로 내 찜 목록에 저장되었습니다.");
+                    // this.myWishList.push(id);
                 }
-                console.log(this.wishlist)
+                // console.log(this.myWishList)
             } catch (error) {
                 console.error("위시리스트 추가/제거 하는 도중에 오류가 발생했습니다..");
             }
         },
         isInWishlist(id) {
-            return this.wishlist.includes(id);
-        }
+            for(let i =0; i< this.myWishList.length; i++) {
+                if(this.myWishList[i].gameId === id) {
+                    return true;
+                }
+            }
+            return false;
+        },
+        async fetchMyWishList() {
+            this.isLoading = true;
+
+            const allWishList = [];
+
+            while (!this.isLastPage) {
+            let params = {
+                size: this.pageSize,
+                page: this.currentPage,
+            };
+
+            const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/wishlist`, { params });
+
+            const additionalData = response.data.result.content;
+            if (additionalData.length === 0) {
+                this.isLastPage = true;
+            } else {
+                allWishList.push(...additionalData);
+                this.currentPage++; 
+            }
+        }   
+            this.wishList = allWishList;
+
+            for(let i =0; i< this.wishList.length; i++) {
+                if(this.wishList[i].memberId === this.myInfo.id) {
+                    this.myWishList.push(this.wishList[i]);
+                }
+            }
+        },
     },
 };
 </script>
