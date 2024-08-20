@@ -50,6 +50,7 @@
         <div v-if="board.images && board.images.length">
           <div v-for="i in board.images" :key="i.id">
             <v-img :src="i.imageUrl" style="width: 500px"></v-img>
+            <br>
           </div>
         </div>
         <div v-else></div>
