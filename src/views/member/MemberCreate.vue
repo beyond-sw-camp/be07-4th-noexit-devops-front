@@ -104,7 +104,7 @@ export default {
                     console.log(data)
                     await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/owner/create`, registerData);
                 }
-                this.$router.push("/doLogin");
+                this.$router.push("/login");
 
             } catch (e) {
                 const error_message = e.response.data.error_message

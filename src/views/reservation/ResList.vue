@@ -2,15 +2,20 @@
     <v-app>
         <v-container>
             <ReservationListComponent />
+            <!-- <ReservationList /> -->
+
         </v-container>
     </v-app>
 </template>
-  
+
 <script>
 import ReservationListComponent from '@/components/ReservationListComponent.vue';
+// import ReservationList from '@/views/reservation/ReservationList.vue';
+
 export default {
     components: {
-        ReservationListComponent
+        ReservationListComponent,
+        // ReservationList
     },
     data() {
         return {

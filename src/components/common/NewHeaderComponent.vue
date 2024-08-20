@@ -3,12 +3,14 @@
         <v-toolbar-title class="d-flex align-center title-style">
             <v-btn text class="title-btn" :to="{ path: '/' }" :class="{ active: isActive('/') }">NoExit</v-btn>
             <v-divider class="mx-3" vertical></v-divider>
-            <v-btn text class="link-btn" :to="{ path: '/board/list' }"
+            <v-btn text class="link-btn" :to="{ path: '/board/list' }" v-if="this.userRole == 'USER'"
                 :class="{ active: isActive('/board/list') }">Board</v-btn>
-            <v-btn text class="link-btn" :to="{ path: '/findboard' }"
+            <v-btn text class="link-btn" :to="{ path: '/findboard' }" v-if="this.userRole == 'USER'"
                 :class="{ active: isActive('/findboard') }">Escape-With-Me</v-btn>
-            <v-btn text class="link-btn" :to="{ path: '/ranking' }"
-                :class="{ active: isActive('/ranking') }">Ranking</v-btn>
+            <v-btn text class="link-btn" :to="{ path: '/ranking' }" :class="{ active: isActive('/ranking') }"
+                v-if="this.userRole == 'USER'">Ranking</v-btn>
+            <v-btn text class="link-btn" :to="{ path: '/resview' }" :class="{ active: isActive('/resview') }"
+                v-if="this.userRole != 'USER'">Reservation</v-btn>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon :to="isLogin ? '/mypage' : '/login'">
@@ -66,6 +68,7 @@ export default {
     data() {
         return {
             isLogin: false,
+            isUser: true,
             userRole: 'USER',
             notifications: [],
         };

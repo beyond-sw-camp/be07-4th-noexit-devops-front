@@ -4,7 +4,10 @@
             <v-row>
                 <MypageSideBarComponent />
                 <v-col>
+
                     <!-- <ReviewList /> -->
+                    <h2 class="font-weight-bold">Review</h2>
+                    <v-divider :thickness="6"></v-divider>
                     <ReviewListComponent :isUserReviews="true" />
                 </v-col>
             </v-row>

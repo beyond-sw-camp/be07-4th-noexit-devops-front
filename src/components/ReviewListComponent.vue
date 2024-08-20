@@ -1,11 +1,11 @@
 <template>
     <v-container style="background-color: #1b1b1b; color:#ffffff;">
         <v-row>
-            <h2 style="font-size:24px; margin-bottom:5px">Review({{ reviewList.length }})</h2>
-            <v-divider :thickness="6"></v-divider>
-            <v-row justify="end" class="more">
-                <v-btn @click="loadMore">더보기</v-btn>
-            </v-row>
+            <!-- <h2 style="font-size:24px; margin-bottom:5px">Review({{ reviewList.length }})</h2>
+            <v-divider :thickness="6"></v-divider> -->
+            <!-- <v-row justify="end" class="more">
+                <v-btn>더보기</v-btn>
+            </v-row> -->
             <v-row justify="center">
                 <v-col cols="12" v-for="review in reviewList" :key="review.id" class="review-item" justify="center">
                     <v-row align="center">

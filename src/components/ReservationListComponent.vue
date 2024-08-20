@@ -25,7 +25,8 @@
                                     </v-list-item-content>
 
                                     <!-- Actions for the owner -->
-                                    <v-list-item-action v-if="isOwner && reservation.delYN !== 'Y' && reservation.reservationStatus === 'WAITING'">
+                                    <v-list-item-action
+                                        v-if="isOwner && reservation.delYN !== 'Y' && reservation.reservationStatus === 'WAITING'">
                                         <v-btn color="success" @click="approveReservation(reservation)">
                                             승인
                                         </v-btn>
@@ -36,15 +37,13 @@
 
                                     <!-- Actions for the user -->
                                     <v-list-item-action v-if="!isOwner">
-                                        <v-btn
-                                            v-if="reservation.reservationStatus === 'WAITING'"
-                                            color="error"
-                                            @click="cancelReservation(reservation)"
-                                        >
+                                        <v-btn v-if="reservation.reservationStatus === 'WAITING'" color="error"
+                                            @click="cancelReservation(reservation)">
                                             예약 취소
                                         </v-btn>
-                                        <v-btn v-if="reservation.reservationStatus === 'ACCEPT' && !reservation.reviewWritten" color="primary"
-                                            @click="goToReviewCreate(reservation)">
+                                        <v-btn
+                                            v-if="reservation.reservationStatus === 'ACCEPT' && !reservation.reviewWritten"
+                                            color="primary" @click="goToReviewCreate(reservation)">
                                             리뷰 작성
                                         </v-btn>
                                     </v-list-item-action>
@@ -85,8 +84,8 @@ export default {
                 this.fetchUserReservations();
             }
             if (this.$route.query.afterReview) {
-            this.reviewCompleted(this.$route.params.reservationId);
-        }
+                this.reviewCompleted(this.$route.params.reservationId);
+            }
         }
     },
     methods: {
@@ -207,7 +206,7 @@ export default {
                 query: { reservationId: reservation.id }
             });
         },
-        
+
         async reviewCompleted(reservationId) {
             const reservation = this.reservations.find(r => r.id === reservationId);
             if (reservation) {
