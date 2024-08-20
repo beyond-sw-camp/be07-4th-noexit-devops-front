@@ -12,7 +12,7 @@
                 item-title="text"
                 item-value="value"
                 class="custom-select"
-                
+             
               ></v-select>
             </v-col>
             <v-col>
@@ -65,7 +65,7 @@ export default {
         { text: "STRATEGY", value: "STRATEGY" },
       ],
       files: [],
-    }
+    };
   },
   methods: {
     async createBoard() {

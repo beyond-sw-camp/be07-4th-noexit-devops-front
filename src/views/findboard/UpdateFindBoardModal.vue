@@ -7,18 +7,20 @@
       <v-card-text>
         <v-form ref="updateForm" @submit.prevent="updateFindBoard">
           <!-- 제목 대신 가게 선택 버튼 추가 -->
-          <v-btn
-            color="#FF0066"
-            outlined
-            block
-            @click="openStoreSelectModal"
-            class="mb-4"
-          >
-            {{ updateselectedStoreName || "가게 선택하기" }}
-          </v-btn>
+          <v-text-field
+          v-model="updateselectedStoreName"
+          label="매장 선택"
+          outlined
+          readonly
+          @click="openStoreSelectModal"
+          class="mb-4"
+          :style="{ color: updateselectedStoreName}"
+        ></v-text-field>
+        
 
           <v-text-field
           v-model="updatetitle"
+          placeholder="제목"
           outlined
           rows="4"
           class="mb-4"
@@ -30,7 +32,7 @@
           <v-textarea
             v-model="updateContents"
             :rules="[(v) => !!v || '내용을 입력하세요.']"
-            label="내용"
+            placeholder="내용"
             outlined
             rows="4"
             class="mb-4"

@@ -29,9 +29,9 @@
         >
           <v-row no-gutters>
 
-            <v-col cols="4">
+            <v-col cols="3">
               <v-avatar
-                style="width: 120px; height: 120px; margin-top: 45px;"
+                style="width: 80px; height: 80px; margin-top: 50px; margin-left: 20px"
               >
                 <img 
                  :src="board.imagePath"
@@ -44,10 +44,13 @@
 
             <v-col>
               <div class="pa-4 custom-text">
-                <h3>{{ board.title }}</h3>
+                <h4>{{ board.title }}</h4>
                 <p>{{ board.contents }}</p>
-                <p>모집 인원: {{ board.totalCapacity }}</p>
-                <p>현재 인원: {{ board.currentCount }}</p>
+                <p style="text-align: right;">
+                  {{ board.currentCount }} / {{ board.totalCapacity }}
+                </p>
+                
+
               </div>
             </v-col>
           </v-row>
