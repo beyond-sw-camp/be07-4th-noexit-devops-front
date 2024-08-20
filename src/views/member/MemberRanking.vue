@@ -1,8 +1,14 @@
 <template>
+    <h2 class="font-weight-bold" style="color:#ffffff">Member Ranking</h2>
+
+
     <v-container justify="center">
-        <v-list>
-            <v-row>
-                <v-col cols="6">
+        <v-list style="background-color:#1b1b1b; color:#ffffff">
+            <v-row style="text-align:center; color:#ff0066; margin-top:10px;padding-bottom:10px" align=" center">
+                <v-col cols="1">
+                    <v-list-item-title class="font-weight-bold"></v-list-item-title>
+                </v-col>
+                <v-col cols="5">
                     <v-list-item-title class="font-weight-bold">닉네임</v-list-item-title>
                 </v-col>
                 <v-col cols="3">
@@ -12,25 +18,32 @@
                     <v-list-item-title class="font-weight-bold">리뷰 갯수</v-list-item-title>
                 </v-col>
             </v-row>
+            <v-divider></v-divider>
 
             <v-list-item v-for="(member, index) in members" :key="member.id">
-                <v-list-item-content>
-                    <v-row no-gutters align="center">
-                        <v-col cols="6">
+                <v-list-item-content class="list-content">
+                    <v-row no-gutters align=" center">
+                        <v-col cols="1">
                             <v-list-item-title>
-                                <span>{{ index }}</span>{{ member.nickname }}</v-list-item-title>
+                                {{ index }}</v-list-item-title>
+                        </v-col>
+                        <v-col cols="5">
+                            <v-list-item-title>
+                                {{ member.nickname }}</v-list-item-title>
                         </v-col>
                         <v-col cols="3">
                             <v-list-item-title>{{ member.point }}</v-list-item-title>
                         </v-col>
-                        <v-col cols="3">
+                        <v-col cols="3" style="text-align:center">
                             <v-list-item-title>{{ member.reviewCount }}</v-list-item-title>
                         </v-col>
                     </v-row>
                 </v-list-item-content>
+                <v-divider></v-divider>
+
             </v-list-item>
         </v-list>
-        <v-pagination v-model:page="pagination.page" :length="pageCount" @input="fetchData"></v-pagination>
+         <!-- <v-pagination v-model:page="pagination.page" :length="pageCount" @input="fetchData"></v-pagination> -->
     </v-container>
 </template>
 
@@ -93,5 +106,8 @@ export default {
 </script>
 
 <style scoped>
-/* Add custom styles here */
+.list-content {
+    padding: 3px;
+    text-align: center;
+}
 </style>

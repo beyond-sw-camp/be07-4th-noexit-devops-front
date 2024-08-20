@@ -36,14 +36,20 @@
                     </v-btn>
                 </v-col>
                 <v-col class="link-col">
-                    <v-btn text :to="{ path: '/reservation/list' }" block
-                        :class="{ active: isActive('/reservation/list') }" class="link-btn">예약 내역</v-btn>
+                    <v-btn text :to="{ path: '/reservation/myreservation' }" block
+                        :class="{ active: isActive('/reservation/myreservation') }" class="link-btn">예약 내역</v-btn>
                 </v-col>
                 <v-col class="link-col">
                     <v-btn text :to="{ path: '/review/myall' }" block :class="{ active: isActive('/review/myall') }"
                         class="link-btn">
                         내가 쓴
                         후기</v-btn>
+                </v-col>
+                <v-col class="link-col">
+                    <v-btn text :to="{ path: '/wishlist' }" block :class="{ active: isActive('/wishlist') }"
+                        class="link-btn">
+                        위시리스트
+                    </v-btn>
                 </v-col>
             </v-toolbar-title>
 
@@ -52,7 +58,12 @@
 </template>
 <script>
 export default {
-    methods: {
+    props: {
+        wishList: {
+            type: Array,
+            required: true
+        }
+    }, methods: {
         isActive(path) {
             return this.$route.path === path;
         },

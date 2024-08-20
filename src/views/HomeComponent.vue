@@ -7,9 +7,19 @@
         <BestGameListComponent :games="bestList" class="best-game" />
         <v-divider></v-divider>
         <!-- <v-col v-if="isWishList"> -->
-        <v-col v-if="wishList && !notLoggedIn" >
-          <h2 class="font-weight-bold">WishList({{ wishList.length }})</h2>
-          <GameListComponent :games="myWishList" />
+        <v-col v-if="wishList">
+          <v-row align="center" justify="space-between" class="wishlist-container">
+            <!-- WishList Title and Button -->
+            <v-col cols="auto">
+              <h2 class="font-weight-bold">WishList</h2>
+            </v-col>
+            <v-col cols="auto">
+              <v-btn :to="{ path: '/wishlist' }" v-if="myWishList.length > 4">더보기</v-btn>
+            </v-col>
+          </v-row>
+          <!-- GameListComponent -->
+          <GameListComponent :games="slicedWishList" />
+
         </v-col>
       </v-row>
       <v-divider></v-divider>
@@ -38,18 +48,16 @@ export default {
       wishList: [],
       isWishList: false,
       myWishList: [],
+      slicedWishList: [],
       pageSize: 10,
       currentPage: 0,
       totalPages: 1,
       isLastPage: false,
       isLoading: false,
-      notLoggedIn: true,
-        };
-    },
-    created() {
-      console.log("토큰값");
-      console.log(localStorage.getItem('token'));
-      this.checkUser();
+    };
+  },
+  created() {
+    this.fetchMyInfo();
     this.loadList();
   },
   methods: {
@@ -74,12 +82,11 @@ export default {
         console.log(e);
       }
     },
-   
+
     async loadList() {
 
       try {
 
-        if(!this.notLoggedIn) { // 로그인함
 
         if (this.isLoading || this.isLastPage) return;
         this.isLoading = true;
@@ -100,37 +107,38 @@ export default {
 
           const additionalData = response.data.result.content;
           if (additionalData.length === 0) {
-          
             this.isLastPage = true;
           } else {
             allWishList.push(...additionalData);
-            this.currentPage++; 
+            this.currentPage++;
           }
         }
-        this.wishList = allWishList; 
+        this.wishList = allWishList;
         this.isLoading = false;
 
         for (let i = 0; i < this.gameList.length; i++) {
-            for(let j =0; j< this.wishList.length; j++) {
-                if(this.wishList[j].gameId === this.gameList[i].id && this.wishList[j].memberId === this.myInfo.id) {
-                    this.myWishList.push(this.gameList[i]);
-                }
+          for (let j = 0; j < this.wishList.length; j++) {
+            if (this.wishList[j].gameId === this.gameList[i].id && this.wishList[j].memberId === this.myInfo.id) {
+              this.myWishList.push(this.gameList[i]);
             }
-        }
-        }else{ // 로그인 안 함
-          const gameInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
-
-          this.bestList = gameInfo.data.result.slice(0, 5); // 최고 5개만 추출
-          this.gameList = gameInfo.data.result;
+          }
         }
 
+        this.slicedWishList = this.myWishList.slice(0, 4);
       } catch (e) {
         console.error("정보가 존재하지 않습니다", e);
       }
- 
     },
   }
 }
 </script>
 
+
+<style>
+.v-btn {
+  background-color: #1b1b1b;
+  color: #919191;
+  font-size: 12px;
+}
+</style>
 

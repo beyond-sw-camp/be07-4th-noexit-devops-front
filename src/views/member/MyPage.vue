@@ -51,15 +51,27 @@ export default {
         }
     },
     async created() {
-        const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`);
-        this.memberInfo = response.data.result;
-        this.memberInfoList = [
-            { key: "profileImage", value: this.memberInfo.profile_image },
-            { key: "username", value: this.memberInfo.username },
-            { key: "nickname", value: this.memberInfo.nickname },
-            { key: "phone_number", value: this.memberInfo.phone_number },
-            { key: "age", value: this.memberInfo.age },
-        ];
+        const role = localStorage.getItem('role');
+        if (role == 'USER') {
+            const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/member/myInfo`);
+            this.memberInfo = response.data.result;
+            this.memberInfoList = [
+                { key: "profileImage", value: this.memberInfo.profile_image },
+                { key: "username", value: this.memberInfo.username },
+                { key: "nickname", value: this.memberInfo.nickname },
+                { key: "phone_number", value: this.memberInfo.phone_number },
+                { key: "age", value: this.memberInfo.age },
+            ];
+        } else if (role == 'OWNER') {
+            const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/owner/myInfo`);
+            this.memberInfo = response.data.result;
+            this.memberInfoList = [
+                { key: "username", value: this.memberInfo.username },
+                { key: "username", value: this.memberInfo.username },
+                { key: "email", value: this.memberInfo.email },
+            ];
+        }
+
     },
     methods: {
         async updateMember() {

@@ -4,8 +4,8 @@ import ReservationCreate from '@/views/reservation/ReservationCreate.vue';
 import MemberReservationList from '@/views/member/MemberReservationList.vue';
 import ReservationDetail from '@/views/reservation/ReservationDetail.vue';
 import StoreReservationList from '@/views/reservation/StoreReservationList.vue';
-import ReservationList from '@/views/reservation/ReservationList.vue'
-import ResList from '@/views/reservation/ResView.vue';
+// import ReservationList from '@/views/reservation/ReservationList.vue'
+import ResList from '@/views/reservation/ResList.vue';
 
 
 export const reservationRouter = [
@@ -14,11 +14,11 @@ export const reservationRouter = [
     name: 'ReservationCreate',
     component: ReservationCreate,
   },
-  {
-    path: '/reservation/list',
-    name: 'ReservationList',
-    component: ReservationList,
-  },
+  // {
+  //   path: '/reservation/list',
+  //   name: 'ReservationList',
+  //   component: ReservationList,
+  // },
   {
     path: '/reservation/detail/:id',
     name: 'ReservationDetail',

@@ -2,10 +2,10 @@
     <v-app style="background-color: #1b1b1b; color:#ffffff;">
         <v-container>
             <v-row>
+                <MypageSideBarComponentVue :wishList="wishgamelist" />
                 <v-col>
                     <h2 class="font-weight-bold">WishList({{ wishgamelist.length }})</h2>
-                    <h2 class="font-weight-bold">WishList</h2>
-                    <v-divider :thickness="8"></v-divider>
+                    <v-divider :thickness="6"></v-divider>
                     <GameListComponent :games="wishgamelist" />
                     <GameListComponent />
                 </v-col>
@@ -17,10 +17,11 @@
 <script>
 import GameListComponent from '@/components/GameListComponent.vue'
 import axios from 'axios';
+import MypageSideBarComponentVue from '@/components/common/MypageSideBarComponent.vue';
 
 export default {
     components: {
-        GameListComponent,
+        GameListComponent, MypageSideBarComponentVue
     },
     data() {
         return {
