@@ -41,7 +41,7 @@
 
 
 
-    <div>
+    <!-- <div>
       <v-row>
         <v-col>
             <input ref="fileInput" type="file" accept="image/*" style="display: none" @change="fileUpdate"/>    
@@ -53,6 +53,23 @@
                   <v-icon @click="triggerFileInput" color="white" size="150" style="cursor: pointer; margin-right: 10px;">mdi-image-outline</v-icon>
                 </template>
             </v-row>
+          </v-col>
+      </v-row>
+    </div> -->
+
+    <div>
+      <v-row>
+        <v-col>
+            <input ref="fileInput" type="file" accept="image/*" style="display: none" @change="fileUpdate"/>    
+            <v-row>
+                <v-col v-for="image in previewImages" :key="image.src" cols="auto" style="margin-right: 10px">
+                    <img :src="image.src" alt="Selected Image" style="width: 100px; height: 100px; object-fit: cover; display: block;" @click="deleteImg(image.src)" />
+                </v-col>
+                <template v-if="files.length < 5">
+                  <v-icon @click="triggerFileInput" color="white" size="150" style="cursor: pointer; margin-right: 10px;">mdi-image-outline</v-icon>
+                </template>
+            </v-row>
+
           </v-col>
       </v-row>
     </div>
@@ -91,9 +108,10 @@ export default {
         { text: "FREE", value: "FREE" },
         { text: "STRATEGY", value: "STRATEGY" },
       ],
-      editedFiles: [],
-      deletedFiles: [],
-      files: [],
+      editedFiles: [], // 기존에 저장된 imageDto 객체 배열
+      deletedFiles: [], // 삭제된 imageDto 객체 배열
+      files: [], // 새로 추가하는 File 객체 배열
+      previewImages: [] // 사용자 눈에 보이는 화면, imageDto + File
     };
   },
 async created() {
@@ -118,10 +136,15 @@ async created() {
         this.editedContents = this.board.contents;
         this.editedBoardType = this.board.boardType;
         this.editedFiles = this.board.images || [];
+        for (let i = 0; i < this.editedFiles.length; i++) {
+          this.createImagePreviewFromUrl(this.editedFiles[i].imageUrl);
+        }
+
       } catch (error) {
         console.error("Failed to fetch board info:", error);
       }
     },
+    
 
     async saveEditing() {
       try {
@@ -138,7 +161,7 @@ async created() {
           new Blob([JSON.stringify(data)], { type: "application/json" })
         );
 
-                this.files.forEach((file) => {
+          this.files.forEach((file) => {
           editedBoard.append("file", file, file.name);
         });
 
@@ -162,20 +185,60 @@ async created() {
     cancelEditing() {
       this.$router.push(`/board/detail/${this.board.id}`);
     },
-fileUpdate() {
-      const file = event.target.files[0]; // Get the first selected file
-      this.filteredFiles.push(file);
-    },
-    async deleteImg(id) {
-      try {
-        await axios.patch(
-          `${process.env.VUE_APP_API_BASIC_URL}/boardimg/delete/${id}`
-        );
-        this.deletedFiles.push(id);
-      } catch (error) {
-        console.error("Failed to delete image:", error);
-      }
+// fileUpdate() {
+//       const file = event.target.files[0]; // Get the first selected file
+//       this.files.push(file);
+//     },
+    // async deleteImg(id) {
+    //   try {
+    //     await axios.patch(
+    //       `${process.env.VUE_APP_API_BASIC_URL}/boardimg/delete/${id}`
+    //     );
+    //     this.deletedFiles.push(id);
+    //   } catch (error) {
+    //     console.error("Failed to delete image:", error);
+    //   }
+    // },
+      fileUpdate(event) {
+    const file = event.target.files[0];
+    if (file) {
+      this.files.push(file);
+      this.createImagePreview(file); 
     }
+  },
+createImagePreviewFromUrl(imageUrl) {
+  this.previewImages.push({ src: imageUrl });
+},
+
+  createImagePreview(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imageSrc = e.target.result;
+      this.previewImages.push({ file, src: imageSrc });
+    };
+    reader.readAsDataURL(file);
+  },
+
+  async deleteImg(imageSrc) {
+    try {
+      const indexToRemove = this.previewImages.findIndex(item => item.src === imageSrc);
+      if (indexToRemove !== -1) {
+        const fileToRemove = this.previewImages[indexToRemove].file;
+        this.previewImages.splice(indexToRemove, 1);
+        for (let i = 0; i < this.editedFiles.length; i++) {
+          if(imageSrc==this.editedFiles[i].imageUrl){
+            this.deletedFiles.push(this.editedFiles[i].id);
+            await axios.patch(
+           `${process.env.VUE_APP_API_BASIC_URL}/boardimg/delete/${this.editedFiles[i].id}`);
+          }else{
+            this.files = this.files.filter(file => file !== fileToRemove);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to delete image:", error);
+    }
+  }
 
   },
 };
