@@ -28,29 +28,19 @@
         </div>
 
         <v-row class="button-container" style=" background-color: #1b1b1b; color:#ffffff;">
-            <v-toolbar-title class="d-flex align-center">
-                <v-col class="link-col">
-                    <v-btn text :to="{ path: '/mypage' }" block :class="{ active: isActive('/mypage') }"
-                        class="link-btn">
-                        마이페이지
-                    </v-btn>
-                </v-col>
-                <v-col class="link-col">
-                    <v-btn text :to="{ path: '/reservation/myreservation' }" block
-                        :class="{ active: isActive('/reservation/myreservation') }" class="link-btn">예약 내역</v-btn>
-                </v-col>
-                <v-col class="link-col">
-                    <v-btn text :to="{ path: '/review/myall' }" block :class="{ active: isActive('/review/myall') }"
-                        class="link-btn">
-                        내가 쓴
-                        후기</v-btn>
-                </v-col>
-                <v-col class="link-col">
-                    <v-btn text :to="{ path: '/wishlist' }" block :class="{ active: isActive('/wishlist') }"
-                        class="link-btn">
-                        위시리스트
-                    </v-btn>
-                </v-col>
+            <v-toolbar-title>
+                <div class="nav-container">
+                    <router-link to="/mypage" class="link-btn"
+                        :class="{ active: isActive('/mypage') }">마이페이지</router-link>
+                    <router-link to="/reservation/myreservation" class="link-btn"
+                        :class="{ active: isActive('/reservation/myreservation') }">Reservations</router-link>
+                    <router-link to="/review/myall" class="link-btn"
+                        :class="{ active: isActive('/review/myall') }">Reviews</router-link>
+                    <router-link to="/wishlist" class="link-btn"
+                        :class="{ active: isActive('/wishlist') }">WishList</router-link>
+                </div>
+
+
             </v-toolbar-title>
 
         </v-row>
@@ -72,6 +62,14 @@ export default {
 </script>
 
 <style scoped>
+.nav-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+
+}
+
 .v-btn {
     all: unset;
     /* 모든 스타일 초기화 */
@@ -89,10 +87,13 @@ export default {
 }
 
 .link-btn {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 400;
+    padding: 12px;
+
     position: relative;
     color: white;
+    text-decoration: none;
 }
 
 .link-btn:hover {
@@ -101,8 +102,7 @@ export default {
 }
 
 .link-btn.active {
-    background-color: rgba(27, 27, 27, 100);
-    border-bottom: 1px solid red;
-
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
 }
 </style>

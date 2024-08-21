@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <v-container>
     <v-row justify="center">
       <v-col cols="12" md="8">
@@ -55,7 +55,6 @@
 
             <btn class="close-btn" @click="$router.go(-1)" fab dark>
               <svg-icon type="mdi" :path="path" style="color:#ff0066"></svg-icon>
-
             </btn>
           </v-row>
 
@@ -150,4 +149,4 @@ export default {
   font-size: 12px;
   /* 아이콘 크기 조정 */
 }
-</style>
+</style> -->

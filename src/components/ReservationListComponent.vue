@@ -41,7 +41,8 @@
                                                         @click="approveReservation(reservation)">
                                                         승인
                                                     </v-btn>
-                                                    <v-btn @click="rejectReservation(reservation)">
+                                                    <v-btn @click="rejectReservation(reservation)"
+                                                        style="background-color:#1b1b1b">
                                                         거절
                                                     </v-btn>
                                                 </v-list-item-action>
