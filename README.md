@@ -5,6 +5,7 @@
 
 ![logo](![NoExit_Logo](https://github.com/user-attachments/assets/c82287fc-49f0-49ee-8602-a9835d39aafa)
 )
+![NoExit_Logo](https://github.com/user-attachments/assets/c82287fc-49f0-49ee-8602-a9835d39aafa)
 
 <br/>
 
