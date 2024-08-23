@@ -1,10 +1,7 @@
 <div align=center>	
 
 # NoEixt
-방탈출 만을 고려하는 찐 방탈출러 덕후들을 위한 커뮤니티
-
-![logo](![NoExit_Logo](https://github.com/user-attachments/assets/c82287fc-49f0-49ee-8602-a9835d39aafa)
-)
+방탈출만을 고려하는 찐 방탈출러 덕후들을 위한 커뮤니티
 ![NoExit_Logo](https://github.com/user-attachments/assets/c82287fc-49f0-49ee-8602-a9835d39aafa)
 
 <br/>
