@@ -62,7 +62,7 @@
 ## 🗓️ WBS
 <img src="./img/WBS.png" alt="개발일정(WBS)" width="1000" height="500"/>
 
-[🗓️ WBS]![findboard추가ERD (1)](https://github.com/user-attachments/assets/a7a859f6-06dd-436d-9fb4-dee6afef6081)
+[🗓️ WBS]
 
 
 <br/>
@@ -76,7 +76,7 @@
 
 ## 📋 ERD
 <img src="./img/MediBooker.jpg" alt="ERD" width="1000" height="700"/>
-
+![findboard추가ERD (1)](https://github.com/user-attachments/assets/a7a859f6-06dd-436d-9fb4-dee6afef6081)
 
 <br/>
 
