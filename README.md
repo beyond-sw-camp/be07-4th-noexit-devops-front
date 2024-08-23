@@ -3,7 +3,8 @@
 # NoEixt
 방탈출 만을 고려하는 찐 방탈출러 덕후들을 위한 커뮤니티
 
-![logo]([https://github.com/user-attachments/assets/94222722-5b34-46c6-aa91-08ba3cbc936e](https://github.com/user-attachments/assets/c82287fc-49f0-49ee-8602-a9835d39aafa))
+![logo](![NoExit_Logo](https://github.com/user-attachments/assets/c82287fc-49f0-49ee-8602-a9835d39aafa)
+)
 
 <br/>
 
