@@ -135,8 +135,10 @@
   </summary>
   <div markdown="1">
     <ul>
-      <li>모집글 작성</li
+      <li>모집글 작성</li>
+      <li>모집글 수정</li>
       <li>모집글 삭제</li>
+      <li>모집글 조회</li>
       <li>모집글 참여</li>
     </ul>
   </div>
@@ -152,6 +154,19 @@
       <li>[점주]예약 거절 및 승인</li>
       <li>리뷰 작성 및 조회</li>
       <li>리뷰 수정 및 삭제</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>
+    <b>위시리스트 추가 및 조회</b>
+  </summary>
+  <div markdown="1">
+    <ul>
+      <li>위시리스트 생성</li>
+      <li>위시리스트 삭제</li>
+      <li>위시리스트 내역 확인</li>
     </ul>
   </div>
 </details>
