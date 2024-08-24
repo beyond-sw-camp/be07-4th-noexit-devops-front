@@ -63,15 +63,15 @@
 ## 🗓️ Work Breakdown Structure
 
 
-
-
-[🗓️ WBS 상세 보기기](https://docs.google.com/spreadsheets/d/1VdXKl6pfghy9OK6zTpShCHeG1uyAGB85Y2ycm1viF5g/edit?usp=sharing)
+[🗓️ WBS 상세 보기](https://docs.google.com/spreadsheets/d/1VdXKl6pfghy9OK6zTpShCHeG1uyAGB85Y2ycm1viF5g/edit?usp=sharing)
 
 
 <br/>
 
 ## 📝 요구사항정의서
 [2팀 회의 문서 - 요구사항 명세서.pdf](https://github.com/user-attachments/files/16707833/2.-.pdf)
+
+
 [📝 요구사항 명세서 상세보기](https://docs.google.com/spreadsheets/d/1VdXKl6pfghy9OK6zTpShCHeG1uyAGB85Y2ycm1viF5g/edit?gid=566809607#gid=566809607)
 
 <br/>
