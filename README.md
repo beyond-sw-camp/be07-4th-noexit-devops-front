@@ -58,12 +58,9 @@
 
 
 <br/>
-
 ## 🗓️ WBS
 <img src="./img/WBS.png" alt="개발일정(WBS)" width="1000" height="500"/>
-
-[🗓️ WBS]
-[2팀 회의 문서 - 2팀 WBS.pdf](https://github.com/user-attachments/files/16735439/2.-.2.WBS.pdf)
+[🗓️ WBS](https://docs.google.com/spreadsheets/d/1VdXKl6pfghy9OK6zTpShCHeG1uyAGB85Y2ycm1viF5g/edit?usp=sharing)
 
 
 <br/>
