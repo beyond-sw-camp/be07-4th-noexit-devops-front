@@ -58,13 +58,11 @@
 
 
 <br/>
-## 🗓️ WBS <img src="./img/WBS.png" alt="개발일정(WBS)" width="1000" height="500"/>
-
+## 🗓️ WBS
 
 [🗓️ WBS](https://docs.google.com/spreadsheets/d/1VdXKl6pfghy9OK6zTpShCHeG1uyAGB85Y2ycm1viF5g/edit?usp=sharing)
 
 
-[테스트](https://docs.google.com/spreadsheets/d/1VdXKl6pfghy9OK6zTpShCHeG1uyAGB85Y2ycm1viF5g/edit?usp=sharing)
 
 
 <br/>
