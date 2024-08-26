@@ -77,27 +77,25 @@ export default {
     methods: {
         async updateMember() {
             try {
-                const formData = new FormData();
-                this.memberInfoList.forEach(element => {
-                    if (element.key !== 'profileImage') {
-                        formData.append(element.key, element.value);
-                    }
-                });
-
-                const data = {};
+                let updateData = new FormData();
+                let data = {};
                 this.memberInfoList.forEach(element => {
                     if (element.key !== 'profileImage') {
                         data[element.key] = element.value;
                     }
                 });
 
-                formData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
+                console.log(data)
+                updateData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
+
                 const fileInput = this.$refs.fileInput;
                 if (fileInput && fileInput.files.length > 0) {
-                    formData.append('file', fileInput.files[0]);
+                    updateData.append('file', fileInput.files[0]);
                 }
+                console.log("file" + fileInput.files[0])
+                console.log(fileInput.files[0] == null)
 
-                await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/member/update`, formData, {
+                await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/member/update`, updateData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -120,6 +118,7 @@ export default {
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
+
                     const profileImage = this.memberInfoList.find(item => item.key === 'profileImage');
                     if (profileImage) {
                         profileImage.value = e.target.result;
