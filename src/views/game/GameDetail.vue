@@ -265,7 +265,7 @@ export default {
             }
         },
 
-        async fetchAvailableHours() { // 여기서 오류 발생(회원정보를 불러오는데 실패하였습니다 오류) -> 여기의 try catch 
+        async fetchAvailableHours() {
             const gameId = this.$route.params.id;
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/${gameId}/available-hours`);
@@ -346,20 +346,27 @@ export default {
             }
 
             try {
+                // 선택한 날짜와 시간을 조합
+                const selectedDate = new Date(this.resDate);
+                const [hours, minutes] = this.resDateTime.split(':').map(Number);
+
+                // 날짜 부분 (YYYY-MM-DD 형식)
+                const resDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+
+                // 시간 부분 (HH:MM 형식)
+                const resDateTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
                 const reservationData = {
                     resName: this.resName,
                     phoneNumber: this.phoneNumber,
                     numberOfPlayers: this.numberOfPlayers,
-                    resDate: this.resDate,
-                    resDateTime: this.resDateTime,
+                    resDate: resDate,  // 날짜만 저장
+                    resDateTime: resDateTime, // 시간만 저장
                     gameId: this.gameId,
                 };
-                console.log(reservationData)
-                await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/reservation/create`, reservationData, {
-                    // headers: {
-                    //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    // }
-                });
+                console.log(reservationData);
+
+                await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/reservation/create`, reservationData);
 
                 this.$router.push('/reservation/myreservation');
             } catch (e) {
@@ -367,6 +374,7 @@ export default {
                 alert("예약 등록에 실패하였습니다.");
             }
         }
+
     }
 };
 </script>
