@@ -54,7 +54,7 @@ export default {
                 const gameInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/list`);
 
                 this.wishlist = response.data.result.content;
-                this.gamelist = gameInfo.data.result;
+                this.gamelist = gameInfo.data.result.content;
                 console.log(this.wishlist);
                 console.log(this.gamelist);
 
