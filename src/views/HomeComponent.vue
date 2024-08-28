@@ -18,9 +18,9 @@
               <h2 class="font-weight-bold">WishList</h2>
             </v-col>
             <v-col cols="auto">
-              <v-btn :to="{ path: '/wishlist' }" v-if="myWishList.length > 4"
-                >더보기</v-btn
-              >
+              <v-btn :to="{ path: '/wishlist' }" v-if="myWishList.length > 4">
+                더보기
+              </v-btn>
             </v-col>
           </v-row>
           <GameListComponent :games="slicedWishList" />
@@ -42,11 +42,7 @@
           ></v-select>
         </v-col>
         <v-col>
-          <v-text-field
-            v-model="searchValue"
-            label="Search"
-            dense
-          ></v-text-field>
+          <v-text-field v-model="searchValue" label="Search" dense></v-text-field>
         </v-col>
         <v-col cols="auto">
           <v-btn height="60" color="pink" @click="filterGames">검색</v-btn>
@@ -57,17 +53,12 @@
         :games="filteredGames"
         style="background-color: #1b1b1b; color: #ffffff"
       />
-      
+
       <v-row justify="center">
-        <v-btn 
-          v-if="!isLastPage && filteredGames.length === gameList.length" 
-          @click="loadMoreGames" 
-          :loading="isLoading"
-        >
+        <v-btn v-if="!isLastPage" @click="loadMoreGames" :loading="isLoading">
           더보기
         </v-btn>
       </v-row>
-
     </v-container>
   </v-app>
 </template>
@@ -109,24 +100,25 @@ export default {
     };
   },
   created() {
+    console.log("created() - 시작");
     this.fetchBestList();
     this.loadGameList(); // 로그인 여부와 상관없이 게임 리스트는 항상 로드
     if (this.token) {
-    
+      console.log("토큰이 존재합니다. 로그인 상태로 설정합니다.");
       this.isLoggedIn = true; // 토큰이 있으면 로그인 상태로 설정
       this.fetchMyInfo();
       this.loadWishList(); // 위시리스트와 관련된 로직만 호출
-    
     } else {
-      console.log(
-        "로그인 해주세요"
-      );
+      console.log("로그인 해주세요");
     }
-    
+    console.log("created() - 종료");
   },
   methods: {
     async fetchMyInfo() {
-      if (!this.token) return; // 토큰이 없으면 요청하지 않음
+      if (!this.token) {
+        console.log("토큰이 없어 사용자 정보를 요청하지 않습니다.");
+        return;
+      }
 
       try {
         const response = await axios.get(
@@ -136,61 +128,32 @@ export default {
           }
         );
         this.myInfo = response.data.result;
+        console.log("fetchMyInfo - 사용자 정보:", this.myInfo);
       } catch (e) {
         console.error("Failed to fetch user info:", e);
       }
     },
     async loadWishList() {
-      if (!this.token) return; // 토큰이 없으면 요청하지 않음
+      if (!this.token) {
+        console.log("토큰이 없어 위시리스트를 요청하지 않습니다.");
+        return;
+      }
 
       try {
-        if (this.isLoading || this.isLastPage) return;
-        this.isLoading = true;
-
-        const allWishList = [];
-
-        while (!this.isLastPage) {
-          let params = {
-            size: this.pageSize,
-            page: this.currentPage,
-          };
-
-          try {
-            const response = await axios.get(
-              `${process.env.VUE_APP_API_BASIC_URL}/wishlist`,
-              {
-                params,
-                headers: { Authorization: `Bearer ${this.token}` },
-              }
-            );
-
-            const additionalData = response.data.result.content;
-            if (additionalData.length === 0) {
-              this.isLastPage = true;
-            } else {
-              allWishList.push(...additionalData);
-              this.currentPage++;
-            }
-          } catch (error) {
-            if (error.response && error.response.status === 403) {
-              console.log(
-                "403 Forbidden - 사용자 인증이 필요합니다. Wishlist를 건너뜁니다."
-              );
-              this.isLastPage = true;
-              break;
-            } else {
-              throw error;
-            }
+        console.log("loadWishList 호출 - 위시리스트 로딩 시작");
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASIC_URL}/wishlist`,
+          {
+            headers: { Authorization: `Bearer ${this.token}` },
           }
-        }
+        );
 
-        this.wishList = allWishList;
-        this.isLoading = false;
+        this.wishList = response.data.result.content;
+        console.log("로드된 위시리스트:", this.wishList);
 
         this.filterMyWishList();
       } catch (e) {
-        console.error("정보가 존재하지 않습니다", e);
-        this.isLoading = false;
+        console.error("위시리스트를 불러오는데 실패했습니다.", e);
       }
     },
     async toggleWishlist(gameId) {
@@ -218,6 +181,7 @@ export default {
         } else {
           this.wishList.push({ gameId, memberId: this.myInfo.id });
         }
+        console.log("위시리스트 업데이트:", this.wishList);
         this.filterMyWishList(); // 위시리스트 갱신
       } catch (error) {
         console.error(
@@ -230,7 +194,7 @@ export default {
       return this.wishList.some((wish) => wish.gameId === gameId);
     },
     filterMyWishList() {
-      if (this.token) {
+      if (this.token && this.wishList.length > 0) {
         this.myWishList = this.gameList.filter((game) =>
           this.wishList.some(
             (wish) =>
@@ -238,43 +202,70 @@ export default {
           )
         );
         this.slicedWishList = this.myWishList.slice(0, 4);
+        console.log("필터링된 위시리스트:", this.slicedWishList);
+      } else {
+        this.myWishList = [];
+        this.slicedWishList = [];
       }
     },
     async loadGameList() {
-    try {
-      const response = await axios.get(
-        `${process.env.VUE_APP_API_BASIC_URL}/game/list`,
-        { params: { page: this.currentPage, size: this.pageSize } }
-      );
+      if (this.isLoading || this.isLastPage) {
+        console.log("현재 로딩 중이거나 마지막 페이지입니다. 데이터를 로드하지 않습니다.");
+        return;
+      }
 
-      const games = response.data.result.content;
+      this.isLoading = true;
+      try {
+        console.log("loadGameList - 현재 페이지:", this.currentPage);
 
-      this.gameList = [...this.gameList, ...games];
-      this.filteredGames = this.gameList;
-      this.totalPages = response.data.result.totalPages;
-      this.isLastPage = this.currentPage + 1 >= this.totalPages;
-      this.currentPage += 1;
-    } catch (e) {
-      console.error("게임 리스트를 불러오는데 실패했습니다.", e);
-    }
-  },
-async fetchBestList() {
-    try {
-      const response = await axios.get(
-        `${process.env.VUE_APP_API_BASIC_URL}/game/list`,
-        { params: { page: 0, size: 5 } }
-      );
-      this.bestList = response.data.result.content.slice(0, 5);
-    } catch (e) {
-      console.error("Best 게임 리스트를 불러오는데 실패했습니다.", e);
-    }
-  },
-loadMoreGames() {
-  if (!this.isLastPage) {
-    this.loadGameList();
-  }
-},
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASIC_URL}/game/list`,
+          { params: { page: this.currentPage, size: this.pageSize } }
+        );
+
+        const games = response.data.result.content;
+
+        console.log("로드된 게임:", games);
+
+        if (games.length > 0) {
+          this.gameList = [...this.gameList, ...games];
+          this.filteredGames = this.gameList;
+        }
+
+        this.totalPages = response.data.result.totalPages;
+        this.isLastPage = this.currentPage + 1 >= this.totalPages;
+        this.currentPage += 1;
+
+        console.log("전체 게임 리스트:", this.gameList);
+        console.log("필터링된 게임 리스트:", this.filteredGames);
+        console.log("총 페이지 수:", this.totalPages);
+        console.log("마지막 페이지 여부:", this.isLastPage);
+      } catch (e) {
+        console.error("게임 리스트를 불러오는데 실패했습니다.", e);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async fetchBestList() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_BASIC_URL}/game/list`,
+          { params: { page: 0, size: 5 } }
+        );
+        this.bestList = response.data.result.content.slice(0, 5);
+        console.log("Best 게임 리스트:", this.bestList);
+      } catch (e) {
+        console.error("Best 게임 리스트를 불러오는데 실패했습니다.", e);
+      }
+    },
+    loadMoreGames() {
+      console.log("더보기 버튼 클릭 - loadMoreGames 호출");
+      if (!this.isLastPage) {
+        this.loadGameList();
+      }
+    },
     filterGames() {
+      console.log("검색 조건:", this.searchType, this.searchValue);
       if (this.searchType === "optional" || this.searchValue.trim() === "") {
         this.filteredGames = this.gameList;
       } else {
@@ -292,6 +283,7 @@ loadMoreGames() {
           return false;
         });
       }
+      console.log("검색 후 필터링된 게임:", this.filteredGames);
     },
     getDifficultyLevel(difficulty) {
       const levels = {
