@@ -59,7 +59,11 @@
       />
       
       <v-row justify="center">
-        <v-btn v-if="!isLastPage" @click="loadMoreGames" :loading="isLoading">
+        <v-btn 
+          v-if="!isLastPage && filteredGames.length === gameList.length" 
+          @click="loadMoreGames" 
+          :loading="isLoading"
+        >
           더보기
         </v-btn>
       </v-row>
@@ -105,6 +109,8 @@ export default {
     };
   },
   created() {
+    this.fetchBestList();
+    this.loadGameList(); // 로그인 여부와 상관없이 게임 리스트는 항상 로드
     if (this.token) {
     
       this.isLoggedIn = true; // 토큰이 있으면 로그인 상태로 설정
@@ -116,7 +122,7 @@ export default {
         "로그인 해주세요"
       );
     }
-    this.loadGameList(); // 로그인 여부와 상관없이 게임 리스트는 항상 로드
+    
   },
   methods: {
     async fetchMyInfo() {
@@ -235,27 +241,34 @@ export default {
       }
     },
     async loadGameList() {
-  try {
-    const response = await axios.get(
-      `${process.env.VUE_APP_API_BASIC_URL}/game/list`,
-      { params: { page: this.currentPage, size: this.pageSize } }
-    );
+    try {
+      const response = await axios.get(
+        `${process.env.VUE_APP_API_BASIC_URL}/game/list`,
+        { params: { page: this.currentPage, size: this.pageSize } }
+      );
 
-    const games = response.data.result.content;
+      const games = response.data.result.content;
 
-    if (this.currentPage === 0) {
-      this.bestList = games.slice(0, 5);
+      this.gameList = [...this.gameList, ...games];
+      this.filteredGames = this.gameList;
+      this.totalPages = response.data.result.totalPages;
+      this.isLastPage = this.currentPage + 1 >= this.totalPages;
+      this.currentPage += 1;
+    } catch (e) {
+      console.error("게임 리스트를 불러오는데 실패했습니다.", e);
     }
-
-    this.gameList = [...this.gameList, ...games];
-    this.filteredGames = this.gameList;
-    this.totalPages = response.data.result.totalPages;
-    this.isLastPage = this.currentPage + 1 >= this.totalPages;
-    this.currentPage += 1;
-  } catch (e) {
-    console.error("게임 리스트를 불러오는데 실패했습니다.", e);
-  }
-},
+  },
+async fetchBestList() {
+    try {
+      const response = await axios.get(
+        `${process.env.VUE_APP_API_BASIC_URL}/game/list`,
+        { params: { page: 0, size: 5 } }
+      );
+      this.bestList = response.data.result.content.slice(0, 5);
+    } catch (e) {
+      console.error("Best 게임 리스트를 불러오는데 실패했습니다.", e);
+    }
+  },
 loadMoreGames() {
   if (!this.isLastPage) {
     this.loadGameList();
