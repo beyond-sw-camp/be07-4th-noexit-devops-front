@@ -55,10 +55,27 @@
       />
 
       <v-row justify="center">
-        <v-btn v-if="!isLastPage && filteredGames.length === gameList.length" 
-        @click="loadMoreGames" :loading="isLoading">
-          더보기
-        </v-btn>
+        <v-btn
+        v-if="!isLastPage && filteredGames.length === gameList.length"
+        @click="loadMoreGames"
+        :loading="isLoading"
+        style="
+          background-color: #1c1c1c;
+          color: #d1d1d1;
+          border-radius: 30px;
+          padding: 15px 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #3a3a3a;
+          font-size: 16px;
+          font-weight: bold;
+          width: 600px; /* 버튼의 넓이 */
+          height: 50px; /* 버튼의 높이 */
+        "
+      >
+        More <span style="margin-left: 10px;">&#x25BC;</span>
+      </v-btn>
       </v-row>
 
     </v-container>
@@ -99,17 +116,17 @@ export default {
         { text: "난이도", value: "difficult" },
       ],
       filteredGames: [], // 필터링된 게임 목록
+      gameListAll: [],
     };
   },
   created() {
-    console.log("created() - 시작");
     this.fetchBestList();
     this.loadGameList(); // 로그인 여부와 상관없이 게임 리스트는 항상 로드
     if (this.token) {
       console.log("토큰이 존재합니다. 로그인 상태로 설정합니다.");
-      this.isLoggedIn = true; // 토큰이 있으면 로그인 상태로 설정
+      this.isLoggedIn = true; // 토
       this.fetchMyInfo();
-      this.loadWishList(); // 위시리스트와 관련된 로직만 호출
+      this.loadWishList();
     } else {
       console.log("로그인 해주세요");
     }
@@ -236,10 +253,6 @@ export default {
         this.isLastPage = this.currentPage + 1 >= this.totalPages;
         this.currentPage += 1;
 
-        console.log("전체 게임 리스트:", this.gameList);
-        console.log("필터링된 게임 리스트:", this.filteredGames);
-        console.log("총 페이지 수:", this.totalPages);
-        console.log("마지막 페이지 여부:", this.isLastPage);
       } catch (e) {
         console.error("게임 리스트를 불러오는데 실패했습니다.", e);
       } finally {
@@ -264,16 +277,33 @@ export default {
         this.loadGameList();
       }
     },
-    filterGames() {
+    async filterGames() {
 
+      const responseAll = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/listAll`);
+      const gameAll = responseAll.data.result;
+
+      if (gameAll.length > 0) {
+          this.gameListAll =[...gameAll]
+          this.filteredGames = this.gameAll;
+        }
+      
       if (this.searchType === "optional" || this.searchValue.trim() === "") {
+
+        // 검색 옵션을 선택하지않고 검색창에 아무것도 입력하지 않으면 페이징처리된 게임 리스트 화면이 보이게끔
         this.filteredGames = this.gameList;
+      
       } else {
-        this.filteredGames = this.gameList.filter((game) => {
+// 그렇지않다면 검색어에 적합하게 전체 데이터에서 검색해서 게임 리스트를 반환
+        this.filteredGames = this.gameListAll.filter((game) => {
+
           if (this.searchType === "gameName") {
+            
             return game.gameName.includes(this.searchValue);
+            
           } else if (this.searchType === "price") {
+            
             return game.price.toString().includes(this.searchValue);
+          
           } else if (this.searchType === "difficult") {
             return (
               this.getDifficultyLevel(game.difficult) ===
