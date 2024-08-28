@@ -55,10 +55,12 @@
       />
 
       <v-row justify="center">
-        <v-btn v-if="!isLastPage" @click="loadMoreGames" :loading="isLoading">
+        <v-btn v-if="!isLastPage && filteredGames.length === gameList.length" 
+        @click="loadMoreGames" :loading="isLoading">
           더보기
         </v-btn>
       </v-row>
+
     </v-container>
   </v-app>
 </template>
@@ -209,15 +211,13 @@ export default {
       }
     },
     async loadGameList() {
+
       if (this.isLoading || this.isLastPage) {
-        console.log("현재 로딩 중이거나 마지막 페이지입니다. 데이터를 로드하지 않습니다.");
         return;
       }
 
       this.isLoading = true;
       try {
-        console.log("loadGameList - 현재 페이지:", this.currentPage);
-
         const response = await axios.get(
           `${process.env.VUE_APP_API_BASIC_URL}/game/list`,
           { params: { page: this.currentPage, size: this.pageSize } }
@@ -265,7 +265,7 @@ export default {
       }
     },
     filterGames() {
-      console.log("검색 조건:", this.searchType, this.searchValue);
+
       if (this.searchType === "optional" || this.searchValue.trim() === "") {
         this.filteredGames = this.gameList;
       } else {
@@ -283,8 +283,8 @@ export default {
           return false;
         });
       }
-      console.log("검색 후 필터링된 게임:", this.filteredGames);
     },
+    
     getDifficultyLevel(difficulty) {
       const levels = {
         ONE: 1,
