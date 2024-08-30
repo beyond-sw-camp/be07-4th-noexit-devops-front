@@ -28,7 +28,8 @@ export default {
             wishlist: [],
             gamelist: [],
             wishgamelist: [],
-            pageSize: 10,
+            //페이징 처리 했는데 페이징 번호가 보이지 않아서 myPage의 WishList가 12개밖에 보이지 않았음. 페이징처리를 없애던지 번호 마킹을 하던지 해야함.
+            pageSize: 50,
             currentPage: 1,
             totalPages: 1,
             pagesPerRange: 5,

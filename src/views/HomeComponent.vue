@@ -74,7 +74,7 @@
           height: 50px; /* 버튼의 높이 */
         "
       >
-        More <span style="margin-left: 10px;">&#x25BC;</span>
+        More
       </v-btn>
       </v-row>
 
