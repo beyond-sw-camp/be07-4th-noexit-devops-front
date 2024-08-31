@@ -289,6 +289,7 @@
         :title="dialogTitle"
         :message="dialogMessage"
       />
+
   </v-container>
 </template>
 
@@ -297,7 +298,7 @@ import axios from "axios";
 import CreateFindBoardModal from "./CreateFindBoardModal.vue";
 import UpdateFindBoardModal from "./UpdateFindBoardModal.vue";
 import ImminentClosingBoards from "./ImminentClosingBoards.vue";
-import AlertDialogComponent from "./AlertDialogComponent.vue";
+import AlertDialogComponent from "../../components/AlertDialogComponent.vue";
 
 export default {
   components: {
@@ -326,6 +327,8 @@ export default {
       currentPageRangeStart: 1,
       currentPageRangeEnd: 5,
       pagesPerRange: 5,
+
+      // showAlert 메서드 추가 후 아래 2개 추가하고 사용할 수 있음.
       dialogTitle: '',
       dialogMessage: '',
     };
@@ -365,6 +368,15 @@ export default {
     this.checkAuthor();
   },
   methods: {
+
+    showAlert(title, message) {
+      this.dialogTitle = title;
+      this.dialogMessage = message;
+      this.$refs.alertDialog.openDialog();
+      
+    },
+
+
     openCreateModal() {
       this.isCreateModalOpen = true;
     },
@@ -377,12 +389,6 @@ export default {
     },
     closeUpdateModal() {
       this.isUpdateModalOpen = false;
-    },
-    showAlert(title, message) {
-      this.dialogTitle = title;
-      this.dialogMessage = message;
-      this.$refs.alertDialog.openDialog();
-      
     },
     async checkAuthor() {
       try {

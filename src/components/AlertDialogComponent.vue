@@ -10,7 +10,7 @@
         <div class="py-6 text-center">
           <v-icon
             class="mb-4"
-            color="success"
+            color=#FF0066
             icon="mdi-check-circle-outline"
             size="48"
           ></v-icon>
@@ -24,7 +24,7 @@
         <div class="pa-4 text-end">
           <v-btn
             class="text-none"
-            color="deep-purple-darken-2"
+            color="grey"
             min-width="92"
             variant="outlined"
             rounded
