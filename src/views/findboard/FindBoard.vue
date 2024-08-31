@@ -199,7 +199,6 @@
                   />
                 </div>
               </v-row>
-              <!-- 마감 시각 또는 FINISH 텍스트 -->
               <v-row class="d-flex justify-center" style="margin-bottom: 20px;">
                 <div
                   v-if="
