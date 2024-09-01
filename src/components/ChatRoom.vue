@@ -7,14 +7,12 @@
             <v-spacer></v-spacer>
             <v-toolbar-title>{{ roomName }}</v-toolbar-title>
             <v-spacer></v-spacer>
-
         </v-toolbar>
-        <div></div>
 
         <!-- 메시지 리스트 -->
         <v-row class="message-list" ref="messageList" style="background-color: #1b1b1b">
             <v-col cols="12">
-                <v-list  style="background-color: #1b1b1b">
+                <v-list style="background-color: #1b1b1b">
                     <v-list-item
                         v-for="(message, index) in messages"
                         :key="index"
@@ -27,15 +25,33 @@
                         <v-list-item-content :class="message.type === 'JOIN' ? 'join-message-container' : ''">
                             <div
                                 :class="{
-                                    'bubble-sent': message.sender === sender && message.type !== 'JOIN',
-                                    'bubble-received': message.sender !== sender && message.type !== 'JOIN',
-                                    'bubble-join': message.type === 'JOIN'
+                                    'bubble-sent-container': message.sender === sender && message.type !== 'JOIN',
+                                    'bubble-received-container': message.sender !== sender && message.type !== 'JOIN'
                                 }"
                             >
-                                <v-list-item-title> {{ typeof message.content === 'object' ? JSON.stringify(message.content) : message.content }}</v-list-item-title>
-                                <v-list-item-subtitle v-if="message.type !== 'JOIN'" class="message-time">
-                                    {{ formatDate(message.timestamp) }}
-                                </v-list-item-subtitle>
+                                <div v-if="message.sender === sender && message.type !== 'JOIN'" class="message-header right-align">
+                                    <span class="sender-name">{{ message.senderName }}</span>
+                                    <v-img v-if="message.senderProfileImage" :src="message.senderProfileImage" alt="Profile" class="profile-image" />
+                                </div>
+                                <div v-else-if="message.sender !== sender && message.type !== 'JOIN'" class="message-header left-align">
+                                    <v-img v-if="message.senderProfileImage" :src="message.senderProfileImage" alt="Profile" class="profile-image" />
+                                    <span class="sender-name">{{ message.senderName }}</span>
+                                </div>
+                                <div
+                                    :class="{
+                                        'bubble-sent': message.sender === sender && message.type !== 'JOIN',
+                                        'bubble-received': message.sender !== sender && message.type !== 'JOIN',
+                                        'bubble-join': message.type === 'JOIN'
+                                    }"
+                                    class="message-bubble"
+                                >
+                                    <v-list-item-title>
+                                        {{ typeof message.content === 'object' ? JSON.stringify(message.content) : message.content }}
+                                    </v-list-item-title>
+                                    <v-list-item-subtitle v-if="message.type !== 'JOIN'" class="message-time">
+                                        {{ formatDate(message.timestamp) }}
+                                    </v-list-item-subtitle>
+                                </div>
                             </div>
                         </v-list-item-content>
                     </v-list-item>
@@ -44,7 +60,7 @@
         </v-row>
 
         <!-- 입력 영역 -->
-        <v-row class="input-row" >
+        <v-row class="input-row">
             <v-col cols="10">
                 <v-text-field
                     v-model="message"
@@ -94,113 +110,138 @@ export default {
         }
     },
     methods: {
-    setSenderFromToken() {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const decodedToken = VueJwtDecode.decode(token);
-            this.sender = decodedToken.sub;
-        } else {
-            this.sender = 'Anonymous';
-        }
-    },
-    fetchRoomInfo() {
-        axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/rooms/${this.roomId}`).then(response => {
-            this.roomName = response.data.name;
-            this.fetchMessages();
-        }).catch(error => {
-            console.error("Failed to fetch room info:", error);
-        });
-    },
-    fetchMessages() {
-        axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/rooms/${this.roomId}/messages`).then(response => {
-            this.messages = response.data;
-            this.scrollToBottom();  // 메시지를 처음 가져올 때 스크롤을 맨 아래로
-        }).catch(error => {
-            console.error("Failed to fetch messages:", error);
-        });
-    },
-    connectWebSocket() {
-        const socket = new SockJS(`${process.env.VUE_APP_API_BASIC_URL}/ws-chat`);
-        const token = localStorage.getItem('token');
-
-        this.client = new Client({
-            webSocketFactory: () => socket,
-            connectHeaders: {
-                'Authorization': `Bearer ${token}`
-            },
-            reconnectDelay: 5000,
-            onConnect: () => {
-                this.subscribeToRoom();
-
-                // sessionStorage에 저장된 값이 없을 때만 join 메시지를 보냄
-                if (!sessionStorage.getItem(`joined_${this.roomId}`)) {
-                    this.joinRoom();
-                    sessionStorage.setItem(`joined_${this.roomId}`, true);
-                }
-            },
-            onStompError: (frame) => {
-                console.error('Broker reported error: ' + frame.headers['message']);
-                console.error('Additional details: ' + frame.body);
-            },
-            onWebSocketClose: (event) => {
-                if (event.code === 403) {
-                    console.error('Connection closed with 403 error. Token might be invalid or expired.');
-                }
-            },
-            onError: (error) => {
-                console.error('WebSocket connection error:', error);
+        setSenderFromToken() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const decodedToken = VueJwtDecode.decode(token);
+                this.sender = decodedToken.sub;
+            } else {
+                this.sender = 'Anonymous';
             }
-        });
+        },
+        fetchRoomInfo() {
+            axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/rooms/${this.roomId}`).then(response => {
+                this.roomName = response.data.name;
+                this.fetchMessages();
+            }).catch(error => {
+                console.error("Failed to fetch room info:", error);
+            });
+        },
+        async fetchMessages() {
+            try {
+                const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/chat/rooms/${this.roomId}/messages`);
+                this.messages = response.data;
 
-        this.client.activate();
-    },
-    subscribeToRoom() {
-        this.client.subscribe(`/topic/room/${this.roomId}`, (message) => {
-            const receivedMessage = JSON.parse(message.body);
-            this.messages.push(receivedMessage);
-        });
-    },
-    joinRoom() {
-        const joinMessage = {
-            sender: this.sender,
-            content: `${this.sender}님이 방에 참가하셨습니다.`,
-            type: 'JOIN',
-            roomId: this.roomId
-        };
-        this.client.publish({
-            destination: '/app/chat.join',
-            body: JSON.stringify(joinMessage)
-        });
-    },
-    sendMessage() {
-        if (this.message.trim() !== '') {
-            const chatMessage = {
+                // 각 메시지에 대해 추가 정보 요청
+                for (let message of this.messages) {
+                    if (message.sender !== this.sender && message.type !== 'JOIN') {
+                        const userResponse = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/users/${message.sender}`);
+                        message.senderProfileImage = userResponse.data.profileImage; // 프로필 이미지 URL
+                        message.senderName = userResponse.data.name; // 사용자 이름
+                    }
+                }
+
+                this.scrollToBottom();  // 메시지를 처음 가져올 때 스크롤을 맨 아래로
+            } catch (error) {
+                console.error("Failed to fetch messages:", error);
+            }
+        },
+        connectWebSocket() {
+            const socket = new SockJS(`${process.env.VUE_APP_API_BASIC_URL}/ws-chat`);
+            const token = localStorage.getItem('token');
+
+            this.client = new Client({
+                webSocketFactory: () => socket,
+                connectHeaders: {
+                    'Authorization': `Bearer ${token}`
+                },
+                reconnectDelay: 5000,
+                onConnect: () => {
+                    this.subscribeToRoom();
+
+                    // sessionStorage에 저장된 값이 없을 때만 join 메시지를 보냄
+                    if (!sessionStorage.getItem(`joined_${this.roomId}`)) {
+                        this.joinRoom();
+                        sessionStorage.setItem(`joined_${this.roomId}`, true);
+                    }
+                },
+                onStompError: (frame) => {
+                    console.error('Broker reported error: ' + frame.headers['message']);
+                    console.error('Additional details: ' + frame.body);
+                },
+                onWebSocketClose: (event) => {
+                    if (event.code === 403) {
+                        console.error('Connection closed with 403 error. Token might be invalid or expired.');
+                    }
+                },
+                onError: (error) => {
+                    console.error('WebSocket connection error:', error);
+                }
+            });
+
+            this.client.activate();
+        },
+        subscribeToRoom() {
+            this.client.subscribe(`/topic/room/${this.roomId}`, (message) => {
+                const receivedMessage = JSON.parse(message.body);
+                this.messages.push(receivedMessage);
+            });
+        },
+        joinRoom() {
+            const joinMessage = {
                 sender: this.sender,
-                content: this.message,
-                type: 'CHAT',
+                content: `${this.sender}님이 방에 참가하셨습니다.`,
+                type: 'JOIN',
                 roomId: this.roomId
             };
             this.client.publish({
-                destination: '/app/chat.sendMessage',
-                body: JSON.stringify(chatMessage)
+                destination: '/app/chat.join',
+                body: JSON.stringify(joinMessage)
             });
-            this.message = '';
-        }
-    },
-    formatDate(timestamp) {
-        const date = new Date(timestamp);
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-        const ampm = hours >= 12 ? '오후' : '오전';
-        const formattedHours = hours % 12 || 12; // 0시를 12시로 표시
-        return `${ampm} ${formattedHours}:${minutes < 10 ? '0' + minutes : minutes}`;
-    },
-    scrollToBottom() {
-        const container = this.$refs.messageList.$el;
-        container.scrollTop = container.scrollHeight;
-    }
-}
+        },
+        sendMessage() {
+            if (this.message.trim() !== '') {
+                const chatMessage = {
+                    sender: this.sender,
+                    content: this.message,
+                    type: 'CHAT',
+                    roomId: this.roomId
+                };
+                this.client.publish({
+                    destination: '/app/chat.sendMessage',
+                    body: JSON.stringify(chatMessage)
+                });
+                this.message = '';
+            }
+        },
+        formatDate(timestamp) {
+            if (isNaN(timestamp)) {
+                timestamp = Date.now();
+            }
 
+            const date = new Date(timestamp);
+
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+
+            const ampm = hours >= 12 ? '오후' : '오전';
+            
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+
+            return `${ampm} ${hours}:${minutes}`;
+        },
+
+        scrollToBottom() {
+            const container = this.$refs.messageList.$el;
+            container.scrollTop = container.scrollHeight;
+        },
+        closeChatModal() {
+            this.$emit('close');
+        }
+    }
 };
 </script>
 
@@ -218,7 +259,7 @@ export default {
     overflow-y: auto;
     padding: 10px;
     background-color: #2e2e2e;
-    max-height: 400px; /* 최대 높이 설정 */
+    max-height: 400px;
 }
 
 .input-row {
@@ -233,7 +274,7 @@ export default {
 }
 
 .send-btn {
-    background-color: #1b1b1b; /* Changed to match the input row background */
+    background-color: #1b1b1b;
     color: white;
     height: 56px;
     width: 56px;
@@ -241,7 +282,7 @@ export default {
 }
 
 .send-icon {
-    color: #ff0066; /* Icon color change */
+    color: #ff0066;
 }
 
 .message-sent {
@@ -249,7 +290,7 @@ export default {
     margin-left: auto;
     max-width: 40%;
     text-align: right;
-    word-wrap: break-word; /* 단어가 길어지면 자동으로 줄바꿈 */
+    word-wrap: break-word;
     white-space: pre-wrap;
     overflow-wrap: break-word;
 }
@@ -259,9 +300,32 @@ export default {
     margin-right: auto;
     max-width: 40%;
     text-align: left;
-    word-wrap: break-word; /* 단어가 길어지면 자동으로 줄바꿈 */
+    word-wrap: break-word;
     white-space: pre-wrap;
     overflow-wrap: break-word;
+}
+.message-bubble {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+.v-list-item-title {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    overflow: visible !important;
+}
+
+.v-list-item-content {
+    overflow: visible !important;
+}
+
+.bubble-sent-container {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 .bubble-sent {
@@ -269,8 +333,15 @@ export default {
     color: white;
     border-radius: 20px 20px 0px 20px;
     padding: 10px 12px;
-    max-width: 100%;
+    max-width: 70%;
     overflow-wrap: break-word;
+}
+
+.bubble-received-container {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .bubble-received {
@@ -278,10 +349,34 @@ export default {
     color: black;
     border-radius: 20px 20px 20px 0px;
     padding: 10px 12px;
-    max-width: 100%;
-    word-wrap: break-word; /* 단어가 길어지면 자동으로 줄바꿈 */
-    white-space: pre-wrap;
+    max-width: 70%;
     overflow-wrap: break-word;
+}
+
+.message-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.right-align {
+    justify-content: flex-end;
+}
+
+.left-align {
+    justify-content: flex-start;
+}
+
+.profile-image {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-left: 8px;
+}
+
+.sender-name {
+    color: white;
+    font-weight: bold;
 }
 
 .message-time {
@@ -312,7 +407,6 @@ export default {
     background-color: transparent;
 }
 
-/* Custom scrollbar styles */
 .message-list::-webkit-scrollbar {
     width: 8px;
 }
@@ -329,4 +423,5 @@ export default {
 .message-list::-webkit-scrollbar-thumb:hover {
     background-color: #ff3385;
 }
+
 </style>
