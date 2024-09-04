@@ -199,7 +199,6 @@
                   />
                 </div>
               </v-row>
-              <!-- 마감 시각 또는 FINISH 텍스트 -->
               <v-row class="d-flex justify-center" style="margin-bottom: 20px;">
                 <div
                   v-if="
@@ -283,6 +282,13 @@
     <div v-if="loading" class="text-center my-4">
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </div>
+
+        <AlertDialogComponent
+        ref="alertDialog"
+        :title="dialogTitle"
+        :message="dialogMessage"
+      />
+
   </v-container>
 </template>
 
@@ -291,11 +297,14 @@ import axios from "axios";
 import CreateFindBoardModal from "./CreateFindBoardModal.vue";
 import UpdateFindBoardModal from "./UpdateFindBoardModal.vue";
 import ImminentClosingBoards from "./ImminentClosingBoards.vue";
+import AlertDialogComponent from "../../components/AlertDialogComponent.vue";
+
 export default {
   components: {
     CreateFindBoardModal,
     UpdateFindBoardModal,
     ImminentClosingBoards,
+    AlertDialogComponent,
   },
   data() {
     return {
@@ -317,6 +326,10 @@ export default {
       currentPageRangeStart: 1,
       currentPageRangeEnd: 5,
       pagesPerRange: 5,
+
+      // showAlert 메서드 추가 후 아래 2개 추가하고 사용할 수 있음.
+      dialogTitle: '',
+      dialogMessage: '',
     };
   },
   mounted() {
@@ -354,6 +367,15 @@ export default {
     this.checkAuthor();
   },
   methods: {
+
+    showAlert(title, message) {
+      this.dialogTitle = title;
+      this.dialogMessage = message;
+      this.$refs.alertDialog.openDialog();
+      
+    },
+
+
     openCreateModal() {
       this.isCreateModalOpen = true;
     },
@@ -424,11 +446,12 @@ export default {
           `http://localhost:8080/findboard/delete/${fbId}`
         );
         console.log("삭제 완료:", response.data);
-        alert("삭제 완료");
-        window.location.reload();
+        this.showAlert("삭제 완료");
+        
+        // window.location.reload();
         this.findBoardList = this.findBoardList.filter((fb) => fb.id !== fbId);
       } catch (error) {
-        console.error("삭제 실패:", error);
+        this.showAlert("삭제 실패", "게시글 삭제 중 문제가 발생했습니다.");
       }
     },
     async participateInFindBoard(findBoardId) {
@@ -452,7 +475,7 @@ export default {
         );
 
         if (alreadyParticipated) {
-          alert("이미 이 게시글에 참가했습니다.");
+          this.showAlert("이미 참석한 게시글 입니다.");
           return;
         }
 
@@ -462,14 +485,14 @@ export default {
         );
 
         if (participateResponse.data.status_code === 200) {
-          alert("참여 완료");
-          window.location.reload();
+          this.showAlert("완료");
+          // window.location.reload();
         } else {
-          alert("새로고침 후 다시 시도해주세요");
+          this.showAlert("다시 시도해주세요");
         }
       } catch (error) {
         console.error("참가 요청 실패:", error);
-        alert("자신의 게시글에는 참여할 수 없습니다.");
+        this.showAlert("자신의 게시글에는 참여할 수 없습니다.");
       }
     },
     prevPageRange() {
@@ -575,7 +598,7 @@ export default {
 
         console.log("Result List:", resultList, resultList.length);
         if (resultList.length === 0) {
-          alert("검색 결과가 없습니다.");
+          this.showAlert("검색 결과가 존재하지 않습니다");
           this.searchTriggered = false;
           return;
         }

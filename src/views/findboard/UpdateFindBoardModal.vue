@@ -74,7 +74,7 @@
           color="white"
           @click="updateFindBoard"
           :disabled="
-            !selectedStoreName || !updateContents || !updateTotalCapacity || !updateTime || !updateDate
+            !updateselectedStoreName || !updateContents || !updateTotalCapacity || !updateTime || !updateDate
           "
         >
           수정하기
@@ -184,12 +184,14 @@ export default {
         const requestData = {
           
           title: this.updatetitle,
-          selectedStoreName:this.updateselectedStoreName,
+          selectedStoreName: this.updateselectedStoreName,
           contents: this.updateContents,
           expirationDate: updateExpirationDateTime.toISOString(), // 서버에 전송할 데이터
           totalCapacity: this.updateTotalCapacity,
         
         };
+
+        console.log('Request Data:', requestData); 
 
         const response = await axios.put(
           `http://localhost:8080/findboard/update/${this.findBoard.id}`,
@@ -224,7 +226,7 @@ export default {
       this.isStoreModalOpen = false;
     },
     selectStore(storeName) {
-      this.selectedStoreName = storeName;
+      this.updateselectedStoreName = storeName;
       this.closeStoreSelectModal();
     },
   },
