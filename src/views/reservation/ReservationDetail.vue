@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <v-container>
     <v-row justify="center">
       <v-col cols="12" md="8">
@@ -149,4 +149,4 @@ export default {
   font-size: 12px;
   /* 아이콘 크기 조정 */
 }
-</style> -->
+</style>
