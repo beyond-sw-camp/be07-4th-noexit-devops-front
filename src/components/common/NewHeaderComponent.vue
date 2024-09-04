@@ -38,7 +38,9 @@
                             <v-list-item-text style="color: #919191; font-weight: 300; font-size:14px">{{
                                 formatDateTime(notification.createdTime)
                                 }}</v-list-item-text> -->
-                            <v-list-item-title>{{ room.name }}</v-list-item-title>
+                            <v-list-item-title>
+                                {{ room.name }}
+                            </v-list-item-title>
 
 
                         </v-list-item-content>
@@ -56,9 +58,10 @@
             <v-icon v-else>mdi-bell</v-icon>
 
             <v-menu activator="parent" offset-y>
-                <v-list-item>
-                    <v-list-item-content>
-                        <v-list-item-title class="mdi-notification-title">
+                <v-list-item style=" background-color:#ff0066;">
+                    <v-list-item-content style="border-radius:10px">
+                        <v-list-item-title class="mdi-notification-title"
+                            style="background-color:#ff0066;border-radius:10px">
                             알림
                         </v-list-item-title>
                     </v-list-item-content>
@@ -69,10 +72,11 @@
                     style="overflow-y: auto; background-color:#1b1b1b">
 
                     <v-list-item v-for="notification in notifications" :key="notification.id"
-                        :class="{ 'readNotification': notification.delYn === 'Y' }"
+                        :class="{ 'readNotification': notification.delYn === 'Y', 'notification-item': true }"
                         @click="unreadNotification(notification)">
                         <v-list-item-content>
-                            <v-list-item-title>{{ notification.message }}</v-list-item-title>
+                            <v-list-item-title style="white-space: pre-line;">{{ notification.message
+                                }}</v-list-item-title>
                             <v-list-item-text style="color: #919191; font-weight: 300; font-size:14px">{{
                                 formatDateTime(notification.createdTime)
                                 }}</v-list-item-text>
@@ -108,10 +112,16 @@ export default {
         this.userRole = role;
         this.isLogin = !!token;
 
-        if (token) {
+        if (this.isLogin) {
             this.fetchNotifications();
             this.fetchChatList();
             this.connectSSE();
+        }
+    },
+    watch: {
+        notifications() {
+            this.notifications.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+
         }
     },
     computed: {
@@ -121,6 +131,9 @@ export default {
         unreadNotifications() {
             return this.notifications.filter((notification) => notification.delYN === 'N');
         },
+        sortedNotifications() {
+            return this.notifications.slice().sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+        },
     },
     methods: {
         connectSSE() {
@@ -128,33 +141,22 @@ export default {
             this.sse = new EventSourcePolyfill(`${process.env.VUE_APP_API_BASIC_URL}/subscribe`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            // 단일 notification으로 받아서 처리하는 방법으로 수정해야
-            // 코멘트 작성
-            this.sse.addEventListener('COMMENT', (event) => {
-                this.notifications.push(JSON.parse(event.data))
-            });
-            // 게시글 좋아요
-            this.sse.addEventListener('BOARD_LIKE', (event) => {
-                this.notifications.push(JSON.parse(event.data))
-            });
-            // 코멘트 좋아요
-            this.sse.addEventListener('COMMENT_LIKE', (event) => {
-                this.notifications.push(JSON.parse(event.data))
-            });
-            // 예약 요청
-            this.sse.addEventListener('RESERVATION_REQ', (event) => {
-                this.notifications.push(JSON.parse(event.data))
-            });
-            // 예약 승인
-            this.sse.addEventListener('RESERVATION_RES', (event) => {
-                this.notifications.push(JSON.parse(event.data))
-            });
-            // 
-            this.sse.addEventListener('CHAT_ROOM_INVITE', (event) => {
-                this.notifications.push(JSON.parse(event.data))
-            });
 
-            console.log(this.notifications)
+            const handleEvent = (event) => {
+                const notification = JSON.parse(event.data);
+                this.notifications.push(notification);
+
+                this.notifications.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+
+            };
+
+            this.sse.addEventListener('COMMENT', handleEvent);
+            this.sse.addEventListener('BOARD_LIKE', handleEvent);
+            this.sse.addEventListener('COMMENT_LIKE', handleEvent);
+            this.sse.addEventListener('RESERVATION_REQ', handleEvent);
+            this.sse.addEventListener('RESERVATION_RES', handleEvent);
+            this.sse.addEventListener('CHAT_ROOM_INVITE', handleEvent);
+
             this.sse.onerror = () => {
                 console.log("SSE 연결이 끊어졌습니다. 재연결을 시도합니다.");
                 this.sse.close();
@@ -169,25 +171,17 @@ export default {
                     },
                 });
                 this.notifications = response.data.result;
-                console.log(this.notifications)
+                this.notifications.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
 
             } catch (error) {
-                console.error('알림 목록을 가져오는 중 오류 발생:', error);
+                console.error('알림 목록을 가져오는 중 오류가 발생하였습니다.', error);
             }
         },
         async unreadNotification(notification) {
-            // 읽지않은 애라면 -> 읽음처리
-
+            // 읽지않은 알림이라 -> 읽음처리
             if (notification.delYn === 'N') {
-
                 try {
                     const notificationId = notification.id;
-                    // const index = this.notifications.findIndex(n => n.id === notification.id);
-                    // if (index !== -1) {
-                    //     this.notifications[index].delYn = 'Y';
-                    // }
-                    // notification.id = index
-                    // console.log(index)
                     const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/notification/update/${notificationId}`, null, {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -200,21 +194,11 @@ export default {
                             this.notifications[index].delYn = 'Y';
                         }
                     }
-
-                    // if (notification.type === 'COMMENT' || notification.type === 'BOARD_LIKE' || notification.type === 'COMMENT_LIKE') {
-                    //     this.$router.push(`/board/detail/${notification.notification_id}`);
-                    // } else if (notification.type === 'CHAT_ROOM_INVITE') {
-                    //     this.enterRoom(notification.notification_id)
-                    // } else if (notification.type === 'RESERVATION_REQ') {   // 점주
-                    //     this.$router.push(`/resview`);
-                    // } else if (notification.type === 'RESERVATION_RES') {   // 사용자
-                    //     this.$router.push(`/reservation/myreservation`);
-                    // }
-                    this.routingList(notification)
                 } catch (error) {
-                    console.error('알림을 읽음으로 표시하는 중 오류 발생:', error);
+                    console.error('알림을 읽음으로 표시하는 중 오류가 발생하였습니다.:', error);
                 }
             }
+            this.routingList(notification)
         },
         routingList(notification) {
             if (notification.type === 'COMMENT' || notification.type === 'BOARD_LIKE' || notification.type === 'COMMENT_LIKE') {
@@ -235,26 +219,19 @@ export default {
                     },
                 });
                 this.chatRooms = response.data;
-                console.log("chatRooms: " + this.chatRooms)
-
             } catch (error) {
                 console.error('채팅 목록을 가져오는 중 오류 발생:', error);
             }
         },
         formatDateTime(isoString) {
+            if (!isoString || isNaN(Date.parse(isoString))) {
+                return '잘못된 데이터 형식입니다.';
+            }
             const date = new Date(isoString);
-            const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1
-                }월 ${date.getDate()}일`;
-            const formattedTime = `${date
-                .getHours()
-                .toString()
-                .padStart(2, "0")}시 ${date
-                    .getMinutes()
-                    .toString()
-                    .padStart(2, "0")}분`;
+            const formattedDate = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+            const formattedTime = `${date.getHours().toString().padStart(2, "0")}시 ${date.getMinutes().toString().padStart(2, "0")}분`;
             return `${formattedDate} ${formattedTime}`;
         },
-
         isActive(path) {
             return this.$route.path === path;
         },
@@ -355,9 +332,9 @@ export default {
     text-decoration-thickness: 1px;
 }
 
+
 .v-list {
-    border: 1px solid #919191;
-    border-radius: 10px;
+    padding: 20px;
 }
 
 .readNotification {
@@ -382,6 +359,51 @@ export default {
 .notification-title {
     color: #ffffff;
     font-weight: 900;
+}
+
+.v-list .notification-item {
+    border: 1px solid #FF0066;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    transition: opacity 0.3s ease;
+}
+
+.unreadNotification {
+    opacity: 1;
+}
+
+.readNotification {
+    opacity: 0.5;
+    filter: grayscale(100%);
+}
+
+.readNotification .notification-item {
+    border-color: #919191;
+
+}
+
+.notification-header {
+    background-color: #ff0066 !important;
+    border-radius: 10px !important;
+}
+
+.notification-list {
+    background-color: #1b1b1b !important;
+    border-radius: 10px !important;
+}
+
+.notification-item {
+    border-radius: 10px !important;
+    border: 2px solid #FF0066;
+    /* 테두리 추가 */
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.notification-item.readNotification {
+    opacity: 0.9;
+    filter: grayscale(100%);
 }
 
 .title-btn {}
