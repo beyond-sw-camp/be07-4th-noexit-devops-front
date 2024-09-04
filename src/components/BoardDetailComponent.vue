@@ -191,7 +191,6 @@ export default {
           `${process.env.VUE_APP_API_BASIC_URL}/board/like/${this.board.id}`
         );
         this.board.likes += response.data.result ? 1 : -1; // 게시글 좋아요 수 업데이트
-        alert(response.data.result ? "게시글을 좋아합니다." : "좋아요를 취소합니다.");
       } catch (e) {
         console.log(e);
         alert("오류");
@@ -204,7 +203,6 @@ export default {
           `${process.env.VUE_APP_API_BASIC_URL}/board/dislike/${this.board.id}`
         );
         this.board.dislikes += response.data.result ? 1 : -1; // 게시글 좋아요 수 업데이트
-        alert(response.data.result ? "게시글을 싫어합니다." : "싫어요를 취소합니다.");
       } catch (e) {
         console.log(e);
         alert("오류");
@@ -243,9 +241,10 @@ export default {
           `${process.env.VUE_APP_API_BASIC_URL}/comment/create`,
           newComment
         );
-        this.board.comments.push(response.data.result); // 댓글 추가
+        const commentId = response.data.result;
+        const commentInfo = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/comment/${commentId}`)
+        this.board.comments.push(commentInfo.data.result); // 댓글 추가
         this.commentContents = ""; // 댓글 입력란 비우기
-        alert("댓글이 성공적으로 작성되었습니다.");
       } catch (e) {
         console.log(e);
         alert("댓글이 작성되지 않았습니다.");
@@ -307,7 +306,6 @@ export default {
         if (comment) {
           comment.likes += response.data.result ? 1 : -1; // 댓글 좋아요 수 업데이트
         }
-        alert(response.data.result ? "댓글을 좋아합니다." : "좋아요를 취소합니다.");
       } catch (e) {
         console.log(e);
         alert("오류");
@@ -322,7 +320,6 @@ export default {
         if (comment) {
           comment.dislikes += response.data.result ? 1 : -1; // 댓글 싫어요 수 업데이트
         }
-        alert(response.data.result ? "댓글을 싫어합니다." : "싫어요를 취소합니다.");
       } catch (e) {
         console.log(e);
         alert("오류");

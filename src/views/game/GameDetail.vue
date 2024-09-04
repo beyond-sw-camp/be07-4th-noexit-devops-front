@@ -29,11 +29,9 @@
                                     <span class="star-level">{{ averageRating.toFixed(1) }}</span>
                                 </v-col>
 
-
                                 <v-divider class="my-3"></v-divider>
 
                                 <div class="game-details">
-
                                     <div class="price-container" style="display: flex; ">
                                         <span class="price">{{ game.price }} ~ </span>
                                         <v-icon @click="openPriceModal" color="pink" class="expand-icon"
@@ -71,12 +69,11 @@
                                     <v-progress-linear :value="difficultyLevel"
                                         :color="getDifficultyColor(difficultyLevel)" height="20"
                                         :buffer-value="bufferValue" rounded></v-progress-linear>
-
-
                                 </div>
                             </div>
                         </v-col>
                     </v-row>
+
                     <v-row class="mt-4">
                         <v-col cols="12">
                             <v-divider class="my-3"></v-divider>
@@ -85,102 +82,104 @@
                             <p class="game-info">{{ game.gameInfo }}</p>
                         </v-col>
                     </v-row>
+
+                    <!-- 지도 섹션 -->
+                    <v-row justify="center" class="mt-4">
+                        <v-col cols="12" md="12">
+                            <div id="map" style="width:100%; height:400px;"></div>
+                        </v-col>
+                    </v-row>
+
+                    <!-- 예약 섹션 -->
+                    <v-row justify="center" class="mt-5">
+                        <v-col cols="12" md="8">
+                            <v-card style="background-color: #1b1b1b; color:#ffffff;">
+                                <v-card-text>
+                                    <v-form @submit.prevent="reservationCreate">
+                                        <v-row>
+                                            <v-col cols="12" md="6">
+                                                <v-text-field label="예약자 이름" v-model="resName"
+                                                    :placeholder="resName || '사용자이름'" required color="pink">
+                                                </v-text-field>
+                                                <v-text-field label="전화번호" v-model="phoneNumber" required
+                                                    color="pink" />
+                                                <v-text-field label="인원 수" v-model="numberOfPlayers" type="number"
+                                                    required color="pink"></v-text-field>
+                                            </v-col>
+
+                                            <v-col cols="12" md="6">
+                                                <v-date-picker label="예약 날짜" v-model="resDate" required
+                                                    :min="new Date().toISOString().substr(0, 10)"
+                                                    style="max-width: 500px;" color="grey" :input-format="'HH:mm'"
+                                                    class="custom-date-picker">
+                                                </v-date-picker>
+                                            </v-col>
+                                        </v-row>
+
+                                        <v-row class="mt-4" align="center">
+                                            <v-col cols="12">
+                                                <div class="time-selector">
+                                                    <v-btn v-for="hour in availableHours" :key="hour"
+                                                        class="time-button" @click="selectTime(hour)"
+                                                        :color="hour === resDateTime ? 'pink' : 'default'" outlined
+                                                        small style="width: 70px; height: 70px;">
+                                                        {{ formatTime(hour) }}
+                                                    </v-btn>
+                                                </div>
+                                            </v-col>
+                                        </v-row>
+
+                                        <v-row class="mt-4">
+                                            <v-col cols="12">
+                                                <v-btn type="submit" color="pink" block>예약 등록</v-btn>
+                                            </v-col>
+                                        </v-row>
+                                    </v-form>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+
+                    <!-- 리뷰 섹션 -->
+                    <v-row justify="center" class="mt-4" style="color:#ffffff">
+                        <v-col cols="12" md="8">
+                            <div class="reviews-summary">
+                                <p>
+                                    <span style="color: palevioletred;">{{ reviewCount }}</span>개의 리뷰
+                                </p>
+                            </div>
+                            <v-divider class="my-3" style="border: 1px solid #ccc;"></v-divider>
+                            <ReviewListComponent :gameId="gameId" />
+                        </v-col>
+                    </v-row>
                 </div>
             </v-col>
         </v-row>
 
-        <!-- 가격 보여주는 modal -->
+        <!-- 가격 모달 -->
         <v-dialog v-model="isPriceModalOpen" max-width="350px">
             <v-card class="price-modal-card">
-                <!-- 닫기 버튼 (X) -->
                 <v-btn icon @click="isPriceModalOpen = false" class="close-btn">
-                    <v-icon small>mdi-close</v-icon> <!-- 아이콘 크기 줄이기 -->
+                    <v-icon small>mdi-close</v-icon>
                 </v-btn>
-
-                <v-card-title class="card-title">
-                    가격 상세
-                </v-card-title>
+                <v-card-title class="card-title">가격 상세</v-card-title>
                 <v-card-text class="card-text">
                     <v-simple-table dense>
                         <tbody>
                             <tr v-for="price in calculatedPrices" :key="price.people">
-                                <td class="table-cell">
-                                    {{ price.people }}인
-                                </td>
-                                <td class="table-cell">
-                                    {{ price.totalPrice }}원
-                                </td>
+                                <td class="table-cell">{{ price.people }}인</td>
+                                <td class="table-cell">{{ price.totalPrice }}원</td>
                             </tr>
                         </tbody>
                     </v-simple-table>
                 </v-card-text>
             </v-card>
         </v-dialog>
-
-
-        <!-- 예약 섹션 -->
-        <v-row justify="center" class="mt-5">
-            <v-col cols="12" md="8">
-                <v-card style="background-color: #1b1b1b; color:#ffffff;">
-                    <v-card-text>
-                        <v-form @submit.prevent="reservationCreate">
-                            <v-row>
-                                <v-col cols="12" md="6">
-                                    <v-text-field label="예약자 이름" v-model="resName" :placeholder="resName || '사용자이름'"
-                                        required color="pink"></v-text-field>
-                                    <v-text-field label="전화번호" v-model="phoneNumber" required color="pink" />
-                                    <v-text-field label="인원 수" v-model="numberOfPlayers" type="number" required
-                                        color="pink"></v-text-field>
-                                </v-col>
-
-                                <v-col cols="12" md="6">
-                                    <v-date-picker label="예약 날짜" v-model="resDate" required
-                                        :min="new Date().toISOString().substr(0, 10)" style="max-width: 500px;"
-                                        color="grey" :input-format="'HH:mm'" class="custom-date-picker">
-
-                                    </v-date-picker>
-                                </v-col>
-                            </v-row>
-
-                            <v-row class="mt-4" align="center">
-                                <v-col cols="12">
-                                    <div class="time-selector">
-                                        <v-btn v-for="hour in availableHours" :key="hour" class="time-button"
-                                            @click="selectTime(hour)" :color="hour === resDateTime ? 'pink' : 'default'"
-                                            outlined small style="width: 70px; height: 70px;">
-                                            {{ formatTime(hour) }}
-                                        </v-btn>
-                                    </div>
-                                </v-col>
-                            </v-row>
-
-                            <v-row class="mt-4">
-                                <v-col cols="12">
-                                    <v-btn type="submit" color="pink" block>예약 등록</v-btn>
-                                </v-col>
-                            </v-row>
-                        </v-form>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-        </v-row>
-
-        <!-- 리뷰 섹션 -->
-        <v-row justify="center" class="mt-4" style="color:#ffffff">
-            <v-col cols="12" md="8">
-                <div class="reviews-summary">
-                    <p>
-                        <span style="color: palevioletred;">{{ reviewCount }}</span>개의 리뷰
-                    </p>
-                </div>
-                <v-divider class="my-3" style="border: 1px solid #ccc;"></v-divider>
-                <ReviewListComponent :gameId="gameId" />
-            </v-col>
-        </v-row>
     </v-container>
 </template>
 
 <script>
+/* global kakao */
 import axios from 'axios';
 import ReviewListComponent from '@/components/ReviewListComponent.vue';
 import { jwtDecode } from 'jwt-decode';
@@ -193,29 +192,34 @@ export default {
         return {
             gameId: this.$route.params.id,
             game: {},
-            difficultyLevel: 1, // 난이도
+            difficultyLevel: 1,
             resName: "",
             phoneNumber: "",
             numberOfPlayers: 1,
             resDate: null,
             resDateTime: "",
             memberId: "",
-            availableHours: [], // 예약 가능한 시간
-            reviewCount: 0, // 총 리뷰 개수
-            isPriceModalOpen: false, // 모달 창의 상태 관리
-            calculatedPrices: [], // 가격 배열
-            averageRating: 0, // 평균 별점 변수 추가
+            availableHours: [],
+            reviewCount: 0,
+            isPriceModalOpen: false,
+            calculatedPrices: [],
+            averageRating: 0,
+            map: null,
+            storeLat: 0,
+            storeLng: 0,
         };
+    },
+    mounted() {
+        this.fetchGameDetail();
     },
     computed: {
         fullStars() {
-            return Math.floor(this.averageRating); // 정수 부분만큼 별을 채움
+            return Math.floor(this.averageRating);
         },
         hasHalfStar() {
-            return this.averageRating - this.fullStars >= 0.5; // 반별이 필요한지 확인
+            return this.averageRating - this.fullStars >= 0.5;
         },
         bufferValue() {
-            // 난이도에 따라 buffer-value를 동적으로 설정합니다.
             return this.difficultyLevel;
         }
     },
@@ -232,8 +236,13 @@ export default {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/detail/${gameId}`);
                 this.game = response.data.result;
                 this.difficultyLevel = this.getDifficultyLevel(this.game.difficult);
-                console.log('Difficulty Level:', this.difficultyLevel);
                 this.averageRating = this.game.averageRating || 0;
+
+                this.storeLat = this.game.latitude;
+                this.storeLng = this.game.longitude;
+                console.log('Store Latitude:', this.storeLat);
+                console.log('Store Longitude:', this.storeLng);
+                this.initMap();
             } catch (e) {
                 console.error(e);
                 alert('게임 정보를 불러오는 데 실패했습니다.');
@@ -241,42 +250,40 @@ export default {
         },
         async fetchUserInfo() {
             const token = localStorage.getItem('token');
-            try {
-                if (token) {
+            if (token) {
+                try {
                     const decodedToken = jwtDecode(token);
                     this.memberId = decodedToken.userId || decodedToken.sub;
 
-                    // resName과 phoneNumber이 비어 있는 경우에만 설정
                     if (!this.resName) {
                         this.resName = decodedToken.name || '';
                     }
                     if (!this.phoneNumber) {
                         this.phoneNumber = decodedToken.phone || '';
                     }
-                } else {
-                    alert('로그인이 필요합니다.');
-                    return false;
+                } catch (error) {
+                    console.error('회원 정보를 가져오는 데 실패했습니다.', error);
+                    // 로그인 정보 가져오기 실패 시에도 추가적인 처리를 하고 싶다면 여기서 처리
                 }
-                return true;
-            } catch (error) {
-                console.error('회원 정보를 가져오는 데 실패했습니다.', error);
-                alert('회원 정보를 가져오는 중 오류가 발생했습니다.');
-                return false;
+            } else {
+                // 로그인이 되어 있지 않을 때에도 추가적인 처리를 할 수 있습니다.
+                console.log('로그인하지 않은 상태입니다.');
+                // alert('로그인이 필요합니다.'); // 이 라인을 제거하면 경고를 표시하지 않습니다.
             }
+            return true;
         },
 
-        async fetchAvailableHours() { // 여기서 오류 발생(회원정보를 불러오는데 실패하였습니다 오류) -> 여기의 try catch 
+        async fetchAvailableHours() {
             const gameId = this.$route.params.id;
             try {
                 const response = await axios.get(`${process.env.VUE_APP_API_BASIC_URL}/game/${gameId}/available-hours`);
                 this.availableHours = response.data;
             } catch (e) {
                 console.error(e);
-                // alert('예약 가능한 시간대를 불러오는 데 실패했습니다.');
             }
         },
         selectTime(hour) {
-            this.resDateTime = hour;   // hour 에서 Axois Error
+            this.resDateTime = hour;
         },
         formatTime(time) {
             return time.slice(0, 5);
@@ -311,15 +318,14 @@ export default {
         },
         getDifficultyLevel(difficulty) {
             const levels = {
-                one: 20, // 1칸
-                two: 40, // 2칸
-                three: 60, // 3칸
-                four: 80, // 4칸
-                five: 100 // 5칸
+                one: 20,
+                two: 40,
+                three: 60,
+                four: 80,
+                five: 100
             };
             const levelKey = difficulty?.toLowerCase();
-            console.log('Difficult Key:', levelKey); // 디버그 로그
-            return levels[levelKey] || 0; // 기본값을 0으로 설정
+            return levels[levelKey] || 0;
         },
         getDifficultyColor(level) {
             if (level <= 20) return 'pink';
@@ -346,26 +352,58 @@ export default {
             }
 
             try {
+                const selectedDate = new Date(this.resDate);
+                const [hours, minutes] = this.resDateTime.split(':').map(Number);
+
+                const resDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                const resDateTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
                 const reservationData = {
                     resName: this.resName,
                     phoneNumber: this.phoneNumber,
                     numberOfPlayers: this.numberOfPlayers,
-                    resDate: this.resDate,
-                    resDateTime: this.resDateTime,
+                    resDate: resDate,
+                    resDateTime: resDateTime,
                     gameId: this.gameId,
                 };
-                console.log(reservationData)
-                await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/reservation/create`, reservationData, {
-                    // headers: {
-                    //     'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    // }
-                });
+                console.log(reservationData);
+
+                await axios.post(`${process.env.VUE_APP_API_BASIC_URL}/reservation/create`, reservationData);
 
                 this.$router.push('/reservation/myreservation');
             } catch (e) {
                 console.error(e);
                 alert("예약 등록에 실패하였습니다.");
             }
+        },
+        initMap() {
+            console.log('지도 초기화 시작');
+            const script = document.createElement('script');
+            script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.VUE_APP_KAKAO_API_KEY}&autoload=false`;
+
+            document.head.appendChild(script);
+
+            script.onload = () => {
+                console.log('카카오 지도 스크립트가 로드되었습니다.');
+                kakao.maps.load(() => {
+                    console.log('카카오 지도 API가 초기화되었습니다.');
+                    const container = document.getElementById('map');
+                    console.log(document.getElementById('map'));
+                    const options = {
+                        center: new kakao.maps.LatLng(this.storeLat, this.storeLng),
+                        level: 3
+                    };
+                    this.map = new kakao.maps.Map(container, options);
+                    console.log('지도 객체가 생성되었습니다.');
+
+                    const markerPosition = new kakao.maps.LatLng(this.storeLat, this.storeLng);
+                    const marker = new kakao.maps.Marker({
+                        position: markerPosition
+                    });
+                    marker.setMap(this.map);
+                    console.log('마커가 지도에 추가되었습니다.');
+                });
+            };
         }
     }
 };
@@ -390,7 +428,7 @@ export default {
 h4.store-name {
     font-size: 24px;
     margin-bottom: 10px;
-    color: #919191
+    color: #919191;
 }
 
 h2.game-name {
@@ -451,13 +489,10 @@ h2.game-name {
     line-height: 1.6;
     color: #666;
     padding: 15px;
-    /* border: 1px solid #ccc; */
     border-radius: 8px;
-    /* background-color: #f9f9f9; */
     margin-top: 20px;
 }
 
-/* 시간 선택 버튼 스타일 */
 .time-selector {
     display: flex;
     flex-wrap: wrap;
@@ -520,24 +555,23 @@ h2.game-name {
 .custom-date-picker .v-picker--date,
 .custom-date-picker .v-picker__body {
     background-color: #333 !important;
-    /* Custom grey background */
     color: #fff;
-    /* White text color */
 }
 
 .custom-date-picker .v-picker__body .v-btn {
     background-color: #444 !important;
-    /* Slightly darker grey for buttons */
 }
 
 .custom-date-picker .v-picker__body .v-btn:hover {
     background-color: #555 !important;
-    /* Hover state */
 }
 
-/* You can also customize the selected date and other elements as needed */
 .custom-date-picker .v-picker__body .v-picker__day.v-picker__day--selected {
     background-color: #e91e63 !important;
-    /* Pink color for selected day */
 }
+/* #map{
+    width: 100%;
+    height: 400px;
+} */
+
 </style>
