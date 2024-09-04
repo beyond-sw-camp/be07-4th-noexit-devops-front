@@ -149,8 +149,11 @@ export default {
                 }
             }
 
-            this.wishList = allWishList;
 
+
+
+            this.wishList = allWishList;
+            console.log(this.wishList);
             for (let i = 0; i < this.wishList.length; i++) {
                 if (this.wishList[i].memberId === this.myInfo.id) {
                     this.myWishList.push(this.wishList[i]);
